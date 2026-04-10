@@ -1,0 +1,564 @@
+{
+  "department": "Supervisao (Field Supervision)",
+  "department_id": "supervisao",
+  "category": "Construction",
+  "ai_agent": {
+    "port": 8004,
+    "role": "Field supervision coordinator managing daily site inspections, quality verification, daily construction logs, and the critical Checklist Done payment trigger across 50+ active houses",
+    "mcp_tools": [
+      "read_daily_logs",
+      "write_daily_logs",
+      "create_inspection",
+      "update_inspection",
+      "log_evidence",
+      "list_evidence",
+      "create_monitor_route",
+      "get_routes_for_date"
+    ],
+    "workflow_chains": [
+      "checklist_done_to_payment",
+      "daily_log_to_scheduling_update",
+      "evidence_to_rework_request",
+      "monitor_route_to_daily_coverage",
+      "loads_calculation_to_scheduling",
+      "quality_issue_to_sub_notification",
+      "warranty_claim_to_repair_schedule"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Moises",
+      "email": "moises@lakeshoresoftware.inc",
+      "role": "Gerente de Supervisao (Field Supervision Manager)"
+    },
+    {
+      "name": "Joao Paulo Valenca",
+      "email": "cpm19@lakeshoresoftware.inc",
+      "role": "Supervisor (Senior Field Supervisor)"
+    },
+    {
+      "name": "Daniel",
+      "email": "daniel@lakeshoresoftware.inc",
+      "role": "Supervisor (Advanced/Warranty Specialist)"
+    },
+    {
+      "name": "Charles",
+      "email": "charles@lakeshoresoftware.inc",
+      "role": "Monitor (New/Junior)"
+    },
+    {
+      "name": "Luigi",
+      "email": "luigi@lakeshoresoftware.inc",
+      "role": "Monitor (Experienced)"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Checklist Done Protocol",
+      "description": "Checklist Done is the single most critical trigger in the entire construction pipeline. When a supervisor marks Checklist Done for an activity, it triggers payment to the subcontractor via Financeiro (H-01). Incorrect or premature Checklist Done results in paying for incomplete work. This is the primary quality gate.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor", "Gerente de Supervisao"]
+    },
+    {
+      "topic": "Daily Construction Log Writing",
+      "description": "Every house visited must have a daily log entry documenting: work performed, workers present, weather conditions, materials delivered, quality issues found, photos taken. Logs are the legal record of construction progress and are used by Scheduling, Financeiro, and Inspecao.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Supervisor", "Monitor"]
+    },
+    {
+      "topic": "Engineering Loads Calculation",
+      "description": "Supervisors must understand and verify engineering loads for foundations. This is a critical bottleneck (H-12) that feeds into Scheduling. The loads calculation determines footer depth, rebar spacing, and concrete specifications. Currently done without proper equipment.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor"]
+    },
+    {
+      "topic": "Quality Verification Standards",
+      "description": "Know the FBC (Florida Building Code) quality standards for each construction phase. Verify plumb, level, square for framing. Check rebar placement and spacing for foundations. Verify proper nailing patterns. Inspect waterproofing and flashing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor", "Monitor"]
+    },
+    {
+      "topic": "Photo Evidence Documentation",
+      "description": "Photos are required at critical milestones: pre-pour foundation, rough-in before cover-up, waterproofing before siding, and any deficiencies found. Photos must be geotagged and timestamped. Current system has 99% upload failure rate (PP-12).",
+      "proficiency_level": "basic",
+      "applies_to": ["Supervisor", "Monitor"]
+    },
+    {
+      "topic": "Monitor Route Planning",
+      "description": "Monitors must plan efficient routes to visit 50+ houses per day. Route optimization considers geographic clustering, phase priority (active pours and inspections first), and urgent issues from previous day's log.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Monitor"]
+    },
+    {
+      "topic": "Elevation Assessment",
+      "description": "Assessing site elevation for drainage and foundation height without proper surveying instruments. This is tribal knowledge held primarily by JP Valenca. Incorrect elevation assessment leads to drainage problems and code violations.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor"]
+    },
+    {
+      "topic": "Warranty and Repair Assessment",
+      "description": "Evaluating warranty claims, determining root cause (construction defect vs homeowner damage vs normal wear), and scheduling repairs. Daniel specializes in this area. Requires knowledge of material lifecycles and construction methods.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor"]
+    },
+    {
+      "topic": "Subcontractor Work Quality Assessment",
+      "description": "Identify common quality issues by trade: framing (crown direction, nailing patterns, header sizes), plumbing (slope, venting, fitting types), electrical (box fill, wire gauge, GFCI placement), and roofing (shingle pattern, flashing, valleys).",
+      "proficiency_level": "advanced",
+      "applies_to": ["Supervisor"]
+    },
+    {
+      "topic": "Safety Compliance On-Site",
+      "description": "OSHA requirements for residential construction sites: fall protection, trench safety, electrical safety, PPE requirements, housekeeping. Supervisors must enforce compliance and document violations.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Supervisor", "Monitor", "Gerente de Supervisao"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Site Inspection Round",
+      "steps": [
+        "Review previous day's logs and open issues",
+        "Check scheduled activities for today across all assigned houses",
+        "Plan optimized route based on priority and geography",
+        "Visit each house and verify sub crew is on site",
+        "Inspect work quality against FBC standards",
+        "Take photos of critical items and deficiencies",
+        "Write daily log for each house visited",
+        "Mark Checklist Done for completed activities (payment trigger)",
+        "Report urgent issues to Scheduling via WhatsApp",
+        "Upload photos and evidence to platform"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "WhatsApp", "BuilderTrend"],
+      "critical_decisions": [
+        "Whether work quality meets Checklist Done threshold",
+        "Whether to stop work and request correction before proceeding",
+        "Whether safety violation requires immediate work stoppage",
+        "Priority ranking of houses to visit given 50+ house load"
+      ]
+    },
+    {
+      "name": "Checklist Done Verification",
+      "steps": [
+        "Arrive at house with scheduled completion",
+        "Verify all scope items for the activity are complete",
+        "Check quality against standards checklist",
+        "Take completion photos",
+        "Mark Checklist Done in system (triggers H-01 payment)",
+        "Note any punch items that don't block completion",
+        "Update daily log with completion details"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "BuilderTrend"],
+      "critical_decisions": [
+        "Whether remaining items are punch-list (allow completion) or deficiency (block completion)",
+        "Whether to require sub to return before marking complete"
+      ]
+    },
+    {
+      "name": "Engineering Loads Verification",
+      "steps": [
+        "Review engineering loads calculation for house",
+        "Visit site to verify soil conditions match assumptions",
+        "Check footer dimensions against loads spec",
+        "Verify rebar size and spacing per loads document",
+        "Confirm fill depth and compaction requirements",
+        "Report loads verification to Scheduling (H-12)"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["LakeshoreSoftware.inc", "WhatsApp"],
+      "critical_decisions": [
+        "Whether site conditions match engineering assumptions",
+        "Whether additional fill or deeper footers are needed"
+      ]
+    },
+    {
+      "name": "Monitor Daily Route Execution",
+      "steps": [
+        "Receive route plan for the day (assigned houses)",
+        "Drive to each house in optimized order",
+        "Photograph overall progress at each house",
+        "Note sub crew presence and headcount",
+        "Identify any obvious safety or quality issues",
+        "Report findings to supervisor via WhatsApp",
+        "Enter basic log data in system"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "WhatsApp"],
+      "critical_decisions": [
+        "Whether an issue is urgent enough to call supervisor immediately vs log for next day"
+      ]
+    },
+    {
+      "name": "Repair Scheduling (Warranty)",
+      "steps": [
+        "Receive warranty claim from customer service",
+        "Visit house to assess claim",
+        "Determine root cause (construction defect vs other)",
+        "If construction defect: identify responsible sub",
+        "Schedule repair with sub or handyman",
+        "Note: supervisors currently schedule repairs WITHOUT PO (pain point)",
+        "Verify repair completion",
+        "Update warranty claim status"
+      ],
+      "frequency": "weekly",
+      "systems_used": ["LakeshoreSoftware.inc", "WhatsApp"],
+      "critical_decisions": [
+        "Whether claim is covered under warranty vs homeowner responsibility",
+        "Whether original sub is responsible for free repair vs new PO needed"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Daily Construction Logs",
+      "features_used": [
+        "Daily log creation and editing",
+        "Activity completion tracking",
+        "Weather condition recording",
+        "Crew presence logging",
+        "Issue flagging and escalation"
+      ],
+      "api_endpoints": [
+        "/api/v1/daily-logs",
+        "/api/v1/daily-logs/{id}",
+        "/api/v1/daily-logs/house/{houseId}",
+        "/api/v1/daily-logs/{id}/activities"
+      ]
+    },
+    {
+      "module": "Service Verification",
+      "features_used": [
+        "Checklist Done marking (payment trigger)",
+        "Quality checklist completion",
+        "Punch list tracking",
+        "Sub performance scoring"
+      ],
+      "api_endpoints": [
+        "/api/v1/services/{id}/verify",
+        "/api/v1/services/{id}/checklist",
+        "/api/v1/services/{id}/punch-items"
+      ]
+    },
+    {
+      "module": "Inspections",
+      "features_used": [
+        "Inspection request creation",
+        "Inspection result recording",
+        "Deficiency tracking",
+        "Re-inspection scheduling"
+      ],
+      "api_endpoints": [
+        "/api/v1/inspections",
+        "/api/v1/inspections/{id}",
+        "/api/v1/inspections/{id}/results"
+      ]
+    },
+    {
+      "module": "Evidence Management",
+      "features_used": [
+        "Photo upload (99% failure rate - PP-12)",
+        "Evidence tagging to activities",
+        "Geotagged photo storage",
+        "Evidence timeline view"
+      ],
+      "api_endpoints": [
+        "/api/v1/evidence",
+        "/api/v1/evidence/{id}",
+        "/api/v1/evidence/house/{houseId}",
+        "/api/v1/evidence/{id}/upload"
+      ]
+    },
+    {
+      "module": "Monitor Routes",
+      "features_used": [
+        "Route creation and assignment",
+        "Geographic house clustering",
+        "Route optimization",
+        "Daily coverage tracking"
+      ],
+      "api_endpoints": [
+        "/api/v1/routes",
+        "/api/v1/routes/{id}",
+        "/api/v1/routes/date/{date}",
+        "/api/v1/routes/{id}/houses"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-01",
+      "direction": "sends_to",
+      "partner_department": "Financeiro",
+      "trigger": "Checklist Done",
+      "data_exchanged": "Activity completion confirmation with date, house ID, sub ID, and completion photos. This triggers subcontractor payment processing.",
+      "impact": "If Checklist Done is premature, sub is paid for incomplete work. If delayed, sub cash flow suffers and relationship deteriorates. Most critical handoff in the system."
+    },
+    {
+      "id": "H-10",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Quality Issue Found",
+      "data_exchanged": "Deficiency description, photos, affected activity, estimated correction time, whether work must stop",
+      "impact": "Quality issues may require rescheduling downstream activities. If not communicated quickly, next trade may arrive to find site not ready."
+    },
+    {
+      "id": "H-11",
+      "direction": "receives_from",
+      "partner_department": "Scheduling",
+      "trigger": "Activity Scheduled",
+      "data_exchanged": "House list with scheduled activities, assigned subs, expected completion dates",
+      "impact": "Without schedule information, supervisors cannot plan daily routes or know which houses to prioritize for verification"
+    },
+    {
+      "id": "H-12",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Loads Calculation Complete",
+      "data_exchanged": "Engineering loads verification with foundation specifications, soil condition assessment, and go/no-go for foundation phase",
+      "impact": "Scheduling cannot proceed with foundation activities until loads are verified. This is a known bottleneck causing Phase 1 delays."
+    },
+    {
+      "id": "H-13",
+      "direction": "sends_to",
+      "partner_department": "Inspecao",
+      "trigger": "Ready for Inspection",
+      "data_exchanged": "House ID, inspection type needed, activities completed, supervisor pre-check notes",
+      "impact": "If inspection is not requested promptly after completion, idle time between activities increases total phase duration"
+    },
+    {
+      "id": "H-14",
+      "direction": "receives_from",
+      "partner_department": "Inspecao",
+      "trigger": "Inspection Failed",
+      "data_exchanged": "Failed items list, correction requirements, re-inspection timeline",
+      "impact": "Supervisor must coordinate correction with sub crew and verify fix before re-inspection can be scheduled"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-11",
+      "description": "Dashboards are read-only; supervisors cannot interact with data, drill down into details, or update status directly from the dashboard view",
+      "severity": "high",
+      "current_workaround": "Supervisors must navigate away from dashboard to individual records to make updates, losing context and wasting time",
+      "proposed_solution": "Interactive dashboards with inline editing, drill-down capability, and quick-action buttons for common operations (Checklist Done, log entry, issue flag)"
+    },
+    {
+      "id": "PP-12",
+      "description": "Photo upload to the platform fails 99% of the time; evidence documentation is essentially non-functional",
+      "severity": "high",
+      "current_workaround": "Photos stored on personal phones, shared via WhatsApp groups, or not documented at all. Critical pre-cover photos are lost.",
+      "proposed_solution": "Offline-first photo capture with background sync when connectivity is available; compressed upload with retry logic; local cache until confirmed upload"
+    },
+    {
+      "id": "PP-13",
+      "description": "50+ houses per day is physically impossible to visit with proper inspection quality; monitors do drive-by assessments rather than thorough checks",
+      "severity": "high",
+      "current_workaround": "Prioritize houses with active pours, inspections, or reported issues; other houses get minimal or no coverage",
+      "proposed_solution": "Risk-based prioritization algorithm that identifies which houses need physical visits vs which can be verified via sub-reported photos; additional monitor hiring"
+    },
+    {
+      "id": "PP-14",
+      "description": "Supervisors schedule repairs directly with subs without creating a Purchase Order (PO), causing financial tracking gaps and unbudgeted expenses",
+      "severity": "medium",
+      "current_workaround": "Repairs are scheduled informally via WhatsApp; costs appear as surprises in financial reconciliation",
+      "proposed_solution": "Quick PO creation workflow from mobile device; repair authorization limit per supervisor; auto-PO for warranty repairs below threshold amount"
+    },
+    {
+      "id": "PP-15",
+      "description": "No standardized quality checklists per activity type; quality assessment depends entirely on individual supervisor experience and judgment",
+      "severity": "medium",
+      "current_workaround": "Experienced supervisors (JP, Daniel) maintain mental checklists; new monitors (Charles) have no reference standard",
+      "proposed_solution": "Digital quality checklists per activity type with FBC reference, photo requirements, and pass/fail criteria. Auto-populated when Checklist Done is attempted."
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Problematic House Identification",
+      "description": "JP Valenca maintains a mental model of which houses across all communities are 'problematic' - meaning they have recurring quality issues, difficult subs, drainage problems, or structural concerns. He adjusts his route to visit these houses more frequently without any system flag telling him to do so.",
+      "holders": ["Joao Paulo Valenca"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Elevation Assessment Without Instruments",
+      "description": "JP can assess site elevation and drainage adequacy by visual inspection and experience, without using surveying instruments. This includes knowing when fill is needed, estimating fill quantities, and predicting drainage problems from site topography. No documented methodology exists.",
+      "holders": ["Joao Paulo Valenca"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Sub Crew Quality Patterns",
+      "description": "Experienced supervisors know which sub crews consistently have quality issues and what specific deficiencies to look for. For example, knowing that a specific framing crew tends to miss hurricane clips or that a plumbing crew doesn't slope drain lines adequately.",
+      "holders": ["Joao Paulo Valenca", "Daniel"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Warranty Root Cause Patterns",
+      "description": "Daniel has extensive knowledge of which construction issues lead to warranty claims. He can predict warranty problems during construction by identifying early signs: insufficient attic ventilation leads to shingle failure, poor flashing leads to water intrusion, inadequate compaction leads to settlement cracks.",
+      "holders": ["Daniel"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Monitor Route Efficiency",
+      "description": "Luigi (experienced monitor) knows the optimal route sequences for each community, including which gates have access code changes, which construction entrances are seasonal, and time-of-day traffic patterns that affect travel time.",
+      "holders": ["Luigi"],
+      "risk_if_lost": "medium"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Checklist Done Protocol & Payment Trigger",
+      "topics": [
+        "What Checklist Done means in the payment pipeline",
+        "Quality verification steps before marking complete",
+        "Common mistakes that lead to premature payment",
+        "How to handle partial completion scenarios",
+        "Documentation requirements for Checklist Done"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Daily Construction Log Standards",
+      "topics": [
+        "Required log fields and format",
+        "How to document weather impact",
+        "Crew presence documentation requirements",
+        "Issue flagging and escalation criteria",
+        "Legal implications of construction logs"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "covered"
+    },
+    {
+      "module": "Dashboard Interactivity Training",
+      "topics": [
+        "How to read and interpret dashboard metrics",
+        "Quick-action operations from dashboard",
+        "Drill-down navigation for issue investigation",
+        "Custom view creation for daily priorities"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Standardized Quality Checklists",
+      "topics": [
+        "FBC quality standards per activity type",
+        "Photo documentation requirements at each stage",
+        "Pass/fail criteria for each checklist item",
+        "How to document deficiencies",
+        "When to stop work vs allow continuation"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Engineering Loads & Foundation Verification",
+      "topics": [
+        "How to read engineering loads documents",
+        "Field verification of footer dimensions",
+        "Rebar inspection techniques",
+        "Soil condition assessment basics",
+        "Equipment needed for proper loads verification"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Safety Compliance & OSHA Requirements",
+      "topics": [
+        "OSHA residential construction requirements",
+        "Fall protection rules",
+        "Trench and excavation safety",
+        "PPE requirements by activity",
+        "Violation documentation and enforcement"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "medium",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Warranty Assessment & Repair Coordination",
+      "topics": [
+        "Warranty coverage determination criteria",
+        "Common warranty claim types and root causes",
+        "Repair scheduling workflow with PO requirement",
+        "Sub responsibility vs company responsibility",
+        "Documentation for warranty defense"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Daily construction logs must be maintained for all active construction sites",
+      "regulation": "FBC",
+      "verification": "Audit daily log completeness weekly; flag houses with missing logs for more than 1 business day"
+    },
+    {
+      "requirement": "Pre-cover photos required before any work is concealed (pre-pour, pre-drywall, pre-siding)",
+      "regulation": "FBC",
+      "verification": "Photo evidence must be timestamped and geotagged; verify photo exists before allowing Checklist Done for cover-up activities"
+    },
+    {
+      "requirement": "OSHA fall protection required for all work above 6 feet",
+      "regulation": "OSHA",
+      "verification": "Supervisor visual inspection during site visits; document compliance or violation in daily log"
+    },
+    {
+      "requirement": "Trench safety requirements for excavations deeper than 5 feet",
+      "regulation": "OSHA",
+      "verification": "Verify shoring or sloping before allowing workers to enter excavations; document in daily log"
+    },
+    {
+      "requirement": "All subcontractor workers must have valid identification and authorization to work",
+      "regulation": "County",
+      "verification": "Periodic crew verification during site visits; document crew count in daily logs"
+    },
+    {
+      "requirement": "Material storage must not block fire access routes or emergency exits",
+      "regulation": "OSHA",
+      "verification": "Visual inspection during daily rounds; issue correction notice if violated"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Houses Visited Per Day",
+      "target": "Supervisor: 15-20 thorough visits, Monitor: 30-40 check visits",
+      "measurement": "Daily log entries count per person; GPS tracking of route coverage"
+    },
+    {
+      "metric": "Checklist Done Accuracy",
+      "target": "<2% of Checklist Done items require rework or correction after marking",
+      "measurement": "Track rework requests against houses where Checklist Done was marked; audit sample monthly"
+    },
+    {
+      "metric": "Daily Log Completion Rate",
+      "target": "100% of active houses have daily log entry on days with scheduled activity",
+      "measurement": "Compare houses with scheduled activities vs houses with daily log entries for same day"
+    },
+    {
+      "metric": "Photo Evidence Upload Success",
+      "target": ">95% upload success rate (current: ~1%)",
+      "measurement": "Successful uploads divided by total upload attempts; track retry counts"
+    },
+    {
+      "metric": "Issue Response Time",
+      "target": "Quality issues reported within 4 hours of discovery; safety issues immediately",
+      "measurement": "Time between issue discovery (daily log timestamp) and notification to Scheduling/relevant department"
+    },
+    {
+      "metric": "Warranty Repair Turnaround",
+      "target": "<5 business days from claim to repair completion",
+      "measurement": "Days between warranty claim receipt and repair completion verification"
+    }
+  ]
+}

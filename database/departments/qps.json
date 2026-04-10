@@ -1,0 +1,305 @@
+{
+  "department": "QPS (Quality, Performance & Standards)",
+  "department_id": "qps",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8002,
+    "role": "Quality assurance across all construction phases — field inspections, 53 checklists, FCC verification, daily log auditing, performance metrics, and phase restructuring",
+    "mcp_tools": [
+      "read_daily_logs",
+      "update_daily_logs",
+      "create_daily_logs",
+      "search_daily_logs",
+      "house_status_summary",
+      "inspection_pass_rate",
+      "budget_variance",
+      "trade_efficiency"
+    ],
+    "workflow_chains": [
+      "quality_control_field",
+      "qc1_qc2_verification",
+      "fcc_final_check",
+      "daily_log_audit",
+      "rework_initiation",
+      "phase_restructuring"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Ana Maria M Gouveia",
+      "email": "",
+      "role": "QPS Manager — quality standards, daily log audit, phase restructuring, compliance"
+    },
+    {
+      "name": "Donald Darby (Don/Donaldo)",
+      "email": "",
+      "role": "QPS Inspector — FCC (Final Construction Check) verification, ~60 houses/day route, checklist approval"
+    },
+    {
+      "name": "Fortine (Leo)",
+      "email": "",
+      "role": "QPS Inspector — quality control, reprobations, ~60 houses/day route"
+    },
+    {
+      "name": "Daniel Consorte",
+      "email": "",
+      "role": "QPS Inspector — FCC phases, walkthrough reports"
+    },
+    {
+      "name": "Diego Araujo",
+      "email": "",
+      "role": "Analytics/BI — Power BI dashboards, data extraction, route optimization"
+    },
+    {
+      "name": "Rost (Horst Flechtner)",
+      "email": "",
+      "role": "Route management — closed house monitoring, dashboards"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "53 Quality Checklists",
+      "description": "53 checklists across 11 phases covering the full construction lifecycle: Pre-Construction (4), Permits (7), Land Prep (13), Masonry/Roofing (6), Roughs (13), Drywall (1), Finishing (5), Trim (5), and Inspections/Final/Close-Out. Based on Job 455 reference data.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps", "supervisao", "scheduling"]
+    },
+    {
+      "topic": "FCC (Face for Checklist Done) Verification",
+      "description": "Don monitors dashboard with two sections: upper (houses needing FCC — 'Face for Requested' or 'Walkthrough Checklist Done') and lower (houses with 'Face for Checklist Done'). Visits each house for comprehensive final verification. ~60 houses/day.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps", "warranty", "client_relations"]
+    },
+    {
+      "topic": "4-Phase Structure (Jan 2026 Restructuring)",
+      "description": "Simplified from 5 to 4 phases: Phase 1+2 unchanged, Phase 3 (new) = old 3.1 (Drywall Checklist Done → CO Issued), Phase 4 (new) = old 3.2+4 merged (CO Issued → Phase 4 Checklist Done). Goal: eliminate phase overlap, reduce post-walkthrough rework by 50%.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps", "scheduling", "supervisao"]
+    },
+    {
+      "topic": "Checklist Done = Payment Trigger",
+      "description": "CRITICAL: When a monitor marks 'Checklist Done', it triggers sub payment. Once paid, sub will not return to fix issues. Monitors must be extremely thorough before marking.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps", "financeiro", "supervisao"]
+    },
+    {
+      "topic": "Daily Log Quality Audit (IT-02)",
+      "description": "6 audit criteria: Phase accuracy, actual hours (not estimates), specific work description, minimum 2 photos (before+after or progress), correct BT tags, date accuracy (<1 day gap). Late inputs noted with 'Input atrasado' flag.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps"]
+    },
+    {
+      "topic": "29 County Inspections",
+      "description": "Full inspection catalog from Const App Service Catalog: UP, Slab, Lintel, Sheathing, Structural Frame, Partial Roof, Rough Electric/Plumbing/AC, Framing, Insulation, Final Electric/Plumbing/AC, and more. Each with specific pass criteria and fail triggers.",
+      "proficiency_level": "advanced",
+      "applies_to": ["qps", "inspecao"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Field Quality Control (Don/Fortine)",
+      "steps": [
+        "Receive optimized route list of houses for verification",
+        "Visit house and verify service against quality checklist",
+        "Document with photos/video (MANDATORY for every finding)",
+        "If approved: mark 'Checklist Done' in BuilderTrend",
+        "If rejected: register issues, initiate rework flow",
+        "Update daily log with result and evidence"
+      ],
+      "frequency": "Daily (~60 houses/day per inspector)",
+      "systems_used": ["Dashboard", "Builder Trend", "Camera"],
+      "critical_decisions": ["Approve vs reject — once Checklist Done triggers payment, sub won't return"]
+    },
+    {
+      "name": "QC1 and QC2 Verification",
+      "steps": [
+        "QC1: Verify all finishes, installations, paint, hardware on FIRST day of Final Touches",
+        "Generate corrections list from QC1",
+        "QC2: Verify QC1 corrections executed on LAST day of Final Touches",
+        "Approve for Building Final Inspection if QC2 passes"
+      ],
+      "frequency": "Per house in closeout phase",
+      "systems_used": ["Builder Trend", "Camera"],
+      "critical_decisions": ["Whether house is ready for final inspection"]
+    },
+    {
+      "name": "Daily Log Audit",
+      "steps": [
+        "Review daily logs from all departments",
+        "Check 6 quality criteria (accuracy, hours, description, photos, tags, date)",
+        "Return logs that fail criteria with correction instructions",
+        "Flag and correct tag inconsistencies",
+        "Handle late inputs with 'Input atrasado' notation"
+      ],
+      "frequency": "Daily (continuous audit)",
+      "systems_used": ["Builder Trend"],
+      "critical_decisions": ["Whether log meets quality standards or needs revision"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Inspections V2 (Const App)",
+      "features_used": [
+        "Inspection flow management",
+        "Pre-inspection verification",
+        "Requests matrix",
+        "Reprobation tracking"
+      ],
+      "api_endpoints": [
+        "/inspection/flow",
+        "/inspection/pre_inspection",
+        "/inspection/requests_matrix",
+        "/inspection/reprobation"
+      ]
+    },
+    {
+      "module": "Daily Logs (Const App/BT)",
+      "features_used": [
+        "Log creation and reading",
+        "Tag management",
+        "Photo attachment",
+        "Search and filtering"
+      ],
+      "api_endpoints": [
+        "/daily_logs/read",
+        "/daily_logs/create",
+        "/daily_logs/update",
+        "/daily_logs/search"
+      ]
+    },
+    {
+      "module": "Verification (Const App)",
+      "features_used": [
+        "PO verification",
+        "Site visit scheduling",
+        "Photo review"
+      ],
+      "api_endpoints": ["/verification"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-01",
+      "direction": "inbound",
+      "partner_department": "Supervisao",
+      "trigger": "Service completed in field, ready for quality check",
+      "data_exchanged": "House ID, service type, completion photos",
+      "impact": "QPS approval triggers payment — critical gate"
+    },
+    {
+      "id": "H-qps-scheduling",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "Rework needed after quality rejection",
+      "data_exchanged": "Rejection details, photos, rework requirements",
+      "impact": "Scheduling must reschedule sub for corrections"
+    },
+    {
+      "id": "H-qps-warranty",
+      "direction": "outbound",
+      "partner_department": "Warranty",
+      "trigger": "Quality patterns that predict warranty claims",
+      "data_exchanged": "Quality scores by sub, risk flags, lawn monitoring reports",
+      "impact": "Informs warranty sub selection and proactive monitoring"
+    },
+    {
+      "id": "H-qps-core-craft",
+      "direction": "outbound",
+      "partner_department": "Core Craft",
+      "trigger": "Rework dispatched to handyman team",
+      "data_exchanged": "Rework details, house ID, priority level",
+      "impact": "Handyman team executes corrections"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-qps-01",
+      "description": "BT data extraction is extremely difficult — BT was not designed for analytics",
+      "severity": "high",
+      "current_workaround": "Diego builds Power BI dashboards with manual data extraction",
+      "proposed_solution": "Automated data pipeline from BT to analytics platform"
+    },
+    {
+      "id": "PP-qps-02",
+      "description": "Route optimization for 60+ houses/day is complex with no dedicated tool",
+      "severity": "medium",
+      "current_workaround": "Rost manages routes via dashboards and manual optimization",
+      "proposed_solution": "GPS-optimized routing system integrated with house status"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Inspection Fail Pattern Recognition",
+      "description": "Don and Fortine can predict which houses will fail inspection based on sub work patterns, weather conditions, and construction timeline. This predictive knowledge is not documented.",
+      "holders": ["Donald Darby", "Fortine"],
+      "risk_if_lost": "Reactive instead of proactive quality management"
+    },
+    {
+      "topic": "Sub Quality Scoring",
+      "description": "QPS team knows which subs consistently deliver quality work vs which generate rework. This informal scoring influences warranty sub selection and scheduling preferences.",
+      "holders": ["Ana Maria M Gouveia", "Donald Darby", "Fortine"],
+      "risk_if_lost": "Quality-blind sub assignment; increased rework rates"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Quality Inspection Fundamentals",
+      "topics": ["53 checklists overview", "Photo documentation requirements", "Checklist Done = payment trigger rule", "Rework initiation process"],
+      "target_audience": ["New QPS inspectors"],
+      "priority": "high",
+      "quiz_coverage": "Checklist categories, photo minimums, payment trigger implications"
+    },
+    {
+      "module": "FCC and Final Verification",
+      "topics": ["FCC dashboard navigation", "QC1/QC2 procedures", "Final walkthrough preparation", "County inspection pass criteria"],
+      "target_audience": ["QPS inspectors"],
+      "priority": "high",
+      "quiz_coverage": "FCC flow, QC1→QC2 timing, 29 inspection pass/fail criteria"
+    },
+    {
+      "module": "Daily Log Auditing",
+      "topics": ["6 audit criteria (IT-02)", "Late input handling", "Tag accuracy verification", "Phase accuracy checking"],
+      "target_audience": ["QPS team"],
+      "priority": "medium",
+      "quiz_coverage": "Audit criteria, correction procedures, tag rules"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All inspections must pass in sequence per county requirements before advancing",
+      "regulation": "Florida Building Code + County building department rules",
+      "verification": "Inspection results tracked in BT and Const App; failed inspections block next phase"
+    },
+    {
+      "requirement": "Photo documentation mandatory for every quality finding",
+      "regulation": "Internal quality policy — CEO directive",
+      "verification": "Daily log audit checks for minimum 2 photos per log"
+    },
+    {
+      "requirement": "CO required before house delivery/closing",
+      "regulation": "Florida Building Code — Certificate of Occupancy",
+      "verification": "Building Final Inspection must pass; CO document filed"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "First-time pass rate",
+      "target": ">85%",
+      "measurement": "Inspection results: pass on first attempt vs total inspections"
+    },
+    {
+      "metric": "Houses verified per day per inspector",
+      "target": "~60 houses/day",
+      "measurement": "Route completion tracking"
+    },
+    {
+      "metric": "Rework cycle time",
+      "target": "<3 days from rejection to re-inspection",
+      "measurement": "Time between rejection log and re-verification log"
+    },
+    {
+      "metric": "Daily log compliance rate",
+      "target": ">90% of logs pass audit on first submission",
+      "measurement": "Audit return rate tracking"
+    }
+  ]
+}

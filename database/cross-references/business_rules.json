@@ -1,0 +1,226 @@
+{
+  "version": "1.0.0",
+  "created": "2026-04-10",
+  "description": "Critical business rules governing Lakeshore Development operations. These rules are derived from CEO directives, operational interviews, and documented processes.",
+  "business_rules": {
+    "cpm_gates": {
+      "description": "Critical Path Method gates enforcing construction phase sequence. No phase can begin until the previous phase's inspections are all passed.",
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Pre-Construction / Foundation",
+          "services": ["Clear Lot", "Stake House", "Load Calculation", "Pad", "Compact Test", "Robintec", "Form"],
+          "gate_inspections": ["Foundation Inspection"],
+          "draw_dependency": "1st draw unlocks up to Robintec; 2nd draw unlocks rest of Phase 1",
+          "key_bottleneck": "Load calculation (equipment shortage)"
+        },
+        {
+          "phase": 2,
+          "name": "Rough / Structure",
+          "services": ["Drawing", "3Rs (Rough Plumbing, Rough Electric, Rough AC)", "Drain", "Left Inspection", "Shingles", "Frame", "Termite", "Insulation"],
+          "gate_inspections": ["Rough Plumbing", "Rough Electric", "Rough AC", "Drain", "Left", "Frame", "Insulation"],
+          "draw_dependency": "4th draw unlocks Phase 2",
+          "key_bottleneck": "Frame Inspection (requires ALL roughs + drain + doors/windows)"
+        },
+        {
+          "phase": 3,
+          "name": "Finish / Acabamento",
+          "services": ["Drywall", "Tile/Vinyl", "Cabinets", "Countertops", "Paint", "Fixtures", "Final Clean", "Beauty Final"],
+          "gate_inspections": ["Final Electric", "Final Plumbing", "Final AC", "Final Building"],
+          "draw_dependency": "Subsequent draws released per progress",
+          "key_bottleneck": "Shower Glass Door (depends on tile + vinyl completion)"
+        },
+        {
+          "phase": 4,
+          "name": "Closing / Warranty",
+          "services": ["Private Inspector Repairs", "CO Issuance", "Closing", "Warranty Period"],
+          "gate_inspections": ["Certificate of Occupancy (CO)"],
+          "draw_dependency": "Final draw at closing",
+          "key_bottleneck": "Impact fees blocking Final Electric (Marion County)"
+        }
+      ],
+      "rule": "STRICT_SEQUENCE — no phase can begin until ALL gate inspections of the previous phase are passed"
+    },
+    "payment_triggers": {
+      "description": "Rules governing when subcontractor payments are authorized",
+      "rules": [
+        {
+          "id": "PAY-01",
+          "rule": "Checklist Done triggers payment",
+          "detail": "When a monitor/supervisor marks a service as 'checklist done' in Builder Trend, this automatically triggers the payment process for the associated subcontractor.",
+          "risk": "Sub paid for incomplete work will NOT return to fix issues",
+          "handoff": "H-01"
+        },
+        {
+          "id": "PAY-02",
+          "rule": "Leo approval required for ALL payments",
+          "detail": "No payment can be executed without Leo's (Leonardo) explicit approval. This is the final gate regardless of amount.",
+          "risk": "Bottleneck if Leo is unavailable; payments queued"
+        },
+        {
+          "id": "PAY-03",
+          "rule": "PO required before service execution",
+          "detail": "Every service should have a Purchase Order created before the sub executes work. Invoices without POs require emergency PM approval (Moises/Samuel).",
+          "risk": "Supervisors frequently bypass this rule, causing financial tracking issues"
+        }
+      ]
+    },
+    "permit_rules": {
+      "description": "Rules governing building permits across counties",
+      "rules": [
+        {
+          "id": "PERM-01",
+          "rule": "Permit expires after 180 days",
+          "detail": "Building permits expire 180 days after issuance if construction has not started. In Marion County, no warning email is sent before expiration.",
+          "counties_affected": ["Marion", "Citrus", "Charlotte"],
+          "risk": "Expired permit = restart entire application process"
+        },
+        {
+          "id": "PERM-02",
+          "rule": "Survey is prerequisite for all permit documents",
+          "detail": "Survey must be received before any other permit document can be prepared (energy calculations, trusses, floor plan submission).",
+          "risk": "Survey delays cascade to entire permit pipeline"
+        },
+        {
+          "id": "PERM-03",
+          "rule": "Citrus County requires waivers and arrows",
+          "detail": "Every house in Citrus County requires additional waiver and arrow documentation. Recurrent rework if not anticipated.",
+          "counties_affected": ["Citrus"]
+        },
+        {
+          "id": "PERM-04",
+          "rule": "Builders Risk insurance required before construction",
+          "detail": "Builders Risk insurance must be active and NOC (Notice of Commencement) filed before construction can legally begin."
+        }
+      ]
+    },
+    "material_adjustment": {
+      "description": "Mauricio's requirement for material change notification",
+      "rule": "Material changes by Compras must be communicated to Scheduling with sufficient lead time",
+      "detail": "When Purchasing changes a material specification (different vendor, different product), Scheduling must be notified with enough lead time to reschedule affected services. Last-minute notifications cause sub cancellations and additional costs.",
+      "minimum_lead_time": "5 business days before scheduled service",
+      "pain_point": "SCH-05",
+      "affected_departments": ["compras", "scheduling", "supervisao"]
+    },
+    "cost_plus_philosophy": {
+      "description": "Bernardo's (CEO) cost-plus pricing model",
+      "rules": [
+        {
+          "id": "CP-01",
+          "rule": "Budget is an ESTIMATE, not a cap",
+          "detail": "Lakeshore uses cost-plus pricing. The budget presented to the client is an estimate (R3). Actual costs (Real) may differ. Variations are the client's exposure."
+        },
+        {
+          "id": "CP-02",
+          "rule": "No risk pricing",
+          "detail": "Lakeshore does NOT inflate prices to cover risk. Client pays actual execution cost + Lakeshore margin. This requires rigorous cost tracking."
+        },
+        {
+          "id": "CP-03",
+          "rule": "Change orders pass through to client",
+          "detail": "Material price fluctuations and change orders are documented and passed through to the client with full transparency."
+        },
+        {
+          "id": "CP-04",
+          "rule": "ROI drives all technology decisions",
+          "detail": "Every operational and technology decision is evaluated by Return on Investment. Tools that reduce cycle time are prioritized over tools that reduce headcount."
+        }
+      ]
+    },
+    "cycle_time_kpis": {
+      "description": "Target construction cycle times by market/product type",
+      "targets": [
+        {
+          "market": "Ocala",
+          "target_months": 10,
+          "notes": "Standard spec homes in Marion County"
+        },
+        {
+          "market": "Wedgefield",
+          "target_months": 12,
+          "notes": "Community homes, slightly longer due to logistics"
+        },
+        {
+          "market": "High-end / Custom",
+          "target_months": 14,
+          "notes": "Custom homes with client change cycles"
+        }
+      ],
+      "measurement": "Days from permit issuance to Certificate of Occupancy",
+      "tracking_tools": ["Power BI", "BuilderTrend"],
+      "scale_target": "500 homes simultaneously (long-term vision)"
+    },
+    "draw_structure": {
+      "description": "Financial draw structure for construction financing",
+      "structure": [
+        {
+          "draw": "Draw 1",
+          "percentage": "15-20%",
+          "trigger": "Contract signing / land purchase",
+          "unlocks": "Permits, Survey, initial planning"
+        },
+        {
+          "draw": "Draw 2",
+          "percentage": "25-30%",
+          "trigger": "Foundation complete",
+          "unlocks": "Phase 1 completion (post-Robintec services)"
+        },
+        {
+          "draw": "Draw 3",
+          "percentage": "30-35%",
+          "trigger": "Rough/Frame complete",
+          "unlocks": "Phase 2 to Phase 3 transition"
+        },
+        {
+          "draw": "Draw 4+",
+          "percentage": "Remainder",
+          "trigger": "Finish milestones",
+          "unlocks": "Phase 3 services and final completion"
+        }
+      ],
+      "notes": "BT does not support partial draw payments. Partial payments tracked manually in spreadsheets."
+    },
+    "contractor_splits": {
+      "description": "Payment split structures for major subcontractors",
+      "contractors": [
+        {
+          "name": "FOCO",
+          "split": "40-40-20",
+          "detail": "40% at start, 40% at rough completion, 20% at final",
+          "services": "Major trades"
+        },
+        {
+          "name": "ECOWAN",
+          "split": "40-30-30",
+          "detail": "40% at start, 30% at rough completion, 30% at final",
+          "services": "Major trades"
+        }
+      ],
+      "notes": "Exact values change with volume. No up-to-date contracts with fixed values for all 27+ models. FIN-03 pain point."
+    },
+    "warranty_rules": {
+      "description": "Rules governing post-construction warranty period",
+      "rules": [
+        {
+          "id": "WAR-R01",
+          "rule": "Warranty starts at date of occupancy/sale",
+          "detail": "Company warranty period begins when the house is occupied or sold, NOT at CO issuance date.",
+          "duration": "1 year from occupancy"
+        },
+        {
+          "id": "WAR-R02",
+          "rule": "Sub warranty has separate timeline",
+          "detail": "Subcontractor warranty is 1 year from end of their service, which may differ from company warranty start. Creates conflict when sub's warranty expires before company's.",
+          "risk": "Repair costs fall on Lakeshore if sub warranty expired but company warranty still active"
+        }
+      ]
+    },
+    "concessionaire_model": {
+      "description": "Expansion strategy for scaling through concessionaires",
+      "ownership_split": "51% Lakeshore / 49% local operator",
+      "lakeshore_provides": ["Brand", "Systems and processes", "Purchasing power", "Quality oversight (QPS)"],
+      "concessionaire_provides": ["Local market knowledge", "Labor relationships", "Daily management"],
+      "quality_control": "QPS department audits all concessionaires"
+    }
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "department": "Compras (Purchasing)",
+  "department_id": "compras",
+  "category": "Purchasing",
+  "ai_agent": {
+    "port": 8008,
+    "role": "Manages all material purchases (stock and direct), warehouse distribution, supplier coordination, and per-house cost tracking",
+    "mcp_tools": [
+      "read_purchase_orders",
+      "create_purchase_order",
+      "update_purchase_order",
+      "check_stock",
+      "set_reorder_point",
+      "manage_suppliers",
+      "search_suppliers"
+    ],
+    "workflow_chains": [
+      "stock_purchase_monthly",
+      "direct_purchase_on_demand",
+      "material_distribution_per_house",
+      "house_closing_checklist",
+      "lumber_request_84lumber",
+      "truss_request_production"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Brenda Amorim",
+      "email": "bamorim@lakeshoredevelopmentfl.com",
+      "role": "Purchasing Leader — manages all POs, stock purchases, direct purchases, supplier coordination, and per-house cost allocation"
+    },
+    {
+      "name": "Marilia Marie Santos",
+      "email": "",
+      "role": "Purchasing Team — assists with distribution tracking, spreadsheet management, and PO processing"
+    },
+    {
+      "name": "Emily",
+      "email": "",
+      "role": "New team member — purchasing support"
+    },
+    {
+      "name": "Klauser Silva (Seu Clauser)",
+      "email": "",
+      "role": "Warehouse Manager — physical stock control, receiving, quality checks, Zorro Sales Orders, material distribution to job sites"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Stock Purchase Workflow",
+      "description": "Monthly bulk purchase at start of month plus on-demand replenishments. Materials registered in Zorro, allocated to houses via distribution spreadsheets, then replicated in BuilderTrend as PO→BI.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compras", "deposito", "financeiro"]
+    },
+    {
+      "topic": "Direct Purchase Workflow",
+      "description": "Materials not stocked in warehouse (tiles, specialty items) purchased directly from suppliers (Home Depot, Amazon, 84Lumber) and delivered to job site. Tracked via Builder Trend POs.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compras", "scheduling"]
+    },
+    {
+      "topic": "Per-House Cost Allocation",
+      "description": "Every material exit from warehouse creates a Zorro Sales Order tied to a house number. Brenda tracks cost allocation across 12+ spreadsheets for financial closing reconciliation.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compras", "financeiro"]
+    },
+    {
+      "topic": "Lumber Request Process (84Lumber)",
+      "description": "Triggered by Blocks/Precast request. Email Jacob Sherrill with address, model, elevation, garage side, NOC, and ETA. Lumber delivered to back of property to prevent theft.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["compras", "scheduling"]
+    },
+    {
+      "topic": "Truss Request Process",
+      "description": "Production triggered by Foundation Material request. Delivery triggered by Blocks/Precast request. ETA = Foundation ETA + 2 weeks. Never request Monday delivery. Suppliers: Truss Direct (Marcelo) or Hitek (Suzanne/Bill/Gary).",
+      "proficiency_level": "intermediate",
+      "applies_to": ["compras", "scheduling"]
+    },
+    {
+      "topic": "Supplier Management",
+      "description": "663 total subs/vendors in BuilderTrend. Key suppliers: Home Depot, Amazon, Lowes, 84Lumber, Truss Direct, Hitek, Cemex, Cast Crete, American Store LLC, Imeca Web POS.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compras", "orcamento"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Stock Purchase and Replenishment",
+      "steps": [
+        "Check stock levels via Clauser's updates and Zorro",
+        "Identify items below reorder point",
+        "Place orders with suppliers via email",
+        "Register purchase in Zorro (Resorders section)",
+        "Update distribution spreadsheet with order details",
+        "Replicate in BuilderTrend (PO → BI)"
+      ],
+      "frequency": "Monthly bulk + daily replenishments",
+      "systems_used": ["Zorro", "Excel Spreadsheets", "Builder Trend", "Email"],
+      "critical_decisions": ["Which materials to bulk-order vs. order on demand", "Supplier selection for best price and reliability"]
+    },
+    {
+      "name": "Material Exit Tracking",
+      "steps": [
+        "Filter Zorro Sales Orders (including drafts)",
+        "Transfer exit numbers to Purchase spreadsheet",
+        "Consult Available Orders spreadsheet",
+        "Subtract used quantities from total purchased",
+        "Record destination house in both spreadsheets",
+        "Calculate and distribute cost per house"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Zorro", "Excel Spreadsheets"],
+      "critical_decisions": ["Matching exits to correct purchase lots", "Cost allocation when Zorro lacks lot reference"]
+    },
+    {
+      "name": "House Closing Checklist",
+      "steps": [
+        "Verify distribution values (Purchase spreadsheet vs BuilderTrend)",
+        "Ensure values within budget",
+        "Create BI (Bill) in BuilderTrend only after verification"
+      ],
+      "frequency": "Per house at closing",
+      "systems_used": ["Excel Spreadsheets", "Builder Trend"],
+      "critical_decisions": ["Approving cost allocation before BI creation"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Stock Management (Const App)",
+      "features_used": [
+        "Stock Levels — cumulative stock requirements from active projects",
+        "Material Purchases — register and track POs with delivery status",
+        "Material Pickups — coordinate pickup from suppliers",
+        "Extraordinary Orders — request materials outside normal replenishment"
+      ],
+      "api_endpoints": [
+        "/stock/stock_levels",
+        "/stock/stock_material_purchases",
+        "/stock/material_pickups",
+        "/stock/extraordinary_orders"
+      ]
+    },
+    {
+      "module": "Quotation (Const App)",
+      "features_used": [
+        "Take-off items (128 items)",
+        "Vendor quotes",
+        "Price tables"
+      ],
+      "api_endpoints": ["/quotation"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-05-recv",
+      "direction": "inbound",
+      "partner_department": "Takeoff",
+      "trigger": "New house approved for construction",
+      "data_exchanged": "Takeoff material quantities and specification sheets",
+      "impact": "Base for all purchase orders and cost estimation"
+    },
+    {
+      "id": "H-compras-scheduling",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "Materials available in warehouse or delivery confirmed",
+      "data_exchanged": "Material availability, delivery dates, stock status",
+      "impact": "Scheduling cannot advance phases without confirmed material availability"
+    },
+    {
+      "id": "H-compras-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "PO created or house closing verification complete",
+      "data_exchanged": "PO details, cost allocation per house, BIs for payment",
+      "impact": "Financial closing depends on accurate cost allocation from Compras"
+    },
+    {
+      "id": "H-compras-deposito",
+      "direction": "outbound",
+      "partner_department": "Deposito",
+      "trigger": "Purchase order placed with supplier",
+      "data_exchanged": "PO details, expected delivery dates, material specifications",
+      "impact": "Warehouse prepares for receiving and quality checks"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-09",
+      "description": "12+ spreadsheets with multiple tabs open daily; similar information in different formats across Zorro, Excel, and BuilderTrend",
+      "severity": "high",
+      "current_workaround": "Intentional duplication for cross-verification",
+      "proposed_solution": "Unified purchasing platform with single source of truth and automated sync"
+    },
+    {
+      "id": "PP-10",
+      "description": "Zorro does not reference which original purchase lot the material came from, making cost traceability per house difficult",
+      "severity": "high",
+      "current_workaround": "Manual tracking via Available Orders spreadsheet and cross-referencing",
+      "proposed_solution": "Automated lot tracking linking Sales Orders to original Purchase Orders"
+    },
+    {
+      "id": "PP-11",
+      "description": "Completed houses sometimes show missing exit records in Zorro, flagged during closing",
+      "severity": "medium",
+      "current_workaround": "Manual reconciliation during house closing checklist",
+      "proposed_solution": "Automated reconciliation alerts when house approaches closing phase"
+    },
+    {
+      "id": "PP-12",
+      "description": "Amazon deliveries frequently fail because USPS cannot find the warehouse address",
+      "severity": "low",
+      "current_workaround": "Reorder or use alternative suppliers",
+      "proposed_solution": "Register alternate delivery address or switch to UPS/FedEx for Amazon orders"
+    },
+    {
+      "id": "PP-13",
+      "description": "Zorro does not auto-update prices; cost values are disregarded by the team",
+      "severity": "medium",
+      "current_workaround": "Manual price tracking in spreadsheets",
+      "proposed_solution": "Integrate real-time pricing from suppliers or use Const App quotation module"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Brenda's Material Allocation Logic",
+      "description": "Complex logic for allocating bulk-purchased materials to individual houses based on purchase lots, exit sequences, and cost-per-unit calculations. Only Brenda fully understands the cross-referencing between Zorro Sales Orders, the Available Orders spreadsheet, and the Distribution spreadsheet.",
+      "holders": ["Brenda Amorim"],
+      "risk_if_lost": "Financial closing would be severely delayed; cost-per-house accuracy would drop significantly"
+    },
+    {
+      "topic": "Lumber Takeoff Knowledge Gap",
+      "description": "Nobody at Lakeshore knows how to do lumber takeoff. Previously handled by the supplier; new supplier (84Lumber) does not provide this service.",
+      "holders": [],
+      "risk_if_lost": "Lumber ordering relies on supplier estimates rather than internal calculations"
+    },
+    {
+      "topic": "Supplier Relationship Management",
+      "description": "Brenda maintains personal relationships with key suppliers (Jacob at 84Lumber, Marcelo at Truss Direct, Suzanne at Hitek) including preferred communication channels, pricing agreements, and delivery preferences.",
+      "holders": ["Brenda Amorim"],
+      "risk_if_lost": "New staff would lose negotiated pricing and priority scheduling"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Purchasing Fundamentals",
+      "topics": ["PO creation in BuilderTrend", "Zorro stock management basics", "Supplier contact protocols", "Cost codes and categories"],
+      "target_audience": ["New purchasing team members"],
+      "priority": "high",
+      "quiz_coverage": "PO workflow, Zorro navigation, supplier communication templates"
+    },
+    {
+      "module": "Material Distribution and Cost Allocation",
+      "topics": ["Per-house cost tracking", "Distribution spreadsheet methodology", "Zorro Sales Order to spreadsheet flow", "House closing checklist"],
+      "target_audience": ["Purchasing team", "Finance team"],
+      "priority": "high",
+      "quiz_coverage": "Cost allocation steps, reconciliation process, common discrepancy patterns"
+    },
+    {
+      "module": "Lumber and Truss Ordering",
+      "topics": ["84Lumber request process", "Truss Direct vs Hitek identification", "ETA calculation rules", "NOC and Floor Plan retrieval"],
+      "target_audience": ["Purchasing team"],
+      "priority": "medium",
+      "quiz_coverage": "Email templates, ETA rules, supplier selection criteria"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All POs must be registered in BuilderTrend before payment",
+      "regulation": "Internal policy — CEO directive for full transparency (cost-plus model)",
+      "verification": "Financeiro cross-checks BT POs against payment requests"
+    },
+    {
+      "requirement": "Material specifications must match takeoff and approved plans",
+      "regulation": "Florida Building Code — materials must meet approved specifications",
+      "verification": "Warehouse QC checks against PO specs on delivery"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "PO accuracy rate",
+      "target": ">95% of POs match takeoff quantities",
+      "measurement": "Monthly audit of PO quantities vs takeoff"
+    },
+    {
+      "metric": "Stock-out incidents",
+      "target": "<2 per month for critical materials",
+      "measurement": "Count of emergency reorders due to stock depletion"
+    },
+    {
+      "metric": "Cost allocation completion",
+      "target": "100% of house materials allocated before closing",
+      "measurement": "Closing checklist completion rate"
+    }
+  ]
+}

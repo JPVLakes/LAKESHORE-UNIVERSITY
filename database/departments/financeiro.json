@@ -1,0 +1,578 @@
+{
+  "department": "Financeiro (Contas a Pagar + Contas a Receber)",
+  "department_id": "financeiro",
+  "category": "Financial",
+  "ai_agent": {
+    "port": 8009,
+    "role": "Manages all financial flows: accounts payable (vendor/sub payments with PO verification, notarization, and Leo approval), accounts receivable (draw collection from clients), house closing accounting, QuickBooks reconciliation, field expense allocation, and financial reporting (DRE, balance sheets).",
+    "mcp_tools": [
+      "read_purchase_orders",
+      "update_purchase_order",
+      "read_daily_logs",
+      "write_daily_logs",
+      "read_contracts",
+      "create_contract"
+    ],
+    "workflow_chains": [
+      "invoice_received -> verify_po -> create_bill -> confirm_checklist_done -> send_release -> notarize -> leo_approve -> process_payment -> reconcile_quickbooks",
+      "contract_signed -> verify_draws_in_bt -> edit_draw_values -> send_collection -> track_payment -> apply_hold_if_delayed",
+      "repair_invoice_no_po -> contact_moises_samuel -> get_authorization -> create_retroactive_po -> process_payment",
+      "field_receipt_slack -> identify_material -> allocate_to_house -> register_or_classify_as_variance",
+      "house_closing -> verify_all_bills -> create_artificial_bills_if_needed -> close_accounting -> final_reconciliation"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Fernanda Franco",
+      "email": "",
+      "role": "Financial Supervisor / Notary - executes payments at the bank, supervises financial operations, processes daily payment batches"
+    },
+    {
+      "name": "Iara Oliveira",
+      "email": "ioliveira@lakeshoredevelopmentfl.com",
+      "role": "Accounts Payable - processes invoices, verifies POs, creates bills, manages releases, QuickBooks classification (86 bills = 2hrs daily), handles field expense allocation"
+    },
+    {
+      "name": "Rayff Cunha",
+      "email": "rcunha@lakeshoredevelopmentfl.com",
+      "role": "Accounts Payable - processes invoices, verifies POs, creates bills, manages releases and notarization, QuickBooks reconciliation, handles repair invoices without POs"
+    },
+    {
+      "name": "Cinthia Araujo",
+      "email": "",
+      "role": "Accounts Receivable - manages draw collection from clients, verifies draw values against contracts, processes partial payments manually, applies hold when payment delayed, pays permit fees on county portal"
+    },
+    {
+      "name": "Thabata Goncalves",
+      "email": "",
+      "role": "House Closing - manages financial close-out of completed houses, creates artificial bills when real invoices haven't arrived, ensures complete financial picture before closing"
+    },
+    {
+      "name": "Ebano Maia",
+      "email": "",
+      "role": "Financial team member - general financial operations support"
+    },
+    {
+      "name": "Rafaella Almeida",
+      "email": "",
+      "role": "Financial team member - general financial operations support"
+    },
+    {
+      "name": "Bruna Carvalho",
+      "email": "",
+      "role": "Utilities and Insurance - manages utility payment processing, insurance documentation, builders risk coordination"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Payment Cycle (Full AP Flow)",
+      "description": "Complete payment cycle: 1) Receive invoice by email (address, service, value), 2) Verify matching PO in BuilderTrend, 3) Create 'bill' in system, 4) Register bill in internal spreadsheet, 5) Confirm service was performed (checklist done from Scheduling), 6) Send 'release' to sub for notarization, 7) Sub gets release notarized at public notary, 8) Receive notarized release (photo/PDF), 9) Build daily payment spreadsheet, 10) Send to Fernanda for bank execution, 11) Leo approves payment, 12) Payment processed daily in afternoon, 13) Next day: close out in BuilderTrend and QuickBooks, 14) Add class in QuickBooks (CMER + house number), 15) Bank reconciliation in QB transactions tab.",
+      "proficiency_level": "advanced",
+      "applies_to": ["accounts_payable", "all_payments"]
+    },
+    {
+      "topic": "Notarization Exceptions",
+      "description": "Certain payment types do NOT require notarized release: initial permit fees, architect services, materials (Lisa products, doors, light fixtures), septic services, and tank services. All other sub payments require the sub to take the release document to a public notary for notarization before payment can be processed.",
+      "proficiency_level": "advanced",
+      "applies_to": ["accounts_payable", "release_management"]
+    },
+    {
+      "topic": "Draw Schedule and Payment Gating",
+      "description": "Draw schedule controls cash flow per house: Draw 1 (15-20% - site work through forms), Draw 2 (25-30% - Phase 1 block/roughs), Draw 3 (30-35% - Phase 2 drywall/paint/trim), Draw 4 (15-20% - final/landscaping/CO). Draw values in BuilderTrend may differ from contract when special client agreements exist. If draw payment delayed, Financeiro applies hold blocking Scheduling from advancing past that draw's scope.",
+      "proficiency_level": "advanced",
+      "applies_to": ["accounts_receivable", "cash_flow"]
+    },
+    {
+      "topic": "QuickBooks Classification Process",
+      "description": "Every bill must be classified in QuickBooks with a 'class' tag (format: CMER-### for project identification). Processing 86 bills takes approximately 2 hours due to two slow systems (BuilderTrend and QuickBooks) running simultaneously. This is the single most time-consuming daily task in the department.",
+      "proficiency_level": "advanced",
+      "applies_to": ["accounting", "daily_operations"]
+    },
+    {
+      "topic": "Artificial Bills for House Closing",
+      "description": "When a house needs to close financially but real invoices haven't arrived, Thabata creates 'artificial bills' in BuilderTrend based on estimated average values from similar projects. This prevents financial closing delays. When the real invoice arrives, it replaces the artificial one. Critical because after closing, Lakeshore can no longer charge the homeowner.",
+      "proficiency_level": "advanced",
+      "applies_to": ["house_closing", "risk_management"]
+    },
+    {
+      "topic": "Field Expense Allocation",
+      "description": "Field teams make emergency purchases with company credit cards. Receipts are sent via Slack channel. Financeiro must identify the material/service from often incomplete receipts, allocate cost to the correct house(s), and rateio (split) across multiple houses when applicable. Unidentifiable expenses are classified as 'variances'.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["field_expenses", "cost_allocation"]
+    },
+    {
+      "topic": "Repair Invoice Handling (No PO)",
+      "description": "Supervisors frequently request repairs without creating POs in BuilderTrend. When repair invoices arrive without matching POs, the team must contact Moises or Samuel for value authorization (often slow). After authorization, a retroactive PO is created and payment processed. Repairs with fixed values (e.g., Eco One) are more straightforward.",
+      "proficiency_level": "advanced",
+      "applies_to": ["accounts_payable", "repairs"]
+    },
+    {
+      "topic": "MEP Payment Split Verification",
+      "description": "FOCO payments split 40-40-20 across three milestones; ECOWAN splits 40-30-30. Financeiro must verify that invoices linked to a PO do not exceed the PO value and that the correct split percentage is applied at each milestone. Values may change with volume, and contracts are not always updated to reflect current pricing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["mep_payments", "vendor_management"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Accounts Payable - Daily Invoice Processing",
+      "steps": [
+        "Receive invoices by email (high daily volume)",
+        "For each invoice: verify matching PO exists in BuilderTrend",
+        "If PO exists and value matches: create bill in BuilderTrend",
+        "Register bill in internal control spreadsheet",
+        "Verify checklist done from Scheduling (service confirmed)",
+        "Send release document to sub for notarization (unless exempt category)",
+        "Receive notarized release (photo/PDF by email)",
+        "Add to daily payment spreadsheet",
+        "Submit payment spreadsheet to Fernanda for bank processing",
+        "Leo approves payment batch",
+        "Fernanda executes payments at the bank (afternoon processing)",
+        "Next day: close bill in BuilderTrend and QuickBooks",
+        "Add QuickBooks class: CMER + house number",
+        "Reconcile in QuickBooks transactions tab"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Email", "BuilderTrend", "QuickBooks", "Excel Spreadsheets", "Bank System"],
+      "critical_decisions": [
+        "Whether invoice matches PO value within acceptable tolerance",
+        "Whether service has been confirmed (checklist done)",
+        "Whether release requires notarization (exemption check)",
+        "Leo's payment approval"
+      ]
+    },
+    {
+      "name": "Repair Invoice Processing (No PO)",
+      "steps": [
+        "Receive repair invoice without matching PO in BuilderTrend",
+        "Identify that supervisor requested repair without creating PO",
+        "Contact Moises or Samuel via Slack/WhatsApp for value authorization",
+        "Wait for authorization response (can be slow)",
+        "Upon authorization: create retroactive PO in BuilderTrend",
+        "Process payment through standard flow"
+      ],
+      "frequency": "As needed (recurrent problem)",
+      "systems_used": ["Email", "Slack", "WhatsApp", "BuilderTrend"],
+      "critical_decisions": [
+        "Whether to escalate if authorization is delayed beyond threshold",
+        "Whether repair value is reasonable based on historical data"
+      ]
+    },
+    {
+      "name": "Accounts Receivable - Draw Management",
+      "steps": [
+        "Receive notification of contract signing from Permits (Cacia) via Slack",
+        "Verify draw schedule in BuilderTrend matches contract values",
+        "Manually edit draw values when client agreements differ from standard",
+        "Send draw collection to client via email at construction milestone triggers",
+        "Monitor payment receipt",
+        "If payment delayed: apply manual hold in BuilderTrend blocking construction advancement",
+        "For partial payments: track manually in spreadsheet (system doesn't support)"
+      ],
+      "frequency": "Per house/project, following construction milestones",
+      "systems_used": ["BuilderTrend", "Email", "WhatsApp", "Slack", "Excel Spreadsheets"],
+      "critical_decisions": [
+        "When to apply hold for delayed payment",
+        "Whether to accept partial payment (manual tracking required)",
+        "Draw value adjustments for special client agreements"
+      ]
+    },
+    {
+      "name": "Field Expense Processing",
+      "steps": [
+        "Monitor Slack channel for field purchase receipts",
+        "Identify material/service from receipt (often incomplete information)",
+        "Determine which house(s) the expense applies to",
+        "Rateio (split) across multiple houses when applicable",
+        "Register in appropriate system with house allocation",
+        "Classify as 'variance' when material/house cannot be determined"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Slack", "Excel Spreadsheets", "BuilderTrend"],
+      "critical_decisions": [
+        "House allocation when receipt information is insufficient",
+        "Whether to classify as variance or request clarification from field"
+      ]
+    },
+    {
+      "name": "House Financial Closing",
+      "steps": [
+        "Identify houses ready for financial close-out",
+        "Verify all real invoices have been received and processed",
+        "For missing invoices: create artificial bills based on estimated values",
+        "Record artificial bills for future replacement when real invoices arrive",
+        "Complete final bill reconciliation in BuilderTrend",
+        "Close accounting in QuickBooks with complete financial picture",
+        "Tag daily log: #F$ - ACCOUNTING CLOSED"
+      ],
+      "frequency": "Per house completion",
+      "systems_used": ["BuilderTrend", "QuickBooks", "Excel Spreadsheets"],
+      "critical_decisions": [
+        "Whether to close with artificial bills or wait for real invoices",
+        "Estimated values for artificial bills (accuracy critical - cannot charge owner after closing)"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Financial Management",
+      "features_used": [
+        "Budget vs projected vs actual cost comparison per project",
+        "Bills tracking from all sources (POs, Service Orders, Permitting Fees)",
+        "Draw/payment tracking with Schedule of Value integration",
+        "Exceeding costs management with approval workflow"
+      ],
+      "api_endpoints": [
+        "/finances/budget/{project_id} - GET budget comparison (estimated vs projected vs actual)",
+        "/finances/bills/{project_id} - GET all bills for project",
+        "/finances/payments/draws/{project_id} - GET draw status and payment progress",
+        "/finances/payments/subcontractors - GET/PUT subcontractor payment management",
+        "/finances/payments/purchase - GET/PUT purchase order payment management"
+      ]
+    },
+    {
+      "module": "Accounts Payable",
+      "features_used": [
+        "Verified POs review with status pipeline (Pending Invoices, Ready for Payment, Processing, Authorized, Paid)",
+        "Payment batch creation for bulk processing",
+        "Authorization workflow for payment batches",
+        "Subcontractor payment with period filtering and batch marking"
+      ],
+      "api_endpoints": [
+        "/purchase-orders - GET/PUT purchase order management with status tracking",
+        "/payment-batches - GET/POST payment batch management",
+        "/payment-batches/{id}/authorize - PUT authorize batch"
+      ]
+    },
+    {
+      "module": "Contracts & AR",
+      "features_used": [
+        "Contract payment tracking (draw progress per contract)",
+        "Contract status management (Pending, Active, Completed)",
+        "Exceeding costs tracking for utility services (read-only budget threshold events)"
+      ],
+      "api_endpoints": [
+        "/contracts - GET/POST contract management",
+        "/contracts/{id}/payments - GET payment progress",
+        "/contracts/{id} - PUT update contract status"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-01",
+      "direction": "inbound",
+      "partner_department": "Scheduling",
+      "trigger": "Checklist Done - supervisor confirms service was performed in BuilderTrend",
+      "data_exchanged": "Checklist completion confirmation with service details, house number, sub identification",
+      "impact": "PAYMENT TRIGGER - without checklist done, payment cannot be released to sub. This is the primary gate for accounts payable."
+    },
+    {
+      "id": "H-02",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "Draw Released - client draw payment received and processed",
+      "data_exchanged": "Draw payment confirmation, amount received, remaining balance",
+      "impact": "Scheduling can only advance construction past a draw's scope after payment is confirmed. Delayed draws trigger holds."
+    },
+    {
+      "id": "H-07",
+      "direction": "inbound",
+      "partner_department": "Permits / Client Relations",
+      "trigger": "Contract Signed - notification from Permits (Cacia) that client signed construction contract",
+      "data_exchanged": "Signed contract, draw schedule, contract value, client information",
+      "impact": "Initiates draw schedule setup in BuilderTrend and first draw collection"
+    },
+    {
+      "id": "H-FIN-ORC",
+      "direction": "inbound",
+      "partner_department": "Orcamento / Budget",
+      "trigger": "Budget finalized with PO values",
+      "data_exchanged": "PO reference values, budget totals by cost code, MEP payment split schedules",
+      "impact": "Financeiro uses budget values as reference to verify invoice amounts against POs"
+    },
+    {
+      "id": "H-FIN-COMPRAS",
+      "direction": "inbound",
+      "partner_department": "Compras / Purchasing",
+      "trigger": "Purchase registered in BuilderTrend",
+      "data_exchanged": "Purchase records, material allocation per house, rateio documentation",
+      "impact": "Purchases replicated in BuilderTrend feed into bill creation and QuickBooks classification"
+    },
+    {
+      "id": "H-FIN-PERM",
+      "direction": "bidirectional",
+      "partner_department": "Permits",
+      "trigger": "Permit Ready to Issue (inbound) / Permit Payment Confirmed (outbound)",
+      "data_exchanged": "Permit payment request with county portal link (inbound), payment confirmation (outbound)",
+      "impact": "Permit cannot be issued without Financeiro making the county portal payment. Builders Risk filing blocked until payment confirmed."
+    },
+    {
+      "id": "H-FIN-UTIL",
+      "direction": "inbound",
+      "partner_department": "Utilities",
+      "trigger": "Utility bills due for payment",
+      "data_exchanged": "Utility account details, amounts due, house allocation",
+      "impact": "Utility payments must be processed to maintain services during construction"
+    },
+    {
+      "id": "H-FIN-FIELD",
+      "direction": "inbound",
+      "partner_department": "Field / Supervisors",
+      "trigger": "Emergency purchases made with company credit cards",
+      "data_exchanged": "Purchase receipts via Slack channel, material/service description (often incomplete)",
+      "impact": "Must be allocated to correct house for accurate per-project cost tracking"
+    },
+    {
+      "id": "H-FIN-CLEVEL",
+      "direction": "outbound",
+      "partner_department": "C-Level (Leo, Samuel, Moises)",
+      "trigger": "Payment batch ready for approval / Repair authorization needed",
+      "data_exchanged": "Daily payment spreadsheet for Leo's approval, repair value authorization requests",
+      "impact": "No payment processed without Leo's approval. Repair authorization delays block vendor payment."
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-01",
+      "description": "Manual QuickBooks classification of 86 bills takes approximately 2 hours daily. Two slow systems (BuilderTrend and QuickBooks) must be used simultaneously. Classified as 'super demorado' (extremely slow) by the team.",
+      "severity": "high",
+      "current_workaround": "Iara/Rayff dedicate 2+ hours daily to manual classification; no shortcut possible with current tools",
+      "proposed_solution": "Automated integration between construction management system and QuickBooks with automatic class mapping (CMER-### per house)"
+    },
+    {
+      "id": "PP-02",
+      "description": "Invoices arrive without matching POs. Supervisors request repairs and services without creating POs in BuilderTrend first. This creates a repetitive workflow of tracking down authorization from Moises or Samuel.",
+      "severity": "high",
+      "current_workaround": "Manual outreach to Moises/Samuel via Slack/WhatsApp; retroactive PO creation after authorization",
+      "proposed_solution": "Mobile PO creation requirement before service execution; supervisors must create PO via app with photo evidence before authorizing any work"
+    },
+    {
+      "id": "PP-03",
+      "description": "Missing contracts with exact values for 27+ models. Prices change based on volume and negotiation; the finance team often doesn't know the correct current contract value for each vendor/model combination.",
+      "severity": "high",
+      "current_workaround": "Team checks with Budget team or asks Samuel/Moises when invoice value doesn't match expected amount",
+      "proposed_solution": "Centralized contract database with current pricing, volume tiers, and automatic alerts when contracts are outdated"
+    },
+    {
+      "id": "PP-04",
+      "description": "Delayed repair confirmation. Authorization from Moises or Samuel for repair invoices without POs is frequently delayed, blocking vendor payment and creating sub dissatisfaction.",
+      "severity": "high",
+      "current_workaround": "Repeated follow-up via Slack and WhatsApp; payment delayed until response received",
+      "proposed_solution": "Automated approval workflow with escalation timer: if not approved within 48 hours, auto-escalate to next authority level"
+    },
+    {
+      "id": "PP-05",
+      "description": "No partial draw payment support in the current system. Clients sometimes make partial draw payments, but BuilderTrend cannot record partial payments, requiring manual spreadsheet tracking.",
+      "severity": "high",
+      "current_workaround": "Manual tracking in Excel spreadsheets; risk of reconciliation errors",
+      "proposed_solution": "Native partial payment support in the construction management system with automatic balance calculation and status updates"
+    },
+    {
+      "id": "PP-FIN-06",
+      "description": "BuilderTrend-QuickBooks integration is incomplete. Date of maturity doesn't work as filter criteria; many fields don't map correctly between systems.",
+      "severity": "high",
+      "current_workaround": "Manual data transfer between systems; double-entry of many fields",
+      "proposed_solution": "Direct bi-directional integration with field mapping between construction system and QuickBooks"
+    },
+    {
+      "id": "PP-FIN-07",
+      "description": "Field expenses arrive with incomplete information. Receipts sent via Slack often lack project/house identification, making accurate cost allocation impossible. Team resorts to 'guessing' (achismos).",
+      "severity": "high",
+      "current_workaround": "Best-guess allocation; unidentifiable expenses classified as variances",
+      "proposed_solution": "Mobile receipt submission app with mandatory fields: house number, cost code category, photo of receipt, description. Reject submissions with missing fields."
+    },
+    {
+      "id": "PP-FIN-08",
+      "description": "BuilderTrend notifications to Permits team don't work. Permits cannot effectively notify Financeiro of payment needs through the system.",
+      "severity": "medium",
+      "current_workaround": "Manual notification via email and Slack between Permits and Financeiro",
+      "proposed_solution": "Reliable notification system with dedicated channels for payment requests and confirmations"
+    },
+    {
+      "id": "PP-FIN-09",
+      "description": "No complete financial history view for a house. When closing a house, there's no single view showing all financial transactions, making close-out slow and audit-prone.",
+      "severity": "medium",
+      "current_workaround": "Manual compilation of bills, payments, and draws from multiple sources",
+      "proposed_solution": "360-degree house financial view aggregating all transactions: POs, bills, payments, draws, field expenses, variances"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Notarization Exceptions",
+      "description": "Iara and Rayff know which payment categories are exempt from notarization requirements: initial permit fees, architect services, materials (Lisa products, doors, light fixtures), septic services, tank services. This knowledge determines whether a release document needs to be sent to the sub and delays payment processing if incorrectly classified.",
+      "holders": ["Iara Oliveira", "Rayff Cunha"],
+      "risk_if_lost": "High - new staff would either require unnecessary notarization (delays) or skip required notarization (legal risk)"
+    },
+    {
+      "topic": "Field Expense Allocation Heuristics",
+      "description": "When field receipts lack clear house identification, Iara and Rayff use heuristics based on: which houses are in active construction near the purchase location, which supervisors used the card, what materials were purchased and which construction phase they match, and historical patterns. This is entirely experience-based with no documented rules.",
+      "holders": ["Iara Oliveira", "Rayff Cunha"],
+      "risk_if_lost": "High - field expenses would be disproportionately classified as variances, distorting per-house cost tracking"
+    },
+    {
+      "topic": "Artificial Bill Estimation Accuracy",
+      "description": "Thabata knows how to estimate artificial bill values for house closing based on historical averages from similar completed houses. She considers: model type, county, vendor patterns, and seasonal price variations. Overestimation wastes budget; underestimation means Lakeshore absorbs the difference after closing.",
+      "holders": ["Thabata Goncalves"],
+      "risk_if_lost": "High - inaccurate artificial bills could lead to financial losses at house closing"
+    },
+    {
+      "topic": "Draw Payment Client Negotiation Patterns",
+      "description": "Cinthia knows which clients have special payment agreements that differ from standard draw schedules, which lenders require specific documentation before releasing draws, and historical patterns of payment delays by client type. She also knows when to apply holds vs when to continue construction on trust.",
+      "holders": ["Cinthia Araujo"],
+      "risk_if_lost": "Medium - could lead to construction advancing without payment security or unnecessary holds on reliable clients"
+    },
+    {
+      "topic": "QuickBooks Class Structure",
+      "description": "The CMER + house number classification system in QuickBooks and its relationship to BuilderTrend job numbers. Includes knowledge of which project codes map to which QuickBooks classes, how to handle multi-unit condominiums, and how to reconcile when the same vendor serves multiple houses.",
+      "holders": ["Iara Oliveira", "Rayff Cunha"],
+      "risk_if_lost": "Medium - incorrect classification breaks per-project financial reporting and audit trail"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Accounts Payable Fundamentals",
+      "topics": [
+        "Complete payment cycle: invoice through QuickBooks reconciliation (15 steps)",
+        "PO verification in BuilderTrend",
+        "Bill creation and internal tracking",
+        "Release document preparation and notarization requirements",
+        "Notarization exceptions (permits, architects, materials, septic, tank)",
+        "Daily payment spreadsheet preparation",
+        "Leo approval workflow"
+      ],
+      "target_audience": ["new_financeiro_staff"],
+      "priority": "high",
+      "quiz_coverage": "Payment cycle steps, PO verification, notarization rules, approval requirements"
+    },
+    {
+      "module": "QuickBooks Integration",
+      "topics": [
+        "CMER class structure and project identification",
+        "Bill classification in QuickBooks",
+        "Bank reconciliation in transactions tab",
+        "BuilderTrend to QuickBooks data mapping",
+        "Handling discrepancies between systems"
+      ],
+      "target_audience": ["ap_staff"],
+      "priority": "high",
+      "quiz_coverage": "Class assignment rules, reconciliation process, discrepancy resolution"
+    },
+    {
+      "module": "Accounts Receivable and Draws",
+      "topics": [
+        "Draw schedule structure: 4 draws with percentage splits",
+        "Contract-to-draw verification in BuilderTrend",
+        "Special client agreement handling",
+        "Partial payment manual tracking (system limitation)",
+        "Hold application and construction gating",
+        "Permit fee payment on county portal"
+      ],
+      "target_audience": ["ar_staff"],
+      "priority": "high",
+      "quiz_coverage": "Draw percentages, hold triggers, partial payment tracking, permit payment process"
+    },
+    {
+      "module": "House Financial Closing",
+      "topics": [
+        "Close-out checklist: all bills verified",
+        "Artificial bill creation and estimation methodology",
+        "When to close vs wait for real invoices",
+        "Post-closing restrictions (cannot charge owner)",
+        "Final reconciliation in BuilderTrend and QuickBooks",
+        "Daily log tagging: #F$ - ACCOUNTING CLOSED"
+      ],
+      "target_audience": ["closing_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Closing prerequisites, artificial bill rules, post-closing implications"
+    },
+    {
+      "module": "Field Expense and Repair Handling",
+      "topics": [
+        "Field receipt processing from Slack channel",
+        "House allocation methodology for unclear receipts",
+        "Variance classification when allocation impossible",
+        "Repair invoice without PO: authorization workflow",
+        "Retroactive PO creation process",
+        "Escalation for delayed authorization"
+      ],
+      "target_audience": ["ap_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Expense allocation logic, variance triggers, repair authorization process"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All sub payments require notarized release document except exempt categories",
+      "regulation": "Florida Construction Lien Law - lien waiver requirement",
+      "verification": "Notarized release on file for every sub payment; exempt categories documented per internal policy"
+    },
+    {
+      "requirement": "All payments require Leo's explicit approval before bank execution",
+      "regulation": "Internal financial control - dual authorization requirement",
+      "verification": "Daily payment spreadsheet signed off by Leo before Fernanda processes at bank"
+    },
+    {
+      "requirement": "Invoice must match PO value; deviations require authorization from Moises or Samuel",
+      "regulation": "Internal procurement control",
+      "verification": "Bill amount in BuilderTrend matches or is below PO amount; overages have documented authorization"
+    },
+    {
+      "requirement": "QuickBooks class assigned to every bill for per-project financial tracking",
+      "regulation": "Internal accounting standard - project-level cost tracking requirement",
+      "verification": "Every bill in QuickBooks has CMER-### class; reconciliation confirms no unclassified bills"
+    },
+    {
+      "requirement": "Builders Risk can only be filed after permit payment is confirmed",
+      "regulation": "Insurance policy requirement - active permit prerequisite",
+      "verification": "Permit payment confirmation on file before Builders Risk application is processed"
+    },
+    {
+      "requirement": "Draw collections must follow contracted schedule; deviations require documented client agreement",
+      "regulation": "Construction contract terms",
+      "verification": "Draw values in BuilderTrend match contract; any manual adjustments have supporting documentation"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Daily invoice processing volume",
+      "target": "All invoices received by noon processed same day",
+      "measurement": "Count of invoices processed per day; backlog at end of day"
+    },
+    {
+      "metric": "QuickBooks classification time",
+      "target": "< 1 hour for daily bill classification (currently 2 hours for 86 bills)",
+      "measurement": "Time spent on QuickBooks class assignment per day"
+    },
+    {
+      "metric": "PO-less invoice rate",
+      "target": "< 5% of invoices arrive without matching PO",
+      "measurement": "Invoices without PO / total invoices received per month"
+    },
+    {
+      "metric": "Repair authorization turnaround",
+      "target": "< 24 hours from request to authorization from Moises/Samuel",
+      "measurement": "Average hours from authorization request to response received"
+    },
+    {
+      "metric": "Draw collection cycle time",
+      "target": "< 5 business days from milestone trigger to payment received",
+      "measurement": "Days from construction milestone to draw payment deposit"
+    },
+    {
+      "metric": "House closing accuracy",
+      "target": "< 3% artificial bill value deviation from actual",
+      "measurement": "Average percentage difference between artificial bill estimate and real invoice when received"
+    },
+    {
+      "metric": "Field expense allocation rate",
+      "target": "> 85% of field expenses correctly allocated to specific houses",
+      "measurement": "Percentage of field expenses allocated to houses vs classified as variances"
+    },
+    {
+      "metric": "Payment processing time",
+      "target": "Invoice to payment in < 5 business days (after checklist done)",
+      "measurement": "Days from invoice receipt to payment execution (when all gates are met)"
+    }
+  ]
+}

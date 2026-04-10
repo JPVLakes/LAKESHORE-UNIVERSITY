@@ -1,0 +1,282 @@
+{
+  "department": "Warranty",
+  "department_id": "warranty",
+  "category": "Client",
+  "ai_agent": {
+    "port": 8013,
+    "role": "Manages post-delivery warranty claims, closing pre-sale repairs, lawn maintenance, shower glass door tracking, and centralized warranty data management",
+    "mcp_tools": [
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "warranty_claim_flow",
+      "closing_presale_repairs",
+      "lawn_cut_management",
+      "shower_glass_tracking",
+      "data_tracking_kildery"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Taylane Silva",
+      "email": "office2@lakeshoredevelopmentfl.com",
+      "role": "Closing & Warranty Leader — in-person realtor/investor contact, pre-sale repairs, key management, walkthrough scheduling"
+    },
+    {
+      "name": "Sophia Felizola",
+      "email": "sfelizola@lakeshoredevelopmentfl.com",
+      "role": "Warranty — repair requests processing, sub coordination, lawn cut management, 3 daily logs per repair"
+    },
+    {
+      "name": "Kildery Diniz",
+      "email": "cpm3@lakeshoredevelopmentfl.com",
+      "role": "Data Management — complex tracking spreadsheets (statistics background), CEO/sale tracking, shower glass door tracking, lawn data, PO control"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Warranty Claim Lifecycle",
+      "description": "8-step flow: Receive (email 100% formal) → Validate coverage → Identify responsible sub → Route via WhatsApp → Schedule repair → Execute with photo confirmation → Verify (Supervisor Daniel) → Close. 3 daily logs per repair: open claim, schedule, finalize.",
+      "proficiency_level": "advanced",
+      "applies_to": ["warranty", "client_relations"]
+    },
+    {
+      "topic": "Coverage Thresholds",
+      "description": "Structural: 10 years. Mechanical (HVAC/Plumbing/Electrical): 2 years. Cosmetic (Paint/Flooring): 1 year. Appliances: per manufacturer. Roofing workmanship: 2 years. All start from date of occupancy/sale (NOT CO date).",
+      "proficiency_level": "advanced",
+      "applies_to": ["warranty", "client_relations"]
+    },
+    {
+      "topic": "Sub Guarantee Conflict",
+      "description": "Subcontractors count 1 year from THEIR completion date, not from sale date. Creates gap period where Lakeshore covers warranty but sub may refuse free repair. When sub guarantee expires, new PO required through Financeiro.",
+      "proficiency_level": "advanced",
+      "applies_to": ["warranty", "financeiro"]
+    },
+    {
+      "topic": "Lawn Cut Management",
+      "description": "Data loggers report weekly via Slack. Open houses: cut directly. Closed houses: need CR authorization (exception: Gabriel and Vittor houses pre-authorized). Pricing: ≤0.22 acres=$50, ≤0.33 acres=$60, ≤0.50=quote, above=special quote, cap $30 for standard cuts.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["warranty", "client_relations"]
+    },
+    {
+      "topic": "Closing Pre-Sale Process",
+      "description": "Private inspector lists repairs needed before sale. Taylane receives via WhatsApp/email, categorizes by trade (electric, plumbing, finishing), dispatches subs, clears house for sale.",
+      "proficiency_level": "advanced",
+      "applies_to": ["warranty", "client_relations"]
+    },
+    {
+      "topic": "Shower Glass Door Tracking",
+      "description": "Pre-requisites: tile and vinyl must be complete. Kildery tracks via BT tags. Flow: tile/vinyl done → house enabled → sub measures → PO created → installation → Beauty Final → CEO.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["warranty", "scheduling"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Warranty Claim Processing",
+      "steps": [
+        "Receive client repair request by email (100% formal channel)",
+        "Register in tracking spreadsheet (request, repair type, date)",
+        "Validate warranty coverage (occupancy/sale date vs current date)",
+        "Route to responsible sub via WhatsApp (specific groups by trade)",
+        "Follow up every 3 days if no response",
+        "Register in Builder Trend: open claim → schedule → finalize (3 daily logs)",
+        "Sub confirms completion with photo",
+        "Supervisor Daniel verifies during route visits"
+      ],
+      "frequency": "Daily (continuous flow)",
+      "systems_used": ["Email", "Excel Spreadsheets", "WhatsApp", "Builder Trend"],
+      "critical_decisions": ["Whether claim is within coverage period", "Whether to use original sub or find alternative"]
+    },
+    {
+      "name": "Lawn Cut Coordination",
+      "steps": [
+        "Receive data logger reports via Slack",
+        "Check house status: open (direct request) or closed (need CR authorization)",
+        "Calculate lawn size via database + VLOOKUP",
+        "Send list to sub with pin point, address, and size",
+        "Control deadlines (max 5 days, target 2-3 days)",
+        "Register PO and values per pricing table",
+        "Receive photo/video proof from sub"
+      ],
+      "frequency": "Weekly",
+      "systems_used": ["Slack", "Excel Spreadsheets", "WhatsApp", "Builder Trend"],
+      "critical_decisions": ["Prioritizing urgent cuts to avoid county fines"]
+    },
+    {
+      "name": "Data Tracking and Management (Kildery)",
+      "steps": [
+        "Update CEO tracking tab (CO date, sale/occupancy date)",
+        "Update repair status with delay tracking (mark >3 days)",
+        "Update shower glass door, tile, vinyl, cabinets tracking",
+        "Manage lawn cut data (addresses, sizes, authorizations, costs)",
+        "Maintain house database (addresses, cities, sq ft, acres)",
+        "Control POs",
+        "Generate decision-support information"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Excel Spreadsheets", "Builder Trend"],
+      "critical_decisions": ["Identifying systemic patterns in warranty claims"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Rework Management (Const App)",
+      "features_used": [
+        "Rework Queue — assign to handymen, dispatch, or postpone",
+        "Handymen Kanban Board — track rework progress",
+        "Completed History — permanent record with duration"
+      ],
+      "api_endpoints": ["/rework/queue", "/rework/kanban", "/rework/history"]
+    },
+    {
+      "module": "Verification (Const App)",
+      "features_used": [
+        "Site Visits — schedule verification visits for warranty repairs",
+        "Photo Review — review photos of completed warranty work"
+      ],
+      "api_endpoints": ["/verification/site_visits", "/verification/photo_review"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-13-recv",
+      "direction": "inbound",
+      "partner_department": "Inspecao",
+      "trigger": "CO issued — house can be delivered",
+      "data_exchanged": "CO document, house_id, inspection results",
+      "impact": "Triggers closing process — warranty period countdown begins at sale"
+    },
+    {
+      "id": "H-war-cr-recv",
+      "direction": "inbound",
+      "partner_department": "Client Relations",
+      "trigger": "Lawn cut authorization for closed houses",
+      "data_exchanged": "Authorization for lawn maintenance, house_id",
+      "impact": "Without authorization, warranty cannot dispatch lawn crews to closed houses"
+    },
+    {
+      "id": "H-war-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Repair POs and lawn cut POs created",
+      "data_exchanged": "PO reference, repair description, sub name, amount",
+      "impact": "Payment processing for warranty repairs"
+    },
+    {
+      "id": "H-war-cr-send",
+      "direction": "outbound",
+      "partner_department": "Client Relations",
+      "trigger": "Repair status update for client communication",
+      "data_exchanged": "Repair status, timeline, house_id",
+      "impact": "CR communicates progress to client"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-war-01",
+      "description": "No dedicated warranty software — all tracking via spreadsheets and Builder Trend. Significant financial losses (example: $14,000 loss on a single house due to tracking failures)",
+      "severity": "critical",
+      "current_workaround": "Kildery's complex spreadsheet system centralizes data from multiple sources",
+      "proposed_solution": "Dedicated warranty management module in Const App with automated SLA tracking"
+    },
+    {
+      "id": "PP-war-02",
+      "description": "3 daily logs required per repair (open claim, schedule, finalize) — excessive manual input",
+      "severity": "high",
+      "current_workaround": "Team batch-processes logs when possible",
+      "proposed_solution": "Automated log generation from claim status changes"
+    },
+    {
+      "id": "PP-war-03",
+      "description": "Subs frequently do not respond to warranty requests — repeated follow-ups via WhatsApp",
+      "severity": "high",
+      "current_workaround": "Chase every 3 days; escalate to Supervisao at 7 days",
+      "proposed_solution": "Contractual warranty SLA with penalties for non-response"
+    },
+    {
+      "id": "PP-war-04",
+      "description": "Sub guarantee period conflict — sub counts 1 year from completion, Lakeshore counts from sale date, creating uncovered gaps",
+      "severity": "high",
+      "current_workaround": "Lakeshore absorbs cost when sub refuses; Financeiro pays via new PO",
+      "proposed_solution": "Contractual alignment of sub warranty period with company warranty"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Kildery's Complex Tracking System",
+      "description": "Multi-tab spreadsheet with VLOOKUP formulas, delay tracking (>3 days flag), CEO tracking, shower glass door dependencies, lawn cut pricing calculations, and house database. Created by a statistics graduate — not documented or replicable.",
+      "holders": ["Kildery Diniz"],
+      "risk_if_lost": "Total loss of centralized warranty visibility; financial tracking would break down"
+    },
+    {
+      "topic": "Sub Reliability Knowledge",
+      "description": "Sophia knows which subs respond quickly to warranty calls, which require multiple follow-ups, and which refuse certain types of repairs. Also knows which WhatsApp groups to use for each trade.",
+      "holders": ["Sophia Felizola"],
+      "risk_if_lost": "Repair routing becomes trial-and-error; response times increase"
+    },
+    {
+      "topic": "Taylane's Realtor Relationships",
+      "description": "Taylane maintains personal relationships with realtors and investors, knows pre-sale inspection patterns, and manages the key custody process.",
+      "holders": ["Taylane Silva"],
+      "risk_if_lost": "Closing process delays; key management confusion"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Warranty Claim Management",
+      "topics": ["Claim lifecycle (8 steps)", "Coverage thresholds by category", "SLA targets", "3 daily log requirement", "Sub routing by trade"],
+      "target_audience": ["New warranty staff"],
+      "priority": "high",
+      "quiz_coverage": "Coverage periods, claim steps, SLA milestones, Daily Log tags"
+    },
+    {
+      "module": "Closing and Pre-Sale Process",
+      "topics": ["Private inspector report handling", "Repair categorization by trade", "Key management", "Walkthrough scheduling", "HUD documentation"],
+      "target_audience": ["Closing staff"],
+      "priority": "high",
+      "quiz_coverage": "Closing flow, document types, key custody rules"
+    },
+    {
+      "module": "Lawn Cut Operations",
+      "topics": ["Pricing table", "Authorization rules (open vs closed houses)", "Sub coordination", "County fine prevention"],
+      "target_audience": ["Warranty team"],
+      "priority": "medium",
+      "quiz_coverage": "Pricing tiers, authorization exceptions, deadline rules"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "1-year builder warranty from date of occupancy/sale per contract Clause 13",
+      "regulation": "Construction Contract — Lakeshore Lira Investments Corp.",
+      "verification": "Warranty start date calculated from sale/occupancy, not CO"
+    },
+    {
+      "requirement": "Post-walkthrough issues must go through formal warranty process (email)",
+      "regulation": "Final Walkthrough Checklist acknowledgment clause",
+      "verification": "All claims tracked via email channel; informal requests redirected"
+    },
+    {
+      "requirement": "Utility transfer within 10 business days of closing",
+      "regulation": "Closing documentation acknowledgment",
+      "verification": "Dandara monitors utility account status post-closing"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Warranty claim resolution time",
+      "target": "<14 days from claim to completion",
+      "measurement": "Tracking spreadsheet: date received vs date finalized"
+    },
+    {
+      "metric": "Client acknowledgment time",
+      "target": "<24 hours",
+      "measurement": "Email response timestamp tracking"
+    },
+    {
+      "metric": "Lawn cut compliance",
+      "target": "0 county fines per quarter",
+      "measurement": "Count of county notifications received"
+    }
+  ]
+}

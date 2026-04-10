@@ -1,0 +1,265 @@
+{
+  "department": "Coordenador (Coordinator)",
+  "department_id": "coordenador",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8001,
+    "role": "Central routing hub for all 20 departments — hybrid dispatch (regex + LLM), interdepartmental coordination, escalation management, and pipeline oversight",
+    "mcp_tools": [
+      "read_daily_logs",
+      "read_daily_log_detail",
+      "search_daily_logs",
+      "read_schedules",
+      "read_schedule_detail",
+      "read_purchase_orders",
+      "read_purchase_order_detail",
+      "read_inspections",
+      "read_inspection_detail",
+      "read_contracts",
+      "read_contract_detail",
+      "get_project",
+      "get_takeoff_completion",
+      "get_permits",
+      "get_documents",
+      "search_suppliers",
+      "check_stock",
+      "get_lead",
+      "list_leads",
+      "get_model",
+      "list_models"
+    ],
+    "workflow_chains": [
+      "intent_classification_routing",
+      "multi_department_coordination",
+      "escalation_management",
+      "pipeline_oversight",
+      "compliance_pre_check"
+    ]
+  },
+  "staff": [],
+  "core_knowledge": [
+    {
+      "topic": "Intent Classification and Routing",
+      "description": "Hybrid regex + LLM dispatch. Keywords map to departments: schedule/agendar→scheduling, comprar/material/PO→compras, budget/custo→orcamento, pagamento/draw→financeiro, inspecao→inspecao, qualidade/checklist→qps, permit/NOC→permits, cliente/lead→client_relations, etc.",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador"]
+    },
+    {
+      "topic": "CEO Construction Pipeline",
+      "description": "Standardized pipeline per CEO Bernardo: Opportunity → Design → Budget → Contract → Permits → Build → Deliver. Each phase has defined active departments and handoff triggers.",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador"]
+    },
+    {
+      "topic": "15 Critical Handoffs",
+      "description": "H-01: Checklist Done (Supervisao→Financeiro+Scheduling), H-02: Draw Release (Financeiro→Scheduling), H-03: Survey Received (Permits→Scheduling), H-04: Planta (Projetos→Budget+Permits+Takeoff), H-05: Takeoff (Takeoff→Budget+Compras), H-06: Permit Approved, H-07: Contrato Assinado, H-08: Resultado Inspecao, H-09: Tug Side, H-10: Sistema Agua/Esgoto, H-11: Client Hold, H-12: Calculo de Loads, H-13: CO, H-14: Terreno pronto, H-15: Budget aprovado.",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador"]
+    },
+    {
+      "topic": "Multi-Department Scenarios",
+      "description": "Lead approval: CR+Orcamento+Projetos. Bid approval: Orcamento+Financeiro+CR. Inspection trigger: Supervisao+Inspecao+Permits. Draw release: Financeiro+Scheduling. New house: Permits+Scheduling+Utilities. Rework: Inspecao+Scheduling+Supervisao+QPS. Closing: Warranty+CR+Financeiro+Inspecao.",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador"]
+    },
+    {
+      "topic": "Escalation Levels",
+      "description": "Level 1: Normal routing. Level 2: Department cannot resolve → Coordenador re-routes. Level 3: Interdepartmental conflict → Coordenador mediates. Level 4: Financial/legal impact → escalate to C-Level (Leo/Samuel/Bernardo).",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador"]
+    },
+    {
+      "topic": "Const App Module Mapping",
+      "description": "16 modules mapped to departments: Service Catalog→TI/Orcamento, Portfolio→Orcamento, Contract Dev→Contratos/CR, Quotation→Orcamento/Compras, Permitting→Permits, AR→Financeiro, PM→PM/Scheduling, AP→Financeiro, CR→Client Relations, Construction→Scheduling/Supervisao, Verification→Supervisao/QPS, Rework→Core Craft/QPS, Inspection→Inspecao, Stock→Deposito/Compras, Utility→Utilities, Admin→TI.",
+      "proficiency_level": "advanced",
+      "applies_to": ["coordenador", "ti"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Message Routing",
+      "steps": [
+        "Receive incoming request/question",
+        "Classify intent using keyword matching (regex) and context (LLM)",
+        "Identify target department(s)",
+        "Check if multi-department coordination needed",
+        "Route to appropriate agent(s) with context",
+        "Monitor for response; re-route if department cannot resolve"
+      ],
+      "frequency": "Continuous",
+      "systems_used": ["All department tools (read-only)"],
+      "critical_decisions": ["Single vs multi-department routing", "Escalation level determination"]
+    },
+    {
+      "name": "Pipeline Monitoring",
+      "steps": [
+        "Check for blocked houses across pipeline stages",
+        "Identify handoff bottlenecks (draws delayed, permits pending, inspections failed)",
+        "Alert responsible departments of blocks",
+        "Escalate when blocks exceed thresholds (draw >5 days, hold >30 days, inspection failed 3x)"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Builder Trend", "Const App"],
+      "critical_decisions": ["When to escalate to C-Level"]
+    },
+    {
+      "name": "Pre-Build Compliance Check",
+      "steps": [
+        "Verify permits issued (or approved for Marion up to Form phase)",
+        "Check NOC recorded",
+        "Verify impact fees paid",
+        "Confirm Builder's Risk insurance active",
+        "Apply county-specific rules (Marion, Citrus, Charlotte, Lake, Sumter, Orange)"
+      ],
+      "frequency": "Per house entering Build phase",
+      "systems_used": ["Const App", "Builder Trend"],
+      "critical_decisions": ["Whether house is cleared to begin construction"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Dashboard & Reporting",
+      "features_used": [
+        "Cross-department status overview",
+        "Pipeline stage tracking",
+        "Handoff monitoring",
+        "Escalation alerts"
+      ],
+      "api_endpoints": ["/dashboard", "/reports"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-01",
+      "direction": "monitored",
+      "partner_department": "Supervisao → Financeiro + Scheduling",
+      "trigger": "Checklist Done by supervisor",
+      "data_exchanged": "Service completion approval",
+      "impact": "Payment trigger for sub — most critical handoff in the system"
+    },
+    {
+      "id": "H-02",
+      "direction": "monitored",
+      "partner_department": "Financeiro → Scheduling",
+      "trigger": "Draw released by lender",
+      "data_exchanged": "Draw amount, phase authorization",
+      "impact": "Construction phases cannot advance without draw funding"
+    },
+    {
+      "id": "H-03",
+      "direction": "monitored",
+      "partner_department": "Permits → Scheduling",
+      "trigger": "Survey Received tag in Daily Log",
+      "data_exchanged": "New house available for scheduling",
+      "impact": "Without tag, house stays in queue indefinitely"
+    },
+    {
+      "id": "H-06",
+      "direction": "monitored",
+      "partner_department": "Permits → Campo + Scheduling",
+      "trigger": "Building permit approved",
+      "data_exchanged": "Permit document, approval conditions",
+      "impact": "Construction cannot legally begin without approved permit"
+    },
+    {
+      "id": "H-08",
+      "direction": "monitored",
+      "partner_department": "Inspecao → Scheduling + Supervisao",
+      "trigger": "Inspection result (pass/fail)",
+      "data_exchanged": "Inspection result, corrections needed if failed",
+      "impact": "Pass = next phase; Fail = rework cycle"
+    },
+    {
+      "id": "H-13",
+      "direction": "monitored",
+      "partner_department": "Inspecao → Warranty + Closing",
+      "trigger": "CO (Certificate of Occupancy) issued",
+      "data_exchanged": "CO document, final inspection results",
+      "impact": "House cannot be delivered without CO"
+    },
+    {
+      "id": "H-14",
+      "direction": "monitored",
+      "partner_department": "Land Dev → Scheduling + Permits",
+      "trigger": "Land development complete, area ready for vertical construction",
+      "data_exchanged": "Infrastructure completion documentation",
+      "impact": "Transition from underground to vertical construction"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-coord-01",
+      "description": "Information scattered across departments with no unified view — Coordenador must query multiple systems to build context",
+      "severity": "high",
+      "current_workaround": "Read-only access to all tools enables context gathering",
+      "proposed_solution": "Unified dashboard with real-time cross-department status"
+    },
+    {
+      "id": "PP-coord-02",
+      "description": "Handoff failures are often silent — no automatic alert when a handoff is missed or delayed",
+      "severity": "high",
+      "current_workaround": "Manual pipeline monitoring and periodic checks",
+      "proposed_solution": "Automated handoff tracking with SLA alerts"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Cross-Department Dependency Map",
+      "description": "The full map of which departments depend on each other, when to involve multiple departments simultaneously, and which handoffs are most likely to fail. This is captured in the 15 handoffs but the timing and coordination nuances are complex.",
+      "holders": [],
+      "risk_if_lost": "Routing errors, missed handoffs, pipeline blockages"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Department Knowledge Overview",
+      "topics": ["All 20 departments and their responsibilities", "Key personnel per department", "Primary tools per department", "Common request types"],
+      "target_audience": ["Coordinators", "New managers"],
+      "priority": "high",
+      "quiz_coverage": "Department identification by keyword, leader names, responsibility boundaries"
+    },
+    {
+      "module": "Pipeline and Handoff Management",
+      "topics": ["CEO pipeline stages", "15 critical handoffs", "Multi-department scenarios", "Escalation levels and triggers"],
+      "target_audience": ["Coordinators"],
+      "priority": "high",
+      "quiz_coverage": "Handoff triggers, escalation thresholds, multi-department routing"
+    },
+    {
+      "module": "County-Specific Routing",
+      "topics": ["Marion vs Citrus vs Charlotte differences", "Inspection sequences per county", "Permit requirements per county"],
+      "target_audience": ["Coordinators"],
+      "priority": "medium",
+      "quiz_coverage": "County-specific rules, inspection order differences"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Pre-build compliance verification before routing to construction phase",
+      "regulation": "Florida Building Code + County ordinances",
+      "verification": "5-point checklist: permits, NOC, impact fees, insurance, county rules"
+    },
+    {
+      "requirement": "Escalation to C-Level for payments exceeding $10,000",
+      "regulation": "Internal financial authorization policy",
+      "verification": "Payment amount check before routing to Financeiro for approval"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Routing accuracy",
+      "target": ">95% of requests routed to correct department on first attempt",
+      "measurement": "Re-routing rate tracking"
+    },
+    {
+      "metric": "Handoff completion rate",
+      "target": ">90% of handoffs completed within SLA",
+      "measurement": "Handoff monitoring dashboard"
+    },
+    {
+      "metric": "Pipeline throughput",
+      "target": "Average house completion <9 months from contract to CO",
+      "measurement": "Pipeline stage duration tracking"
+    }
+  ]
+}

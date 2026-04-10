@@ -1,0 +1,273 @@
+{
+  "department": "TI (IT/Technology)",
+  "department_id": "ti",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8019,
+    "role": "Manages all technology infrastructure — Const App development (16 processes, 156 services), BuilderTrend administration, QuickBooks integration, Power BI analytics, and enterprise tools",
+    "mcp_tools": [
+      "read_daily_logs",
+      "read_daily_log_detail",
+      "search_daily_logs",
+      "read_schedules",
+      "read_schedule_detail",
+      "read_purchase_orders",
+      "read_purchase_order_detail",
+      "read_inspections",
+      "read_inspection_detail",
+      "read_contracts",
+      "read_contract_detail",
+      "get_project",
+      "get_takeoff_completion",
+      "get_permits",
+      "get_documents",
+      "search_suppliers",
+      "check_stock",
+      "get_lead",
+      "list_leads",
+      "get_model",
+      "list_models"
+    ],
+    "workflow_chains": [
+      "const_app_management",
+      "bt_administration",
+      "system_integration",
+      "user_access_management",
+      "playwright_scraping"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Evandro Macedo",
+      "email": "",
+      "role": "Lead Developer / Product Owner — Const App development, 65+ hours of requirements interviews, system architecture"
+    },
+    {
+      "name": "Luan Leitao",
+      "email": "",
+      "role": "IT Support — technical support, AI tools research, onboarding"
+    },
+    {
+      "name": "Luciano Holanda",
+      "email": "lholanda@lakeshoredevelopmentfl.com",
+      "role": "Requirements Analyst — user stories, process documentation"
+    },
+    {
+      "name": "Brendda Maria Sobral",
+      "email": "bsobral@lakeshoredevelopmentfl.com",
+      "role": "Requirements Analyst — land development and custom home user stories"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Const App (Hatchbox)",
+      "description": "Custom platform: Ruby 3.4.5 / Rails 8.0.2.1 / SQLite / Hatchbox PaaS. 16 business processes (6 Planning, 10 Execution, 2 Admin), 156 executable services, 130 tables, 35 users, 5 cells (counties). Admin: miro@lakeshoredevelopmentfl.com.",
+      "proficiency_level": "advanced",
+      "applies_to": ["ti"]
+    },
+    {
+      "topic": "BuilderTrend Administration",
+      "description": "Primary platform: Schedule (50 items/job), Daily Logs (396/job), To-Dos (53 checklists/job), POs (122/job), Bills (178/job), Change Orders, 663 Subs/Vendors. Known pain points: triple data entry, slow loading, tag confusion, no standardized PO fields.",
+      "proficiency_level": "advanced",
+      "applies_to": ["ti"]
+    },
+    {
+      "topic": "System Integration Landscape",
+      "description": "BT↔QuickBooks (partial, manual for classes). Const App as replacement platform. Power BI for analytics (Diego). Playwright scrapers for data extraction. No unified API layer currently.",
+      "proficiency_level": "advanced",
+      "applies_to": ["ti", "financeiro"]
+    },
+    {
+      "topic": "156 Service Catalog",
+      "description": "Service codes across 20 categories: Inspection (INS, 29 services), Lot-Level (LTV, 8), Foundation (FND), Masonry (MAS), Roofing (ROF), Windows (WIN), Doors (DOR), Plumbing (PLM), Electrical (ELC), Mechanical (MEC), Finishing (FIN), Exterior (EXT), Specialties (SPC), Landscape (LND), Concrete (CON), Variances (VAR), etc.",
+      "proficiency_level": "advanced",
+      "applies_to": ["ti", "scheduling", "orcamento"]
+    },
+    {
+      "topic": "Playwright Web Scrapers",
+      "description": "Automated scrapers for county portals and utility company websites to extract permit status, inspection results, and utility account information. Replaces manual portal checking.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["ti", "permits", "inspecao"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Const App Development and Maintenance",
+      "steps": [
+        "Review feature requests and bug reports",
+        "Develop new modules and features",
+        "Deploy to Hatchbox production",
+        "Monitor system health (63 active sessions, 130 tables)",
+        "Manage user access and process assignments (25 process assignments)"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Rails Development", "Hatchbox", "Git"],
+      "critical_decisions": ["Feature prioritization", "Architecture decisions for new modules"]
+    },
+    {
+      "name": "BuilderTrend Administration",
+      "steps": [
+        "Manage user accounts and permissions",
+        "Configure new job templates",
+        "Support departments with BT usage issues",
+        "Monitor BT↔QuickBooks sync"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Builder Trend", "QuickBooks"],
+      "critical_decisions": ["Permission levels for new users", "Template standardization"]
+    },
+    {
+      "name": "User Access Management",
+      "steps": [
+        "Process new user creation requests",
+        "Assign users to appropriate processes in Const App",
+        "Configure department-specific access levels",
+        "Audit access periodically"
+      ],
+      "frequency": "As needed",
+      "systems_used": ["Const App Admin Panel"],
+      "critical_decisions": ["Access level determination based on role"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Admin & User-Process Management (Const App)",
+      "features_used": [
+        "Admin Panel — 35 users, 16 processes, 130 tables, 5 cells",
+        "User-Process assignment management",
+        "System health monitoring",
+        "Database management (SQLite, 2880 KB)"
+      ],
+      "api_endpoints": [
+        "/admin",
+        "/admin/users",
+        "/admin/processes",
+        "/admin/user_processes",
+        "/admin/cells"
+      ]
+    },
+    {
+      "module": "Service Catalog Management (Const App)",
+      "features_used": [
+        "156 service definitions across 20 categories",
+        "Service code management",
+        "Component and material mapping"
+      ],
+      "api_endpoints": ["/admin/service_catalog"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-ti-all",
+      "direction": "outbound",
+      "partner_department": "All departments",
+      "trigger": "System updates, new features, access changes",
+      "data_exchanged": "Feature announcements, access credentials, training materials",
+      "impact": "All departments depend on TI for system availability and functionality"
+    },
+    {
+      "id": "H-ti-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "BT↔QuickBooks integration issues",
+      "data_exchanged": "Sync status, error reports, manual reconciliation needs",
+      "impact": "Financial data accuracy depends on integration health"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-ti-01",
+      "description": "CPUs on company computers are inadequate for modern software requirements",
+      "severity": "medium",
+      "current_workaround": "Prioritize critical applications, close unnecessary programs",
+      "proposed_solution": "Hardware upgrade plan for workstations"
+    },
+    {
+      "id": "PP-ti-02",
+      "description": "BT↔QuickBooks integration is incomplete — classes require manual entry",
+      "severity": "high",
+      "current_workaround": "Manual class assignment in QuickBooks for each transaction",
+      "proposed_solution": "Automated class mapping or migrate to Const App financial module"
+    },
+    {
+      "id": "PP-ti-03",
+      "description": "Personal computers used for work create security risks — no centralized device management",
+      "severity": "high",
+      "current_workaround": "Policy guidelines but no enforcement mechanism",
+      "proposed_solution": "Company-issued devices with MDM (Mobile Device Management)"
+    },
+    {
+      "id": "PP-ti-04",
+      "description": "BuilderTrend as primary platform has fundamental limitations — triple data entry, no standardized fields, slow performance",
+      "severity": "high",
+      "current_workaround": "Const App being developed as replacement",
+      "proposed_solution": "Complete migration to Const App with all 16 modules operational"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Const App Architecture and Business Logic",
+      "description": "Evandro has 65+ hours of requirements interviews encoded in the application logic. The mapping between business processes and code is primarily in his knowledge.",
+      "holders": ["Evandro Macedo"],
+      "risk_if_lost": "Application maintenance and evolution would be severely impacted"
+    },
+    {
+      "topic": "BuilderTrend Configuration",
+      "description": "Complex BT setup with job templates, tag systems, PO workflows, and user permissions. Configuration knowledge distributed across IT and power users in each department.",
+      "holders": ["Evandro Macedo", "Luan Leitao"],
+      "risk_if_lost": "BT misconfiguration could disrupt all departments"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Const App User Training",
+      "topics": ["Module navigation", "Process-specific features", "Data entry best practices", "Report generation"],
+      "target_audience": ["All department users"],
+      "priority": "high",
+      "quiz_coverage": "Module access, data entry workflows, report types"
+    },
+    {
+      "module": "BuilderTrend Essentials",
+      "topics": ["Daily Log creation", "PO management", "Schedule updates", "Tag usage", "Photo uploads"],
+      "target_audience": ["New employees"],
+      "priority": "high",
+      "quiz_coverage": "BT navigation, tag rules, photo requirements"
+    },
+    {
+      "module": "IT Security Basics",
+      "topics": ["Password management", "Personal device risks", "Data backup procedures", "Acceptable use policy"],
+      "target_audience": ["All employees"],
+      "priority": "medium",
+      "quiz_coverage": "Password rules, device security, data handling"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "User access must be role-appropriate with least-privilege principle",
+      "regulation": "Internal IT security policy",
+      "verification": "Periodic access audit of Const App and BT user permissions"
+    },
+    {
+      "requirement": "Data backups must be maintained for all critical systems",
+      "regulation": "Business continuity policy",
+      "verification": "Automated backup verification (Hatchbox managed for Const App)"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "System uptime",
+      "target": ">99.5% for Const App and BT",
+      "measurement": "Monitoring tools and incident tracking"
+    },
+    {
+      "metric": "Feature delivery rate",
+      "target": "Per sprint/milestone planning",
+      "measurement": "Completed features vs planned per development cycle"
+    },
+    {
+      "metric": "Support ticket resolution time",
+      "target": "<4 hours for critical, <24 hours for standard",
+      "measurement": "Ticket tracking system"
+    }
+  ]
+}

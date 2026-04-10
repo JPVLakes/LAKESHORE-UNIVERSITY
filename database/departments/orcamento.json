@@ -1,0 +1,478 @@
+{
+  "department": "Orcamento / Budget",
+  "department_id": "orcamento",
+  "category": "Financial",
+  "ai_agent": {
+    "port": 8007,
+    "role": "Creates and manages construction budgets for 27+ home models (spec and custom), handles vendor quotation process, maintains cost matrices (materials + labor + overhead), produces R3 pre-contract estimates, manages MEP payment splits (FOCO 40-40-20, ECOWAN 40-30-30), and tracks budget-to-actual variance.",
+    "mcp_tools": [
+      "read_purchase_orders",
+      "read_daily_logs",
+      "get_takeoff_completion",
+      "calculate_cost_matrix",
+      "finalize_budget",
+      "create_budget",
+      "get_model",
+      "list_models"
+    ],
+    "workflow_chains": [
+      "takeoff_received -> apply_unit_prices -> county_adjustments -> samuel_review -> budget_finalized -> notify_scheduling_financeiro",
+      "custom_design_received -> request_quotes_3_vendors -> collect_quotes -> compare_prices -> samuel_approval -> budget_creation -> client_presentation",
+      "r3_estimate_request -> cost_per_sqft_lookup -> category_coefficient -> present_to_client -> if_contract_signed -> convert_to_full_budget",
+      "model_change -> takeoff_update -> price_recalculation -> budget_revision -> notify_all_stakeholders",
+      "mep_contract -> determine_payment_split -> foco_40_40_20_or_ecowan_40_30_30 -> register_po_schedule"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Felipe Nery",
+      "email": "fnery@lakeshoredevelopmentfl.com",
+      "role": "Budget Lead / Estimating Engineer - overall budget creation and management for spec and custom homes, MEP payment split management, vendor negotiation, final budget review coordination"
+    },
+    {
+      "name": "Ana Helena Torres",
+      "email": "atorres@lakeshoredevelopmentfl.com",
+      "role": "Budget/Quotation team - estimate-to-PO integration in BuilderTrend (manual process), quotation collection, Financeiro coordination for payment verification"
+    },
+    {
+      "name": "Pedro Henrique Cordeiro",
+      "email": "",
+      "role": "Quotation Specialist - vendor contact for quotes (2-3 quotes per service), price table management, quote status tracking with color-coded spreadsheets, CAS Creed vs CMEX nomenclature mapping"
+    },
+    {
+      "name": "Rodrigo Cordeiro",
+      "email": "",
+      "role": "Concrete Budget Specialist - concrete-specific budget calculations, slab and lintel concrete volumes, concrete vendor relationships"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "27+ Model Budget Templates",
+      "description": "Lakeshore maintains budget templates for 27+ standardized home models. Each template is replicable across houses of the same model. Templates use POs in cost code order. Budget varies by county (Marion, Citrus, Charlotte) due to different permit fees, impact fees, wind speed requirements, utility costs, and labor rates. Budget is finalized by Samuel Torres and altered only when material/labor prices change.",
+      "proficiency_level": "advanced",
+      "applies_to": ["spec_homes", "budget_management"]
+    },
+    {
+      "topic": "Cost Matrix (Materials + Labor + Overhead)",
+      "description": "The budget is built on a cost matrix that combines material quantities (from takeoff), labor costs (from sub quotes), and overhead (insurance, permits, office costs). Each cost code has specific calculation methodology. The matrix is the core tool for both spec and custom home budgets.",
+      "proficiency_level": "advanced",
+      "applies_to": ["all_budgets", "cost_management"]
+    },
+    {
+      "topic": "R3 Pre-Contract Estimates",
+      "description": "R3 (Revision 3 of cost model) is an initial budget estimate created before contract signing, based on cost per square foot of recent similar projects (~$250/sqft). Used for client negotiation and contract pricing. Variables like terrain (final grading, septic connection) affect precision. R3 must convert to full budget when contract is signed. Samuel Torres manages R3 creation.",
+      "proficiency_level": "advanced",
+      "applies_to": ["custom_homes", "pre_contract"]
+    },
+    {
+      "topic": "FOCO 40-40-20 vs ECOWAN 40-30-30 Payment Splits",
+      "description": "Two major MEP subcontractors have different payment split structures: FOCO pays 40% at rough, 40% at trim, 20% at final. ECOWAN pays 40% at rough, 30% at trim, 30% at final. Direct unit price comparison between vendors is misleading without considering these payment terms. Both splits must be correctly registered in POs for Financeiro processing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["mep_contracts", "payment_scheduling"]
+    },
+    {
+      "topic": "Quote Color-Coding System",
+      "description": "Quotation tracking uses color codes: YELLOW = pending/needs review (requested not received), WHITE = standard/received (awaiting comparison), ORANGE = all received/needs attention (ready for Sam's review), GREEN = approved/within budget (Sam approved), RED = over budget/rejected/incoherent (Sam flagged). Sam has final approval on all quotes.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["quotation_process", "vendor_management"]
+    },
+    {
+      "topic": "10% Variance Expectation",
+      "description": "Budget estimates are expected to be within 10% of actual costs. Variance greater than 10% triggers review by Samuel Torres. The ~10% natural variation in takeoff quantities across different subs is considered acceptable. For custom homes, variance is typically higher due to client specification changes.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["budget_monitoring", "variance_management"]
+    },
+    {
+      "topic": "19 Cost Code Structure",
+      "description": "Budget is organized into 19 cost categories: 1-Contract, 2-Permit, 3-Utilities, 4-Land Preparation, 5-Foundation, 6-Plumbing, 7-Electric, 8-Masonry, 9-Roofing/Framing, 10-Windows/Ext Doors, 11-Doors, 12-Mechanical, 13-Finishing, 14-Exterior Finishing, 15-Specialties, 16-Final Clean, 17-Upgrades, 18-Variances, 19-Lot Variances. Each code has specific sub-items and calculation methods.",
+      "proficiency_level": "advanced",
+      "applies_to": ["all_budgets", "cost_tracking"]
+    },
+    {
+      "topic": "Samuel Torres Final Approval Logic",
+      "description": "Samuel Torres (Sam) has final approval authority on all budgets and quotes. He reviews values based on experience and market knowledge. Red-flagged items are values he considers incoherent or over budget. His approval (green status) is required before any budget is finalized or any quote is accepted.",
+      "proficiency_level": "advanced",
+      "applies_to": ["approval_process", "vendor_selection"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Spec Home Budget Creation",
+      "steps": [
+        "Receive plans and specifications from Design Office (Camila)",
+        "Use replicable templates with POs in cost code order",
+        "Apply existing quotations (same materials and prices per model)",
+        "Adjust county-specific fees (Marion, Citrus, Charlotte impact fees, permit fees, utility costs)",
+        "Samuel Torres reviews final values based on experience",
+        "Budget finalized; locked unless material/labor price changes"
+      ],
+      "frequency": "Per new model; updated when prices change",
+      "systems_used": ["BuilderTrend (PO templates)", "Excel Spreadsheets", "ClickUp"],
+      "critical_decisions": [
+        "County-specific fee adjustments",
+        "Whether price changes warrant template update across all models"
+      ]
+    },
+    {
+      "name": "Custom Home Budget Creation",
+      "steps": [
+        "Receive Design Book and Takeoff from Camila/Projetos",
+        "Request individual quotations from at least 3 vendors per service",
+        "Detail all items and costs including special features (pool, premium finishes)",
+        "Define allowances and 'by owner' items with Camila before contract",
+        "Samuel and Camila approve initial budget (R3 estimate)",
+        "After contract signing, PMs (Daniel, Cris, Edson) approve real budget with sub quotes"
+      ],
+      "frequency": "Per custom project",
+      "systems_used": ["Excel Spreadsheets", "BuilderTrend", "Google Drive", "Email", "WhatsApp"],
+      "critical_decisions": [
+        "Allowance vs fixed value for finishing items",
+        "Which vendors to request quotes from",
+        "R3 estimate precision (cost per sqft coefficient selection)"
+      ]
+    },
+    {
+      "name": "Vendor Quotation Process",
+      "steps": [
+        "Contact vendors for material and service prices via email and WhatsApp",
+        "Collect 2-3 quotations per service for competitive pricing",
+        "Record quotes in color-coded spreadsheet (Yellow=pending, White=received, Orange=all received)",
+        "Present compiled quotes to Samuel Torres for negotiation leverage and review",
+        "Samuel reviews: marks green (approved) or red (rejected/incoherent)",
+        "Approved quotes finalized (green status)"
+      ],
+      "frequency": "Per project (custom) or per price update cycle (spec)",
+      "systems_used": ["Excel Spreadsheets", "Email", "WhatsApp"],
+      "critical_decisions": [
+        "Vendor selection based on price, reliability, and payment terms",
+        "Volume negotiation strategy for repeated orders"
+      ]
+    },
+    {
+      "name": "Unit Price Material Calculation",
+      "steps": [
+        "Receive vendor price table with unit prices (e.g., DZ Blocks - regular block $1.89)",
+        "Receive quantity from Takeoff team (Gabriela's Globin + ChatGPT estimation)",
+        "Multiply: quantity from takeoff x unit price from vendor table",
+        "Record final calculated value in project spreadsheet",
+        "Route to budget for inclusion"
+      ],
+      "frequency": "Per project/model for unit-priced materials",
+      "systems_used": ["Excel Spreadsheets", "Email"],
+      "critical_decisions": [
+        "Which vendor price table to use when multiple exist",
+        "Whether quantity variance from takeoff is acceptable"
+      ]
+    },
+    {
+      "name": "MEP Payment Split Registration",
+      "steps": [
+        "Determine if project is Full MAP based on Permits definition",
+        "Identify MEP contractor (FOCO or ECOWAN) for the project",
+        "Apply correct payment split: FOCO 40-40-20 or ECOWAN 40-30-30",
+        "Register specific deductions when applicable (e.g., $679.01 for non-provided bathtub)",
+        "Create POs with correct split values",
+        "Monitor that invoices do not exceed PO values"
+      ],
+      "frequency": "Per project",
+      "systems_used": ["Excel Spreadsheets", "BuilderTrend"],
+      "critical_decisions": [
+        "Correct payment split application per contractor",
+        "Deduction identification and documentation"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Financial Management & Budgets",
+      "features_used": [
+        "Budget creation per model with 19 cost categories and 206 line items",
+        "Estimate templates linked to models (values frozen on project creation)",
+        "Budget vs projected vs actual cost comparison",
+        "Cost code-based organization matching BuilderTrend structure",
+        "Automatic approval when order value <= estimate; manual approval when exceeded"
+      ],
+      "api_endpoints": [
+        "/budget - GET/POST budget management",
+        "/budget/{project_id} - GET project budget with cost code breakdown",
+        "/budget/{project_id}/variance - GET estimated vs actual comparison",
+        "/purchase-orders - GET/POST purchase order management",
+        "/models - GET/POST model templates with estimates"
+      ]
+    },
+    {
+      "module": "Quotation",
+      "features_used": [
+        "Take-off page for quantity definition per model",
+        "Supply type classification: Stocked, Quoted, By Sub, Non-stock",
+        "Vendor Takeoff feature (Enable Vendor Takeoff flag)",
+        "Service catalog with cost codes mapped to trades",
+        "Price table registration for vendor catalogs"
+      ],
+      "api_endpoints": [
+        "/quotation/take_off - GET/POST takeoff management",
+        "/quotation/take_off/{model_id}/completion - GET completion status",
+        "/quotation/vendors - GET vendor price tables",
+        "/quotation/cost_matrix - GET/POST cost matrix calculations"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-15",
+      "direction": "outbound",
+      "partner_department": "Client Relations",
+      "trigger": "Budget approved by Samuel Torres and ready for client presentation",
+      "data_exchanged": "Approved budget (condensed format for custom homes showing categories not line items), contract pricing, allowance definitions",
+      "impact": "Client Relations uses approved budget to communicate pricing to client. Inaccurate or delayed budget blocks contract signing."
+    },
+    {
+      "id": "H-ORC-FIN",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Budget finalized and POs created",
+      "data_exchanged": "PO values as payment reference, budget totals by cost code, MEP payment split schedules (FOCO/ECOWAN)",
+      "impact": "Financeiro uses budget values to verify invoices against POs. Incorrect budget = incorrect payment verification."
+    },
+    {
+      "id": "H-ORC-SCHED",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "Budget finalized with material specifications",
+      "data_exchanged": "Budget as reference for material ordering, vendor selections, quantity approvals",
+      "impact": "Scheduling uses budget to plan material procurement timing and verify order amounts"
+    },
+    {
+      "id": "H-ORC-COMPRAS",
+      "direction": "outbound",
+      "partner_department": "Compras / Purchasing",
+      "trigger": "Budget approved with vendor selections",
+      "data_exchanged": "Approved vendor list, material specifications, quantities, and approved prices",
+      "impact": "Purchasing uses budget as basis for all material purchases"
+    },
+    {
+      "id": "H-ORC-CONTRATOS",
+      "direction": "outbound",
+      "partner_department": "Contratos (Bruna)",
+      "trigger": "Quotations selected and approved",
+      "data_exchanged": "Selected vendor quotations as basis for formal contracts",
+      "impact": "Contracts formalize the pricing negotiated by Budget team"
+    },
+    {
+      "id": "H-ORC-TK",
+      "direction": "inbound",
+      "partner_department": "Takeoff / Escritorio de Projetos",
+      "trigger": "Takeoff quantities completed for model or project",
+      "data_exchanged": "Takeoff PDF with material quantities by category, design book, spec sheet, floor plans",
+      "impact": "Budget cannot be created without takeoff quantities. Currently no automatic notification when takeoff changes."
+    },
+    {
+      "id": "H-ORC-PERM",
+      "direction": "inbound",
+      "partner_department": "Permits",
+      "trigger": "Permit application stage - Full MAP determination",
+      "data_exchanged": "County assignment, Full MAP determination, permit fee schedule",
+      "impact": "County assignment affects budget template selection and fee calculations"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-12",
+      "description": "Rapid material price changes in the US market. Material costs and tariffs change quickly, causing invoices to have different values than POs. This creates cascading problems in Financeiro and requires constant budget revision.",
+      "severity": "high",
+      "current_workaround": "Manual monitoring of price changes; reactive budget updates when invoices arrive with different amounts",
+      "proposed_solution": "Automated price monitoring with threshold alerts (e.g., >5% change triggers budget review notification); vendor price table auto-update from periodic quotes"
+    },
+    {
+      "id": "PP-13",
+      "description": "Manual estimate-to-PO integration in BuilderTrend. Ana Helena spends hours daily manually transferring approved budget estimates into PO entries in BuilderTrend. This is the critical bottleneck in the budget team.",
+      "severity": "high",
+      "current_workaround": "Ana Helena performs manual entry for each PO; cross-references between spreadsheet and BuilderTrend",
+      "proposed_solution": "Automated propagation from approved budget to PO creation in the construction management system"
+    },
+    {
+      "id": "PP-14",
+      "description": "Budget not ready before permit is issued. Budget should ideally be completed before permit issuance to ensure financial viability, but frequently lags behind, allowing construction to start without confirmed budget.",
+      "severity": "high",
+      "current_workaround": "Construction proceeds with preliminary estimates; budget finalized during early construction phases",
+      "proposed_solution": "Budget completion as a gating requirement for permit payment release; dashboard showing budget vs permit status alignment"
+    },
+    {
+      "id": "PP-ORC-04",
+      "description": "Knowledge concentration in Samuel Torres. Final approval authority, R3 estimation methodology, vendor negotiation strategy, and cost-per-sqft benchmarks are concentrated in Samuel's experience with no formal documentation.",
+      "severity": "high",
+      "current_workaround": "All critical decisions routed through Samuel; team cannot proceed without his availability",
+      "proposed_solution": "Document Samuel's decision frameworks, approval criteria, and benchmark data. Create decision support system with historical cost data and approval rules."
+    },
+    {
+      "id": "PP-ORC-05",
+      "description": "POs registered out of order in old BuilderTrend system. POs were cadastered randomly without following cost code sequence, making it difficult to compare against the budget spreadsheet.",
+      "severity": "medium",
+      "current_workaround": "Manual sorting and cross-referencing between systems",
+      "proposed_solution": "Enforce cost code ordering in PO creation; automatic sequencing by cost code"
+    },
+    {
+      "id": "PP-ORC-06",
+      "description": "Duplicated functions: Energy Calculation requested by both Budget and Permits departments, sometimes resulting in dual vendor charges.",
+      "severity": "medium",
+      "current_workaround": "Verbal coordination to avoid duplicate requests",
+      "proposed_solution": "Centralized document request system where one department requests and all consuming departments receive"
+    },
+    {
+      "id": "PP-ORC-07",
+      "description": "Communication with subs is challenging. Many subcontractors have limited technology skills and rely on WhatsApp/phone. Responses come through untrackable channels.",
+      "severity": "medium",
+      "current_workaround": "Email and WhatsApp used interchangeably; Pedro and Ana Helena follow up manually",
+      "proposed_solution": "Vendor portal with simplified interface for quote submission; email fallback with automatic import"
+    },
+    {
+      "id": "PP-ORC-08",
+      "description": "Takeoff changes do not automatically notify budget team. When Gabriela updates a takeoff, the budget team continues working with outdated quantities until manually informed.",
+      "severity": "medium",
+      "current_workaround": "Manual notification via email or verbal communication (often delayed)",
+      "proposed_solution": "Automated notification when takeoff document is updated; change summary highlighting affected budget categories"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Samuel Torres Final Approval Logic",
+      "description": "Samuel Torres holds the institutional knowledge for budget approval decisions. He knows acceptable price ranges for every trade, when vendor quotes are 'incoherent' (red flag), volume discount thresholds for major vendors, and cost-per-sqft benchmarks by project type and county. His approval framework is entirely experience-based with no documented decision criteria.",
+      "holders": ["Samuel Torres"],
+      "risk_if_lost": "Critical - no one else in the company can validate budget reasonableness or negotiate with the same effectiveness"
+    },
+    {
+      "topic": "Cost-Per-Square-Foot Benchmarks",
+      "description": "Historical cost data showing average construction cost per square foot by model type, county, and finishing level. Used for R3 estimates (~$250/sqft baseline). Includes knowledge of which project categories consistently run over or under budget and why.",
+      "holders": ["Samuel Torres", "Felipe Nery"],
+      "risk_if_lost": "High - R3 estimates would lose accuracy; custom home pricing would be unreliable"
+    },
+    {
+      "topic": "Vendor Volume Pricing Tiers",
+      "description": "Knowledge of which vendors offer volume discounts, at what thresholds they trigger, and how to structure orders to maximize savings. Includes understanding of FOCO vs ECOWAN payment terms and their impact on total cost comparison.",
+      "holders": ["Samuel Torres", "Pedro Henrique Cordeiro"],
+      "risk_if_lost": "High - company would lose negotiating leverage and potentially pay higher prices"
+    },
+    {
+      "topic": "MEP Contract Nuances",
+      "description": "Detailed knowledge of FOCO and ECOWAN contract structures, including which deductions are acceptable (e.g., $679.01 for non-provided bathtub), how to verify invoice amounts against PO splits, and historical patterns of change orders from MEP contractors.",
+      "holders": ["Felipe Nery"],
+      "risk_if_lost": "High - incorrect payment splits could lead to overpayment or contractor disputes"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Budget Fundamentals",
+      "topics": [
+        "19 cost code structure and what each category covers",
+        "Spec home budget template usage and replication",
+        "County-specific adjustments (Marion, Citrus, Charlotte)",
+        "Cost matrix components: materials, labor, overhead",
+        "Budget lifecycle: R3 estimate -> full budget -> actual tracking"
+      ],
+      "target_audience": ["new_budget_staff", "project_managers"],
+      "priority": "high",
+      "quiz_coverage": "Cost code identification, template usage, county adjustments, R3 vs actual distinction"
+    },
+    {
+      "module": "Quotation Process",
+      "topics": [
+        "Vendor contact and quote collection (2-3 per service)",
+        "Color-coding system: Yellow, White, Orange, Green, Red",
+        "Quote comparison methodology with unit normalization",
+        "CAS Creed vs CMEX nomenclature mapping",
+        "Samuel Torres approval workflow and escalation criteria",
+        "Volume pricing negotiation basics"
+      ],
+      "target_audience": ["quotation_staff"],
+      "priority": "high",
+      "quiz_coverage": "Color code meanings, quote comparison process, vendor nomenclature, approval workflow"
+    },
+    {
+      "module": "Custom Home Budget Process",
+      "topics": [
+        "Differences from spec home budgets",
+        "R3 estimate creation using cost-per-sqft benchmarks",
+        "Allowance vs fixed value decision framework",
+        "Client-facing condensed budget vs internal detailed budget",
+        "Managing budget revisions during construction",
+        "Change order impact assessment"
+      ],
+      "target_audience": ["budget_staff", "project_managers"],
+      "priority": "medium",
+      "quiz_coverage": "R3 creation, allowance logic, revision workflow, change order process"
+    },
+    {
+      "module": "MEP Payment Splits and Contracts",
+      "topics": [
+        "FOCO payment structure: 40-40-20 across three milestones",
+        "ECOWAN payment structure: 40-30-30 across three milestones",
+        "Full MAP determination from Permits",
+        "Invoice verification against PO splits",
+        "Deduction documentation and application",
+        "MEP control spreadsheet usage"
+      ],
+      "target_audience": ["budget_staff", "financeiro"],
+      "priority": "medium",
+      "quiz_coverage": "Payment split structures, deduction rules, PO verification"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Budget must be approved by Samuel Torres before contract pricing is presented to client",
+      "regulation": "Internal financial control policy",
+      "verification": "Samuel's green approval status documented in quotation spreadsheet before budget release"
+    },
+    {
+      "requirement": "At least 2-3 vendor quotations must be obtained per service for competitive pricing",
+      "regulation": "Internal procurement policy - competitive bidding requirement",
+      "verification": "Quotation spreadsheet shows multiple vendor quotes per service with comparison"
+    },
+    {
+      "requirement": "Budget estimate values frozen when linked to project - price changes only affect future projects",
+      "regulation": "Internal policy - contract integrity",
+      "verification": "Const App enforces value freeze on project creation; changes to base data do not retroactively update"
+    },
+    {
+      "requirement": "MEP payment splits must match contracted terms exactly (FOCO 40-40-20, ECOWAN 40-30-30)",
+      "regulation": "Contractual obligation with MEP subcontractors",
+      "verification": "PO values match contracted split percentages; invoices verified against PO before payment"
+    },
+    {
+      "requirement": "Orders exceeding estimated budget require project manager approval",
+      "regulation": "Internal financial control - exceeded cost approval",
+      "verification": "System flags orders above estimate; PM approval documented before procurement"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Budget accuracy (estimated vs actual)",
+      "target": "< 10% variance for spec homes; < 15% for custom",
+      "measurement": "Final actual cost / initial budget estimate ratio per completed project"
+    },
+    {
+      "metric": "Budget completion before permit",
+      "target": "100% of budgets finalized before permit payment release",
+      "measurement": "Percentage of projects with finalized budget at permit ready-to-issue stage"
+    },
+    {
+      "metric": "Quote turnaround time",
+      "target": "< 5 business days from quote request to all quotes received (orange status)",
+      "measurement": "Days from first vendor contact to all quotes received per service"
+    },
+    {
+      "metric": "Cost approval rate for exceeding costs",
+      "target": "70% approval rate (from CPM metrics)",
+      "measurement": "Approved exceeding cost requests / total exceeding cost requests"
+    },
+    {
+      "metric": "PO-to-invoice variance",
+      "target": "< 5% average variance between PO value and final invoice",
+      "measurement": "Average absolute difference between PO amount and paid invoice amount"
+    },
+    {
+      "metric": "R3 estimate precision",
+      "target": "R3 within 15% of final actual cost for custom homes",
+      "measurement": "Final actual cost / R3 estimate ratio for custom projects"
+    }
+  ]
+}

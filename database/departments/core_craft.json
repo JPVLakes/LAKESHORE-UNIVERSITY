@@ -1,0 +1,571 @@
+{
+  "department": "Core Craft (In-House Services)",
+  "department_id": "core_craft",
+  "category": "Construction",
+  "ai_agent": {
+    "port": 8014,
+    "role": "In-house services coordinator managing 7 service groups (Cut/Grade/Access, Dumpster, Site Prep/Materials, Garden, Cleaning, Garage, Handymen), handling Slack-based dispatch with 22 tags, and coordinating with supervisors and schedulers",
+    "mcp_tools": [
+      "read_service_catalog",
+      "create_service_request",
+      "update_service_request",
+      "assign_service_crew",
+      "read_rework_orders",
+      "create_rework_order",
+      "update_rework_order",
+      "read_daily_logs",
+      "write_daily_logs",
+      "get_service_pricing",
+      "update_service_pricing"
+    ],
+    "workflow_chains": [
+      "service_request_to_crew_dispatch",
+      "cut_grade_to_site_ready",
+      "cleaning_to_final_walkthrough",
+      "rework_to_sub_notification",
+      "dumpster_to_phase_readiness",
+      "handyman_to_punch_completion",
+      "garden_to_final_inspection"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Yuri Melo",
+      "email": "yuri@lakeshoresoftware.inc",
+      "role": "Gestor (Core Craft Manager)"
+    },
+    {
+      "name": "Sales Lopes",
+      "email": "cpm14@lakeshoresoftware.inc",
+      "role": "Coordenacao (Operations Coordinator)"
+    },
+    {
+      "name": "Camila",
+      "email": "camila@lakeshoresoftware.inc",
+      "role": "Administrative Support"
+    },
+    {
+      "name": "Joao Marcos",
+      "email": "jmarcos@lakeshoresoftware.inc",
+      "role": "Handyman (Lead)"
+    },
+    {
+      "name": "Mateus",
+      "email": "mateus@lakeshoresoftware.inc",
+      "role": "Irrigation Specialist"
+    },
+    {
+      "name": "Natanael",
+      "email": "natanael@lakeshoresoftware.inc",
+      "role": "Substitute / Multi-Service"
+    },
+    {
+      "name": "Lavinia",
+      "email": "lavinia@lakeshoresoftware.inc",
+      "role": "Cleaning Crew"
+    },
+    {
+      "name": "Rose",
+      "email": "rose@lakeshoresoftware.inc",
+      "role": "Cleaning Crew"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "7 Service Groups",
+      "description": "Core Craft operates 7 distinct service groups, each with different equipment, skills, and scheduling requirements: (1) Cut/Grade/Access - lot clearing, grading, access road maintenance; (2) Dumpster - placement, removal, and rotation of construction dumpsters; (3) Site Prep/Materials - material staging, scaffold setup, temporary structures; (4) Garden - landscaping, sod, irrigation, final grading; (5) Cleaning - construction cleaning, final cleaning, rough cleaning between phases; (6) Garage - garage door installation, adjustment, and repair; (7) Handymen - punch list items, minor repairs, miscellaneous construction tasks.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Gestor", "Coordenacao"]
+    },
+    {
+      "topic": "Slack-Based Communication with 22 Tags",
+      "description": "Core Craft uses Slack as primary dispatch system with 22 specific tags for different service types and urgency levels. Tags include identifiers for each service group, urgency markers, community identifiers, and status updates. Proper tag usage ensures correct crew routing and priority handling.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Gestor", "Coordenacao", "Administrative Support"]
+    },
+    {
+      "topic": "WhatsApp for Urgencies",
+      "description": "While Slack is the standard communication channel, urgent requests (blocking construction progress or safety concerns) are escalated via WhatsApp for immediate response. Understanding the urgency threshold that warrants WhatsApp escalation vs Slack queue is critical.",
+      "proficiency_level": "basic",
+      "applies_to": ["Gestor", "Coordenacao", "Handyman", "Cleaning Crew"]
+    },
+    {
+      "topic": "Service Interdependencies",
+      "description": "Many Core Craft services are prerequisites for construction activities scheduled by Scheduling department. Cut/Grade must be complete before Stake/Layout. Dumpster must be on site before framing. Cleaning between phases is required before inspections. Garden must be complete before Final Building inspection. Understanding these dependencies is critical for prioritization.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Gestor", "Coordenacao"]
+    },
+    {
+      "topic": "Pricing Heuristics",
+      "description": "Yuri maintains mental pricing models for non-standard services. Standard services have fixed prices in the price table, but many requests involve unique scope (unusual lot shapes, excessive debris, specialty repairs). Yuri estimates pricing based on labor hours, equipment needs, material costs, and complexity factors developed through experience.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Gestor"]
+    },
+    {
+      "topic": "Cut vs Removal Distinction",
+      "description": "A persistent pain point: CUT service (cutting vegetation, trees, or material) does NOT include REMOVAL. Supervisors and schedulers frequently request CUT assuming removal is included, leading to confusion and incomplete site preparation. The two services must be explicitly ordered separately.",
+      "proficiency_level": "basic",
+      "applies_to": ["Gestor", "Coordenacao", "Administrative Support"]
+    },
+    {
+      "topic": "Equipment Management",
+      "description": "Core Craft manages specialized equipment including skid steers, dump trailers, mowers, pressure washers, and hand tools. Equipment availability directly affects service capacity. Maintenance scheduling must not conflict with high-demand periods.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Gestor", "Coordenacao"]
+    },
+    {
+      "topic": "Irrigation System Installation and Repair",
+      "description": "Mateus specializes in irrigation system installation (zones, heads, timers, rain sensors) and repair. Irrigation must be complete before sod installation and before Final Building inspection. Zone layout depends on lot size, landscape plan, and water pressure.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Irrigation Specialist"]
+    },
+    {
+      "topic": "Final Cleaning Standards",
+      "description": "Final cleaning is the last service before homeowner walkthrough and Certificate of Occupancy. Standards include: all construction debris removed, all surfaces cleaned, windows cleaned inside and out, appliances cleaned and verified, HVAC registers cleaned, garage floor swept. Quality must be move-in ready.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Cleaning Crew", "Coordenacao"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Service Request Processing",
+      "steps": [
+        "Review Slack channels for new service requests (22 tag categories)",
+        "Categorize requests by service group and urgency",
+        "Check crew availability and current assignments",
+        "Assign crews to requests based on priority, location, and skill match",
+        "Dispatch crews via Slack confirmation with house address and scope",
+        "Monitor completion updates throughout the day",
+        "Update service status in platform",
+        "Handle urgent WhatsApp escalations immediately"
+      ],
+      "frequency": "daily",
+      "systems_used": ["Slack", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Priority ranking when requests exceed crew capacity",
+        "Whether to reassign a crew from lower-priority task to urgent request",
+        "Whether a request requires CUT only or CUT + REMOVAL (clarification needed)"
+      ]
+    },
+    {
+      "name": "Cut/Grade/Access Operations",
+      "steps": [
+        "Receive lot clearing or grading request",
+        "Assess lot size and vegetation density (may require site visit)",
+        "Determine equipment needs (skid steer, dump trailer, chainsaws)",
+        "Schedule crew with appropriate equipment",
+        "Execute cut and/or grading work",
+        "If removal requested: arrange debris hauling",
+        "Verify grade meets engineering specs if applicable",
+        "Notify Scheduling that lot is ready for next phase"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["Slack", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether lot conditions require additional equipment",
+        "Whether CUT request includes REMOVAL (must clarify - PP-22)",
+        "Whether grading meets engineering specifications"
+      ]
+    },
+    {
+      "name": "Dumpster Management",
+      "steps": [
+        "Track dumpster inventory and locations across all communities",
+        "Process dumpster placement requests for new construction starts",
+        "Schedule dumpster rotation when full",
+        "Coordinate dumpster removal at project completion",
+        "Track dumpster rental costs per house",
+        "Ensure dumpster placement doesn't block construction access"
+      ],
+      "frequency": "daily",
+      "systems_used": ["Slack", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether dumpster is full enough to warrant rotation (cost vs convenience)",
+        "Placement location that doesn't interfere with crane or concrete truck access"
+      ]
+    },
+    {
+      "name": "Cleaning Schedule (Rough and Final)",
+      "steps": [
+        "Receive cleaning request from Scheduling or Supervisao",
+        "Determine cleaning type: rough clean (between phases) or final clean (pre-occupancy)",
+        "Assign cleaning crew (Lavinia, Rose, or substitute)",
+        "Rough clean: remove construction debris, sweep, organize material staging",
+        "Final clean: comprehensive move-in ready cleaning per standards",
+        "Verify cleaning quality before notifying Supervisao",
+        "Report completion for inspection scheduling"
+      ],
+      "frequency": "daily",
+      "systems_used": ["Slack", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether house is clean enough for inspection or needs additional cleaning pass",
+        "Whether cleaning crew needs to return after other trades finish touch-up work"
+      ]
+    },
+    {
+      "name": "Handyman Punch List Execution",
+      "steps": [
+        "Receive punch list from Supervisao or post-walkthrough report",
+        "Review items for skill requirements and material needs",
+        "Assign items to Joao Marcos or qualified crew member",
+        "Procure materials if needed",
+        "Execute punch items",
+        "Photograph completed items",
+        "Report completion to Supervisao for verification",
+        "Track time and materials for costing"
+      ],
+      "frequency": "daily",
+      "systems_used": ["Slack", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether punch item is handyman scope or requires licensed trade (plumber, electrician)",
+        "Whether item is warranty-covered or billable"
+      ]
+    },
+    {
+      "name": "Garden and Landscaping",
+      "steps": [
+        "Receive landscaping request (typically near project completion)",
+        "Review landscape plan for house",
+        "Coordinate irrigation installation (Mateus) before sod",
+        "Schedule sod delivery and installation crew",
+        "Install plants and trees per landscape plan",
+        "Final grading for drainage before sod",
+        "Verify irrigation system coverage and operation",
+        "Notify Supervisao for Final Building inspection readiness"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["Slack", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether irrigation system needs modification for lot-specific conditions",
+        "Whether sod installation should wait for optimal weather conditions",
+        "Whether final grade is adequate for proper drainage"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Service Catalog",
+      "features_used": [
+        "Service type definitions for all 7 groups",
+        "Service request creation and tracking",
+        "Crew assignment and dispatch",
+        "Service completion recording",
+        "Cost tracking per service",
+        "Service history per house"
+      ],
+      "api_endpoints": [
+        "/api/v1/services",
+        "/api/v1/services/{id}",
+        "/api/v1/services/catalog",
+        "/api/v1/services/{id}/assign",
+        "/api/v1/services/{id}/complete",
+        "/api/v1/services/house/{houseId}"
+      ]
+    },
+    {
+      "module": "Rework Management",
+      "features_used": [
+        "Rework order creation",
+        "Root cause categorization",
+        "Sub accountability tracking",
+        "Rework cost tracking",
+        "Rework history and pattern analysis"
+      ],
+      "api_endpoints": [
+        "/api/v1/rework",
+        "/api/v1/rework/{id}",
+        "/api/v1/rework/house/{houseId}",
+        "/api/v1/rework/{id}/status",
+        "/api/v1/rework/sub/{subId}"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-20",
+      "direction": "receives_from",
+      "partner_department": "Scheduling",
+      "trigger": "Service Needed",
+      "data_exchanged": "House ID, service type needed (cut, grade, dumpster, cleaning, etc.), required completion date, any special instructions",
+      "impact": "Core Craft services are prerequisites for many scheduled construction activities. Delay in Core Craft completion delays the entire construction phase."
+    },
+    {
+      "id": "H-21",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Service Completed",
+      "data_exchanged": "Service completion confirmation, house ID, service type, any issues found during service",
+      "impact": "Scheduling cannot advance to dependent activities until Core Craft confirms completion. Late notification causes scheduling gaps."
+    },
+    {
+      "id": "H-22",
+      "direction": "receives_from",
+      "partner_department": "Supervisao",
+      "trigger": "Punch List Items",
+      "data_exchanged": "Punch list with item descriptions, photos, priority levels, and which items are handyman scope",
+      "impact": "Punch list completion is required before final walkthrough and Certificate of Occupancy. Handyman items not completed delay closing."
+    },
+    {
+      "id": "H-23",
+      "direction": "sends_to",
+      "partner_department": "Supervisao",
+      "trigger": "Cleaning Complete",
+      "data_exchanged": "Cleaning completion confirmation, type (rough or final), any areas that could not be cleaned due to ongoing work",
+      "impact": "Supervisao cannot schedule inspection or walkthrough until cleaning is confirmed complete."
+    },
+    {
+      "id": "H-24",
+      "direction": "sends_to",
+      "partner_department": "Financeiro",
+      "trigger": "Service Cost Report",
+      "data_exchanged": "Service type, labor hours, materials used, equipment costs, total cost per house",
+      "impact": "Core Craft costs must be tracked per house for accurate project costing. Undefined values (PP-24) make cost tracking unreliable."
+    },
+    {
+      "id": "H-25",
+      "direction": "receives_from",
+      "partner_department": "Supervisao",
+      "trigger": "Urgent Site Issue",
+      "data_exchanged": "Emergency service request via WhatsApp: fallen tree, flooding, debris blocking access, safety hazard",
+      "impact": "Urgent issues block all construction activity until resolved. Response time directly affects construction schedule."
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-22",
+      "description": "CUT service is frequently requested without specifying REMOVAL. CUT only cuts/clears vegetation or material but does NOT remove it from site. Supervisors and schedulers assume removal is included, leading to lots with cut vegetation piled on site blocking construction.",
+      "severity": "high",
+      "current_workaround": "Yuri or Sales must clarify with requester every time CUT is requested; sometimes crews arrive to find previous CUT debris still on lot from months ago",
+      "proposed_solution": "Service catalog explicitly separates CUT and REMOVAL as two services; CUT request auto-prompts 'Do you also need REMOVAL?'; bundle pricing option for CUT+REMOVAL"
+    },
+    {
+      "id": "PP-23",
+      "description": "Supervisors bypass daily logs and communicate service requests only via WhatsApp, creating no paper trail and making it impossible to track service history or costs per house",
+      "severity": "high",
+      "current_workaround": "Yuri manually creates service records based on WhatsApp conversation threads; some services are never formally recorded",
+      "proposed_solution": "WhatsApp integration that auto-creates service requests from structured messages; or Slack-first policy enforcement with WhatsApp reserved only for true emergencies"
+    },
+    {
+      "id": "PP-24",
+      "description": "Undefined values for non-standard services: many requests fall outside the standard service catalog and have no established pricing, leading to inconsistent billing and cost overruns",
+      "severity": "medium",
+      "current_workaround": "Yuri estimates pricing on the fly based on his experience; estimates are not documented and vary by situation",
+      "proposed_solution": "Pricing formula builder for non-standard services based on labor hours, equipment type, material cost, and complexity multiplier; historical pricing database for reference"
+    },
+    {
+      "id": "PP-25",
+      "description": "No formal daily log compliance from Core Craft crews; work performed is often undocumented, making it difficult to verify what was done, when, and at what cost",
+      "severity": "medium",
+      "current_workaround": "Sales tracks crew activities informally; end-of-day summary via Slack channel that may or may not be complete",
+      "proposed_solution": "Mobile daily log for crews with simple photo-based completion documentation; GPS-based check-in/check-out at job sites; auto-generated daily summary from check-in data"
+    },
+    {
+      "id": "PP-26",
+      "description": "Service interdependencies are not tracked in the system; Core Craft must manually coordinate with Scheduling to understand which services are blocking construction activities",
+      "severity": "medium",
+      "current_workaround": "Yuri and Sales maintain mental model of which services are blocking; sometimes discover too late that a service was needed before a scheduled activity",
+      "proposed_solution": "Integration with Scheduling that auto-flags Core Craft services as prerequisites for construction activities; priority boost when service is on critical path"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Pricing Heuristics for Non-Standard Services",
+      "description": "Yuri has developed mental pricing models over years of experience. He can estimate cost for unusual lot clearing (oversized lots, heavily wooded, wetland adjacent), specialty grading (drainage issues, retaining wall prep), and complex handyman repairs. These estimates consider factors like equipment wear, fuel costs, disposal fees, and crew fatigue that are not in any price table.",
+      "holders": ["Yuri Melo"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Service Interdependencies and Timing",
+      "description": "Yuri and Sales know which services must be sequenced (grading before irrigation, irrigation before sod, rough cleaning before inspection, CUT before grade) and which can be parallelized. They also know the optimal timing for each service relative to construction phase (e.g., dumpster rotation should happen at framing completion, not during framing).",
+      "holders": ["Yuri Melo", "Sales Lopes"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Crew Capability Mapping",
+      "description": "Not all crew members can do all services. Yuri knows the exact capabilities of each person: Joao Marcos can handle electrical punch items but not plumbing; Mateus can do irrigation but also fills in for grading; Natanael is the most versatile substitute but needs supervision for irrigation work. This mapping exists only in Yuri's head.",
+      "holders": ["Yuri Melo"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Equipment Maintenance Patterns",
+      "description": "Yuri tracks equipment maintenance needs mentally. He knows the skid steer needs hydraulic fluid check every 50 hours, the dump trailer axle needs greasing every 2 weeks, and the pressure washer pump fails if run dry for more than 30 seconds. No maintenance log or schedule exists.",
+      "holders": ["Yuri Melo"],
+      "risk_if_lost": "medium"
+    },
+    {
+      "topic": "Community-Specific Requirements",
+      "description": "Different communities have different standards for landscaping, cleaning, and site maintenance. Some HOAs require specific grass types, tree species, or mulch colors. Some communities have restricted access hours for heavy equipment. Sales knows these requirements from experience.",
+      "holders": ["Sales Lopes"],
+      "risk_if_lost": "medium"
+    },
+    {
+      "topic": "Disposal Site Locations and Pricing",
+      "description": "Yuri knows which disposal sites accept which materials (green waste, construction debris, fill dirt), their current pricing, weight limits, and operating hours. He routes disposal runs to minimize cost and travel time. Some disposal sites have informal relationships that provide better rates.",
+      "holders": ["Yuri Melo"],
+      "risk_if_lost": "medium"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "7 Service Groups Overview",
+      "topics": [
+        "Cut/Grade/Access: scope, equipment, safety",
+        "Dumpster: placement rules, rotation triggers, rental tracking",
+        "Site Prep/Materials: staging, scaffold, temporary structures",
+        "Garden: landscaping, irrigation, sod, final grade",
+        "Cleaning: rough cleaning vs final cleaning standards",
+        "Garage: door installation, adjustment, common issues",
+        "Handymen: scope limits, when to escalate to licensed trade"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "high",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Slack Communication Protocol (22 Tags)",
+      "topics": [
+        "Tag naming convention and meaning",
+        "When to use each tag",
+        "Urgency escalation protocol (Slack vs WhatsApp)",
+        "Response time expectations per tag type",
+        "Status update format and frequency"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "CUT vs REMOVAL Clarification",
+      "topics": [
+        "Definition of CUT scope (what it includes and excludes)",
+        "Definition of REMOVAL scope",
+        "How to handle combined requests",
+        "Pricing differences between CUT and REMOVAL",
+        "Common miscommunication scenarios and prevention"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Service Pricing and Cost Tracking",
+      "topics": [
+        "Standard service price table",
+        "Non-standard service estimation methodology",
+        "Cost tracking per house requirements",
+        "Material cost documentation",
+        "Equipment usage cost allocation"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Daily Log Compliance for Crews",
+      "topics": [
+        "Why daily logs matter (cost tracking, legal, quality)",
+        "How to complete a mobile daily log",
+        "Photo documentation requirements",
+        "Time tracking per service per house",
+        "End-of-day reporting procedures"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Equipment Safety and Maintenance",
+      "topics": [
+        "Skid steer operation and safety",
+        "Dump trailer towing safety",
+        "Power tool safety (chainsaws, pressure washers)",
+        "Basic equipment maintenance procedures",
+        "When to report equipment issues vs attempt repair"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "medium",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Service Interdependencies and Construction Phase Awareness",
+      "topics": [
+        "Which Core Craft services are prerequisites for construction activities",
+        "How to read a construction schedule for priority determination",
+        "Critical path awareness for service prioritization",
+        "Coordination with Scheduling and Supervisao departments"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All lot clearing must comply with environmental regulations regarding protected trees and wetland buffers",
+      "regulation": "County",
+      "verification": "Verify lot clearing plan against county environmental overlay map before CUT/GRADE operations; document tree removal with species and diameter"
+    },
+    {
+      "requirement": "Dumpster placement must not obstruct fire lanes, public sidewalks, or utility access",
+      "regulation": "County",
+      "verification": "Verify placement location against site plan showing fire lanes and utility easements; photograph placement for documentation"
+    },
+    {
+      "requirement": "Irrigation system installation must comply with local water authority regulations",
+      "regulation": "County",
+      "verification": "Irrigation plan must include rain sensor (required by Florida statute), proper backflow prevention, and compliance with watering restrictions"
+    },
+    {
+      "requirement": "Construction debris disposal must use approved disposal facilities",
+      "regulation": "County",
+      "verification": "Retain disposal receipts showing facility name, date, material type, and weight/volume for each disposal run"
+    },
+    {
+      "requirement": "Landscaping must meet community HOA requirements and county code for minimum plantings",
+      "regulation": "County",
+      "verification": "Verify landscape plan meets minimum tree, shrub, and ground cover requirements per county code and HOA standards"
+    },
+    {
+      "requirement": "Equipment operators must have appropriate licenses and training",
+      "regulation": "OSHA",
+      "verification": "Maintain training records and certifications for equipment operators; verify currency before assignment"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Service Request to Completion Time",
+      "target": "Standard services: <2 business days; Urgent: same day",
+      "measurement": "Time between service request creation in Slack and completion confirmation, tracked by service group"
+    },
+    {
+      "metric": "Service Blocking Incidents",
+      "target": "0 construction activities delayed due to pending Core Craft service",
+      "measurement": "Count of scheduling delays attributed to incomplete Core Craft services; tracked via Scheduling handoff data"
+    },
+    {
+      "metric": "CUT/REMOVAL Miscommunication Rate",
+      "target": "<5% of CUT requests require follow-up clarification about REMOVAL",
+      "measurement": "Count of CUT requests requiring clarification divided by total CUT requests"
+    },
+    {
+      "metric": "Daily Log Compliance",
+      "target": "100% of services performed have corresponding daily log entries",
+      "measurement": "Services completed vs daily log entries with matching house ID and date"
+    },
+    {
+      "metric": "Crew Utilization Rate",
+      "target": ">80% of available crew hours assigned to revenue-generating work",
+      "measurement": "Assigned service hours divided by total available crew hours per week"
+    },
+    {
+      "metric": "Final Cleaning First-Pass Rate",
+      "target": ">90% of final cleanings accepted without re-clean request",
+      "measurement": "Final cleanings accepted by Supervisao on first pass divided by total final cleanings performed"
+    },
+    {
+      "metric": "Equipment Downtime",
+      "target": "<5% of scheduled equipment hours lost to breakdowns",
+      "measurement": "Hours of equipment downtime due to unplanned maintenance divided by total scheduled equipment hours"
+    }
+  ]
+}

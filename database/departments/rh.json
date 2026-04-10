@@ -1,0 +1,196 @@
+{
+  "department": "Recursos Humanos (HR)",
+  "department_id": "rh",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8018,
+    "role": "Manages PTO accrual and tracking, sick day balances, absence registration, and workforce availability across all departments",
+    "mcp_tools": [
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "pto_accrual_management",
+      "sick_day_tracking",
+      "absence_registration",
+      "balance_reporting"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Dani Campos",
+      "email": "dcampos@lakeshoredevelopmentfl.com",
+      "role": "HR Lead — PTO management, sick day tracking, absence registration, balance calculations"
+    },
+    {
+      "name": "Julia Costa",
+      "email": "jcosta@lakeshoredevelopmentfl.com",
+      "role": "HR Support — assists with tracking, payroll coordination"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "PTO Accrual Rules",
+      "description": "Accrual every 6 months from start date. Red (Leadership): 5 days per cycle = 10 days/year. Full-time (8h): standard allocation. Part-time (6h): 2 days 1st semester, 3 days 2nd semester = 5 days/year. Special contracts may vary (e.g., Camila has 5 sick days). PTOs are NOT cumulative and expire after 1 year.",
+      "proficiency_level": "advanced",
+      "applies_to": ["rh"]
+    },
+    {
+      "topic": "Sick Day Policy",
+      "description": "Red (Leadership): 4 days. Standard employees: 3 days. Not cumulative. Special contracts may override (e.g., Camila: 5 sick days). Reset annually.",
+      "proficiency_level": "advanced",
+      "applies_to": ["rh"]
+    },
+    {
+      "topic": "Absence Registration Workflow",
+      "description": "Department leader marks absence in Google Calendar → Dani receives automatic notification (email + Slack) for future/same-day events → CRITICAL: Calendar does NOT notify for past-date entries → Dani registers in absence spreadsheet → Debits PTO only AFTER the day passes (prevents cancellation issues) → Marks green after debit → If PTO exceeds balance: registers as 'falta' (unexcused absence).",
+      "proficiency_level": "advanced",
+      "applies_to": ["rh"]
+    },
+    {
+      "topic": "Peak Season Rules",
+      "description": "During peak construction season, PTO requires 2 weeks advance notice. Leaders must check employee balance before scheduling (currently no visibility tool for leaders).",
+      "proficiency_level": "intermediate",
+      "applies_to": ["rh", "scheduling"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Absence Monitoring",
+      "steps": [
+        "Check Google Calendar for scheduled absences (today and upcoming)",
+        "Check email and Slack for Calendar notifications",
+        "Manually check for any past-date entries (Calendar doesn't notify)",
+        "Register absences in absence tracking spreadsheet",
+        "For past days: debit PTO from employee balance",
+        "Mark debited entries in green",
+        "If PTO exceeds balance: register as 'falta'"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Google Calendar", "Gmail", "Slack", "PTO Spreadsheet"],
+      "critical_decisions": ["Whether absence is PTO or falta (unexcused)"]
+    },
+    {
+      "name": "PTO Accrual Cycle Management",
+      "steps": [
+        "Calculate next accrual date for each employee (every 6 months from start)",
+        "Apply correct accrual amount based on category (Red/8h/6h/Special)",
+        "Calculate expiration date (1 year from accrual)",
+        "Update PTO balance in tracking spreadsheet",
+        "Notify employee of new PTO availability"
+      ],
+      "frequency": "Per employee every 6 months",
+      "systems_used": ["PTO Spreadsheet"],
+      "critical_decisions": ["Correct category classification", "Handling special contract exceptions"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "User Processes (Const App Admin)",
+      "features_used": [
+        "User-process assignment tracking",
+        "Employee access management"
+      ],
+      "api_endpoints": ["/admin/user_processes"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-rh-all-recv",
+      "direction": "inbound",
+      "partner_department": "All departments",
+      "trigger": "Leader schedules PTO or sick day for team member via Google Calendar",
+      "data_exchanged": "Employee name, absence date(s), absence type",
+      "impact": "Triggers PTO debit or sick day debit"
+    },
+    {
+      "id": "H-rh-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Payroll period",
+      "data_exchanged": "Absence records, falta (unexcused) entries for payroll deduction",
+      "impact": "Payroll accuracy depends on correct absence tracking"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-rh-01",
+      "description": "Leaders schedule PTO without checking employee balance — no visible balance tool for leaders",
+      "severity": "high",
+      "current_workaround": "Dani manually checks balance when PTO request comes in; sometimes catches after the fact",
+      "proposed_solution": "Self-service PTO balance check tool for leaders before scheduling"
+    },
+    {
+      "id": "PP-rh-02",
+      "description": "Google Calendar does NOT notify for past-date entries — leaders sometimes enter absences retroactively with no notification to HR",
+      "severity": "high",
+      "current_workaround": "Dani manually reviews calendar daily for any backdated entries",
+      "proposed_solution": "Automated alert for any Calendar entry with past date"
+    },
+    {
+      "id": "PP-rh-03",
+      "description": "Highly manual process — daily calendar monitoring, manual balance calculations, manual expiration tracking",
+      "severity": "medium",
+      "current_workaround": "Diego's PTO spreadsheet with formulas",
+      "proposed_solution": "HR module in Const App with automated accrual, debit, and balance tracking"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Special Contract Exceptions",
+      "description": "Certain employees have negotiated PTO/sick day amounts different from standard policy (e.g., Camila has 5 sick days). These are tracked in the spreadsheet but the contract terms are only known to Dani.",
+      "holders": ["Dani Campos"],
+      "risk_if_lost": "Incorrect accrual amounts; employee disputes"
+    },
+    {
+      "topic": "Accrual Date Calculation",
+      "description": "Complex calculation based on individual start dates, 6-month cycles, and 1-year expiration windows. Dani maintains this manually across 72+ employees.",
+      "holders": ["Dani Campos"],
+      "risk_if_lost": "Missed accruals or expired PTO not removed from balance"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "PTO and Absence Management",
+      "topics": ["Accrual rules by category", "Sick day allocation", "Expiration policy", "Absence registration process", "Falta classification"],
+      "target_audience": ["HR staff", "Department leaders"],
+      "priority": "high",
+      "quiz_coverage": "Accrual rates, category rules, Calendar notification gaps, debit timing"
+    },
+    {
+      "module": "Leader PTO Guidelines",
+      "topics": ["How to check employee PTO balance", "Advance notice requirements (2 weeks peak season)", "Calendar entry best practices", "No past-date entries rule"],
+      "target_audience": ["All department leaders"],
+      "priority": "medium",
+      "quiz_coverage": "Balance checking, advance notice rules, Calendar usage"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "PTO records maintained for all employees with accurate accrual and debit tracking",
+      "regulation": "Internal HR policy + employment contracts",
+      "verification": "Monthly reconciliation of spreadsheet balances"
+    },
+    {
+      "requirement": "Sick day usage documented and tracked per employee category",
+      "regulation": "Employment contract terms",
+      "verification": "Spreadsheet tracking with category-specific limits"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "PTO tracking accuracy",
+      "target": "100% of absences captured and debited correctly",
+      "measurement": "Monthly audit of Calendar entries vs spreadsheet debits"
+    },
+    {
+      "metric": "Accrual timeliness",
+      "target": "100% of accruals applied within 1 day of cycle date",
+      "measurement": "Accrual date tracking in spreadsheet"
+    },
+    {
+      "metric": "Unexcused absence rate",
+      "target": "<5% of total absences classified as falta",
+      "measurement": "Monthly count of faltas vs total absences"
+    }
+  ]
+}

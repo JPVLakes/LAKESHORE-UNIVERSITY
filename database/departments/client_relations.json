@@ -1,0 +1,276 @@
+{
+  "department": "Client Relations",
+  "department_id": "client_relations",
+  "category": "Client",
+  "ai_agent": {
+    "port": 8012,
+    "role": "Central point of communication between Lakeshore and clients — from first contact (pre-sale) through house delivery. Manages leads, upgrades, cost communication, and portal monitoring.",
+    "mcp_tools": [
+      "create_lead",
+      "get_lead",
+      "list_leads",
+      "update_lead_status",
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "lead_pipeline",
+      "upgrade_processing",
+      "client_hold_communication",
+      "portal_monitoring",
+      "closing_walkthrough"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Juliana Theodoro",
+      "email": "jtheodoro@lakeshoredevelopmentfl.com",
+      "role": "Client Relations Leader — main client contact, HubSpot phone access, upgrade processing, client hold communication"
+    },
+    {
+      "name": "Daniela Thuaslar",
+      "email": "dthuaslar@lakeshoredevelopmentfl.com",
+      "role": "Client Relations — client communication, Daily Log monitoring, portal updates"
+    },
+    {
+      "name": "Vitoria Moura",
+      "email": "vmoura@lakeshoredevelopmentfl.com",
+      "role": "Client Relations — client communication, status tracking, document coordination"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Lead Pipeline Management",
+      "description": "Lead lifecycle: new → contacted → qualified → proposal → negotiation → won/lost. Tracked in HubSpot (still implementing). Each stage has defined actions and SLAs.",
+      "proficiency_level": "advanced",
+      "applies_to": ["client_relations", "coordenador"]
+    },
+    {
+      "topic": "Upgrade Processing",
+      "description": "Client requests upgrade via WhatsApp → formalize by email → route internally for quote → return quote to client → if approved, register in Daily Log fixed card → monitor execution. Common upgrades: paint palette, ceiling fan, washer/dryer, extra cabinet, exterior patio.",
+      "proficiency_level": "advanced",
+      "applies_to": ["client_relations", "orcamento", "scheduling"]
+    },
+    {
+      "topic": "Client Hold Communication",
+      "description": "When costs exceed budget by >$1,000, CR receives notification from Utilities/Permits/other departments, prepares cost breakdown for client, obtains approval or rejection, and notifies Financeiro for processing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["client_relations", "utilities", "financeiro"]
+    },
+    {
+      "topic": "Hold Types and Resolution",
+      "description": "Four hold types: Client Hold (financing/design change), Permit Hold (county approval), Financial Hold (draw/payment), Technical Hold (engineering/inspection). Each has distinct escalation chains.",
+      "proficiency_level": "advanced",
+      "applies_to": ["client_relations", "permits", "financeiro", "supervisao"]
+    },
+    {
+      "topic": "Final Walkthrough Process",
+      "description": "Three options: Waiver (client declines), Private Inspector (third-party signs), Third Party Authorization. Checklist covers 45 items across General, Electric, AC, Plumbing, Doors/Windows, and Landscaping categories.",
+      "proficiency_level": "advanced",
+      "applies_to": ["client_relations", "warranty", "qps"]
+    },
+    {
+      "topic": "Contract Key Clauses",
+      "description": "CO within 1 year of permit+slab. Change orders must be written and signed. 1-year builder warranty from CO. Allowances not used are NOT reimbursed. Dispute resolution: negotiation → mediation → binding arbitration.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["client_relations", "warranty"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Client Communication",
+      "steps": [
+        "Check HubSpot for incoming client messages (WhatsApp, calls, email)",
+        "Identify request type: status update, contract question, upgrade, complaint",
+        "Search Daily Log in BuilderTrend for project status",
+        "If insufficient: check contract spreadsheet or meeting notes",
+        "If still missing: consult Scheduling or field supervisors",
+        "Respond to client via HubSpot",
+        "Process RCRC channel requests from other departments"
+      ],
+      "frequency": "Daily, continuous",
+      "systems_used": ["HubSpot", "Builder Trend", "Contract Spreadsheet", "Slack"],
+      "critical_decisions": ["Prioritizing urgent client concerns vs routine updates"]
+    },
+    {
+      "name": "Upgrade Management",
+      "steps": [
+        "Receive upgrade request from client via WhatsApp",
+        "Request client to formalize via email",
+        "Route internally for quotation to responsible departments",
+        "Receive quotation",
+        "Present to client with pricing",
+        "If approved: register in Daily Log fixed card",
+        "Monitor execution through to completion"
+      ],
+      "frequency": "On demand",
+      "systems_used": ["HubSpot", "Email", "Builder Trend"],
+      "critical_decisions": ["Whether upgrade removes house from production line", "Ensuring sub executes the approved upgrade"]
+    },
+    {
+      "name": "Portal Monitoring",
+      "steps": [
+        "Check BuilderTrend client portal for inconsistencies",
+        "Verify schedule, budget, photos, invoices, documents",
+        "When client questions an inconsistency, explain and seek correction",
+        "Request updates from responsible departments"
+      ],
+      "frequency": "Continuous",
+      "systems_used": ["Builder Trend"],
+      "critical_decisions": ["Whether to proactively fix portal info vs wait for client complaint"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "CRM & Lead Management",
+      "features_used": [
+        "Lead creation and tracking",
+        "Lead status pipeline (new→contacted→qualified→proposal→negotiation→won/lost)",
+        "Lead assignment and follow-up scheduling"
+      ],
+      "api_endpoints": [
+        "/leads/create",
+        "/leads/{id}",
+        "/leads/list",
+        "/leads/{id}/status"
+      ]
+    },
+    {
+      "module": "Client Relations (Const App)",
+      "features_used": [
+        "Exceeding Costs tab — budget threshold events for utility services",
+        "Project/Service/Bucket/Budget/Actual/Variance/PO tracking"
+      ],
+      "api_endpoints": ["/client_relations"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-11",
+      "direction": "inbound",
+      "partner_department": "Utilities",
+      "trigger": "Extra cost identified (extension, nitrogen, well, underground electric >$1K over budget)",
+      "data_exchanged": "Cost details, utility type, house ID, documentation",
+      "impact": "Client must approve before construction can proceed — blocks pipeline"
+    },
+    {
+      "id": "H-15",
+      "direction": "inbound",
+      "partner_department": "Orcamento + Escritorio de Projetos",
+      "trigger": "Custom home budget approved",
+      "data_exchanged": "Approved budget, design specs, contract terms",
+      "impact": "Without budget approval, contract cannot be signed"
+    },
+    {
+      "id": "H-cr-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Client approves extra cost",
+      "data_exchanged": "Approval confirmation, cost amount, payment terms",
+      "impact": "Financeiro processes payment; construction resumes"
+    },
+    {
+      "id": "H-cr-warranty",
+      "direction": "outbound",
+      "partner_department": "Warranty",
+      "trigger": "House delivered to client",
+      "data_exchanged": "Client info, closing date, walkthrough results, punch list",
+      "impact": "Warranty period begins; CR provides lawn cut authorizations for closed houses"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-cr-01",
+      "description": "HubSpot still in implementation phase — only Juliana has phone access (user limitation)",
+      "severity": "high",
+      "current_workaround": "Other team members use WhatsApp and email directly",
+      "proposed_solution": "Expand HubSpot licenses to full team"
+    },
+    {
+      "id": "PP-cr-02",
+      "description": "BuilderTrend client portal is dysfunctional — schedule never worked, budget shows 'price adjustment' that scares clients, items not marked complete after payment",
+      "severity": "high",
+      "current_workaround": "Team constantly explains portal inconsistencies to clients",
+      "proposed_solution": "Custom client portal with accurate real-time data or fix BT portal configuration"
+    },
+    {
+      "id": "PP-cr-03",
+      "description": "Upgrades disappear in the process — sub forgets to execute, nobody confirms completion, fixed card not monitored",
+      "severity": "high",
+      "current_workaround": "Manual follow-up by CR team",
+      "proposed_solution": "Upgrade tracking system with automated reminders and completion verification"
+    },
+    {
+      "id": "PP-cr-04",
+      "description": "Slow information retrieval — must search Daily Logs, spreadsheets, and contact multiple departments to answer a single client question",
+      "severity": "medium",
+      "current_workaround": "Multi-channel search across systems",
+      "proposed_solution": "Unified project status dashboard accessible to CR"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Client Escalation Patterns",
+      "description": "Juliana knows which clients need proactive updates, which prefer minimal contact, and which are high-risk for disputes. This relationship context is not documented.",
+      "holders": ["Juliana Theodoro"],
+      "risk_if_lost": "Client satisfaction drops; disputes increase"
+    },
+    {
+      "topic": "Hold Resolution Shortcuts",
+      "description": "The team knows informal channels to expedite hold resolution — who to call at which department, when to escalate to Samuel Torres vs Leo.",
+      "holders": ["Juliana Theodoro", "Daniela Thuaslar"],
+      "risk_if_lost": "Holds take longer to resolve; client frustration increases"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Client Communication Essentials",
+      "topics": ["HubSpot usage", "Communication templates by situation", "Hold types and resolution paths", "Escalation chains"],
+      "target_audience": ["New CR team members"],
+      "priority": "high",
+      "quiz_coverage": "Hold types, escalation levels, communication channel rules"
+    },
+    {
+      "module": "Upgrade and Cost Management",
+      "topics": ["Upgrade request workflow", "Client hold threshold ($1,000)", "Cost communication templates", "Fixed card registration"],
+      "target_audience": ["CR team"],
+      "priority": "high",
+      "quiz_coverage": "Upgrade flow steps, threshold rules, approval documentation"
+    },
+    {
+      "module": "Contract and Closing Knowledge",
+      "topics": ["Key contract clauses", "Final walkthrough checklist (45 items)", "Walkthrough Decision Form options", "Warranty transition rules"],
+      "target_audience": ["CR team", "Warranty team"],
+      "priority": "medium",
+      "quiz_coverage": "Contract terms, walkthrough options, warranty start date rules"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Change orders must be written documents signed by both parties — oral changes are invalid",
+      "regulation": "Construction Contract Clause 5",
+      "verification": "CR ensures all upgrade approvals are formalized in writing"
+    },
+    {
+      "requirement": "Client must receive written notification of excluded cosmetic items",
+      "regulation": "Final Walkthrough Checklist acknowledgment clause",
+      "verification": "Walkthrough documentation includes exclusion list"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Lead conversion rate",
+      "target": ">25% of qualified leads to won",
+      "measurement": "Monthly pipeline analysis in HubSpot/CRM"
+    },
+    {
+      "metric": "Client response time",
+      "target": "<4 hours for status inquiries",
+      "measurement": "HubSpot response time tracking"
+    },
+    {
+      "metric": "Upgrade completion rate",
+      "target": "100% of approved upgrades executed before closing",
+      "measurement": "Fixed card audit at house closing"
+    }
+  ]
+}

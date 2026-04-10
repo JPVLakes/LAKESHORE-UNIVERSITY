@@ -1,0 +1,243 @@
+{
+  "department": "Compliance Officer",
+  "department_id": "compliance",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8020,
+    "role": "Read-only compliance verification — monitors FBC adherence, county-specific regulations, permit compliance, OSHA safety, and flags non-compliant items with code references",
+    "mcp_tools": [
+      "read_inspections",
+      "get_permits",
+      "get_documents",
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "permit_compliance_check",
+      "inspection_sequence_audit",
+      "safety_monitoring",
+      "document_completeness_check",
+      "permit_expiration_alert"
+    ]
+  },
+  "staff": [],
+  "core_knowledge": [
+    {
+      "topic": "Florida Building Code (FBC 8th Edition, 2023)",
+      "description": "Comprehensive knowledge of FBC requirements for residential construction including wind speed zones, energy code compliance (blower door, duct leakage, HERS), structural requirements, and inspection sequences.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compliance", "inspecao", "supervisao"]
+    },
+    {
+      "topic": "County-Specific Requirements",
+      "description": "Marion County: 130 mph wind, DOH septic approval, well permits. Citrus County: 140 mph wind, FEMA flood zones, environmental review near Withlacoochee. Charlotte County: 150 mph wind (highest), extensive SFHA, enhanced hurricane building code, elevation certificates mandatory.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compliance", "permits", "utilities"]
+    },
+    {
+      "topic": "10-Point Compliance Checklist",
+      "description": "Per-project verification: 1) NOC recorded, 2) Permit issued and active, 3) Builder's Risk insurance active, 4) Inspections passed in sequence, 5) Energy code compliance, 6) Wind mitigation per county, 7) Flood zone compliance, 8) Impact fees paid, 9) Utility connections approved, 10) Final inspection and CO before closing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compliance", "coordenador"]
+    },
+    {
+      "topic": "Permit Expiration Rules",
+      "description": "Permits expire after 180 days without inspection activity per Florida Statute 553.79(14). Compliance must alert when permits approach this threshold.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compliance", "permits", "inspecao"]
+    },
+    {
+      "topic": "Chapter 713 Lien Compliance",
+      "description": "Florida Construction Lien Law — Notice to Owner deadlines, Contractor's Final Affidavit requirements (Fla. Stat. 713.06), and payment chain compliance.",
+      "proficiency_level": "advanced",
+      "applies_to": ["compliance", "financeiro"]
+    },
+    {
+      "topic": "OSHA Safety Requirements",
+      "description": "Construction site safety compliance including fall protection, scaffolding, electrical safety, excavation standards, and personal protective equipment requirements.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["compliance", "supervisao", "qps"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Permit Status Monitoring",
+      "steps": [
+        "Review all active permits for expiration proximity (180-day rule)",
+        "Verify permit is active for every project before construction activity",
+        "Flag permits approaching 30-day expiration window",
+        "Alert responsible department (Permits/Inspecao) for action"
+      ],
+      "frequency": "Weekly",
+      "systems_used": ["Const App", "Builder Trend"],
+      "critical_decisions": ["Whether to flag imminent permit expiration as critical"]
+    },
+    {
+      "name": "Inspection Sequence Audit",
+      "steps": [
+        "Cross-reference inspection results with county requirements",
+        "Verify inspections passed in correct sequence",
+        "Flag any out-of-sequence inspection attempts",
+        "Verify all required inspections completed before CO request"
+      ],
+      "frequency": "Per project milestone",
+      "systems_used": ["Const App Inspections"],
+      "critical_decisions": ["Whether inspection sequence violation blocks next phase"]
+    },
+    {
+      "name": "Daily Log Safety Monitoring",
+      "steps": [
+        "Monitor daily logs for safety violations or code non-compliance mentions",
+        "Flag missing safety documentation (erosion control, PPE)",
+        "Check for OSHA-reportable incidents",
+        "Route violations to Supervisao for correction"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Builder Trend Daily Logs"],
+      "critical_decisions": ["Severity classification of safety findings"]
+    },
+    {
+      "name": "Document Completeness Check",
+      "steps": [
+        "Verify NOC filed before construction begins",
+        "Check Builder's Risk insurance validity",
+        "Verify impact fee payments per county schedule",
+        "Check Florida Product Approval numbers on specified materials",
+        "Verify utility connection approvals"
+      ],
+      "frequency": "Per project at phase transitions",
+      "systems_used": ["Const App", "Builder Trend"],
+      "critical_decisions": ["Whether missing document blocks construction progress"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Inspections (Const App)",
+      "features_used": [
+        "Inspection flow monitoring",
+        "Pre-inspection verification",
+        "Reprobation tracking",
+        "Sequence compliance checking"
+      ],
+      "api_endpoints": ["/inspection/flow", "/inspection/reprobation"]
+    },
+    {
+      "module": "Permitting (Const App)",
+      "features_used": [
+        "Permit status monitoring",
+        "Document verification",
+        "Expiration tracking"
+      ],
+      "api_endpoints": ["/permitting/status", "/permitting/documents"]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-comp-permits",
+      "direction": "outbound",
+      "partner_department": "Permits",
+      "trigger": "Permit approaching expiration or missing documentation identified",
+      "data_exchanged": "Permit ID, days to expiration, missing document list",
+      "impact": "Expired permit = all work must stop until renewed"
+    },
+    {
+      "id": "H-comp-supervisao",
+      "direction": "outbound",
+      "partner_department": "Supervisao",
+      "trigger": "Safety violation or code non-compliance detected in daily logs",
+      "data_exchanged": "Violation description, code reference, required correction",
+      "impact": "Safety violations can result in stop-work orders"
+    },
+    {
+      "id": "H-comp-coordenador",
+      "direction": "outbound",
+      "partner_department": "Coordenador",
+      "trigger": "Compliance violation detected requiring escalation",
+      "data_exchanged": "Violation details, severity, affected project, recommended action",
+      "impact": "Coordenador must immediately re-route for resolution"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-comp-01",
+      "description": "County requirements change frequently and vary significantly between Marion, Citrus, and Charlotte — difficult to maintain current knowledge",
+      "severity": "medium",
+      "current_workaround": "Permits department maintains county contacts for updates",
+      "proposed_solution": "Automated county regulation tracking and alert system"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "County-Specific Inspection Variations",
+      "description": "Each county has different inspection requirements and sequences. Citrus requires Structural Frame + Sheathing inspections that Marion does not. Charlotte has enhanced hurricane requirements. This variation is partially documented but nuances exist.",
+      "holders": [],
+      "risk_if_lost": "Inspection scheduling errors; failed inspections due to wrong sequence"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Florida Building Code Essentials",
+      "topics": ["FBC 8th Edition key requirements", "Wind speed zones by county", "Energy code compliance (blower door, duct leakage)", "Inspection sequences"],
+      "target_audience": ["Compliance staff", "Permits", "Supervisors"],
+      "priority": "high",
+      "quiz_coverage": "Wind speeds per county, permit expiration rules, inspection sequences"
+    },
+    {
+      "module": "County Compliance Variations",
+      "topics": ["Marion County rules", "Citrus County rules (flood zones, waivers)", "Charlotte County rules (hurricane enhanced)", "Impact fee schedules"],
+      "target_audience": ["Compliance staff", "Permits"],
+      "priority": "high",
+      "quiz_coverage": "County-specific requirements, fee schedules, special inspections"
+    },
+    {
+      "module": "OSHA Construction Safety",
+      "topics": ["Fall protection requirements", "Excavation standards", "Electrical safety", "PPE requirements", "Incident reporting"],
+      "target_audience": ["All field staff", "Supervisors"],
+      "priority": "medium",
+      "quiz_coverage": "OSHA standards, incident classification, reporting requirements"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All projects must have active permits before any construction activity",
+      "regulation": "Florida Statute 553.79 — Building permits",
+      "verification": "Permit status check before each phase transition"
+    },
+    {
+      "requirement": "NOC must be recorded before construction begins",
+      "regulation": "Florida Statute 713 — Construction Liens",
+      "verification": "Document presence check in BT/Drive before first activity"
+    },
+    {
+      "requirement": "Builder's Risk insurance must be active throughout construction",
+      "regulation": "Florida insurance requirements for licensed contractors",
+      "verification": "Policy expiration monitoring"
+    },
+    {
+      "requirement": "CO issued before any occupancy or closing",
+      "regulation": "Florida Building Code — Certificate of Occupancy",
+      "verification": "CO document filed after Building Final Inspection passes"
+    },
+    {
+      "requirement": "Wind mitigation features must meet county-specific wind speed requirements",
+      "regulation": "FBC + county wind zone maps",
+      "verification": "Structural plans review and inspection results"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Permit expiration incidents",
+      "target": "0 expired permits",
+      "measurement": "Weekly permit status audit"
+    },
+    {
+      "metric": "Pre-build compliance pass rate",
+      "target": "100% of projects pass 10-point checklist before construction",
+      "measurement": "Checklist completion tracking"
+    },
+    {
+      "metric": "Safety violation rate",
+      "target": "<1 violation per 100 daily logs reviewed",
+      "measurement": "Daily log audit findings"
+    }
+  ]
+}

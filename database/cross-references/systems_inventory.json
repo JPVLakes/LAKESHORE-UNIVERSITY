@@ -1,0 +1,522 @@
+{
+  "version": "1.0.0",
+  "created": "2026-04-10",
+  "description": "Complete inventory of all systems, tools, and platforms used across departments at Lakeshore Development. Includes usage, limitations, integration status, and replacement plans.",
+  "total_systems": 28,
+  "systems": [
+    {
+      "id": "SYS-01",
+      "name": "BuilderTrend",
+      "abbreviation": "BT",
+      "category": "Construction Management Software",
+      "status": "in_replacement",
+      "replacement": "ConstApp (Lakeshore Ruby on Rails app on Hatchbox)",
+      "departments_using": ["orcamento", "compras", "financeiro", "scheduling", "supervisao", "inspecao", "warranty", "escritorio_projetos", "permits", "client_relations", "utilities", "core_craft", "deposito", "land_dev"],
+      "primary_functions": ["Schedule management", "Purchase Orders", "Bills", "Daily Logs", "House templates", "Client portal", "Document storage"],
+      "known_issues": [
+        "Slow and heavy (page reload after each input)",
+        "Information repeated 3x (daily logs + schedule + PO)",
+        "Confusing navigation for basic info (house model requires folder navigation)",
+        "No standardized PO title fields",
+        "Client portal outdated (schedule and budget not reflecting reality)",
+        "Excessive and confusing tags, some duplicated between phases",
+        "Notifications unreliable",
+        "Data extraction extremely difficult (not designed for BI)",
+        "Poor field internet causes data duplication/loss",
+        "Does not support partial draw payments",
+        "Two separate instances (BT1 and BT2)"
+      ],
+      "integration_with": ["QuickBooks (incomplete)"],
+      "url": null,
+      "notes": "Most used system. 14 of 15 operational departments use it."
+    },
+    {
+      "id": "SYS-02",
+      "name": "QuickBooks",
+      "abbreviation": "QB",
+      "category": "Financial ERP",
+      "status": "active_keeping",
+      "replacement": null,
+      "departments_using": ["financeiro"],
+      "primary_functions": ["Financial reporting (DRE, balance, T99)", "Bank reconciliation", "Project classification (CMER + house number)", "Invoice processing"],
+      "known_issues": [
+        "Manual class entry: 86 bills = 2h/day",
+        "Slow system",
+        "Incomplete integration with BuilderTrend",
+        "Manual reconciliation process"
+      ],
+      "integration_with": ["BuilderTrend (incomplete)"],
+      "url": null,
+      "notes": "Will be maintained with improved integration to new ConstApp platform"
+    },
+    {
+      "id": "SYS-03",
+      "name": "Zorro",
+      "abbreviation": null,
+      "category": "Inventory Management",
+      "status": "in_replacement",
+      "replacement": "ConstApp Stock module",
+      "departments_using": ["compras", "core_craft", "deposito"],
+      "primary_functions": ["Material entry/exit tracking (Sales Orders)", "Purchase orders", "Invoice generation (Core Craft)"],
+      "known_issues": [
+        "Does not auto-update prices",
+        "Does not reference purchase lot (cannot trace which purchase a material came from)",
+        "Difficult to track purchase orders",
+        "Zero integration with other tools",
+        "Unconfirmed drafts create uncertainty"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Klauser (warehouse) uses it daily. Zero integration with BT or spreadsheets."
+    },
+    {
+      "id": "SYS-04",
+      "name": "ConstApp (Lakeshore Software)",
+      "abbreviation": "ConstApp",
+      "category": "Custom Construction Management Platform",
+      "status": "in_development",
+      "replacement": null,
+      "departments_using": [],
+      "primary_functions": ["Replace BuilderTrend", "Replace Zorro", "Replace Excel tracking", "Replace ClickUp", "Integrated scheduling, purchasing, inspection, warranty"],
+      "known_issues": [
+        "In development (target: June 2026)",
+        "UI bug (menu disappearing on click)",
+        "Upload limit 20MB (needs 100MB)",
+        "No offline/mobile mode yet",
+        "No QuickBooks integration yet"
+      ],
+      "integration_with": [],
+      "url": "https://6e8kz.hatchboxapp.com",
+      "stack": "Ruby 3.4.5 / Rails on Hatchbox",
+      "modules": 16,
+      "sub_pages": 53,
+      "services": 156,
+      "notes": "Validated with 65+ hours of employee interviews. 16 modules covering Planning, Execution, and Admin."
+    },
+    {
+      "id": "SYS-05",
+      "name": "ClickUp",
+      "abbreviation": null,
+      "category": "Project/Task Management",
+      "status": "in_replacement",
+      "replacement": "ConstApp",
+      "departments_using": ["orcamento", "escritorio_projetos", "utilities", "land_dev", "scheduling"],
+      "primary_functions": ["Activity tracking", "Code/budget/contract progress", "Reminders", "Lead management (Vinicius)"],
+      "known_issues": [
+        "Personal use not standardized across departments",
+        "Not integrated with other systems",
+        "Some staff prefer paper/whiteboard (Giovana)"
+      ],
+      "integration_with": [],
+      "url": "https://clickup.com",
+      "notes": "Usage varies widely by person. Will be absorbed into ConstApp."
+    },
+    {
+      "id": "SYS-06",
+      "name": "HubSpot",
+      "abbreviation": null,
+      "category": "CRM / Customer Service",
+      "status": "in_implementation",
+      "replacement": null,
+      "departments_using": ["client_relations"],
+      "primary_functions": ["Integrated client communication (WhatsApp, phone, email)", "Client relationship management"],
+      "known_issues": [
+        "Only Juliana has phone capability (user license limitation)",
+        "Still being implemented"
+      ],
+      "integration_with": ["WhatsApp"],
+      "url": "https://hubspot.com",
+      "notes": "Recently adopted. Replacing direct WhatsApp/email communication."
+    },
+    {
+      "id": "SYS-07",
+      "name": "BlueBeam",
+      "abbreviation": null,
+      "category": "Engineering / Takeoff",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["Material quantification from PDFs", "Area/volume/quantity takeoff"],
+      "known_issues": [
+        "Paid spreadsheet link function never utilized",
+        "Results compiled manually in Word",
+        "Lakeshore CPUs cannot run it adequately"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by Candida, Gabriela, and Brazil-based team. API integration planned for future."
+    },
+    {
+      "id": "SYS-08",
+      "name": "AutoCAD",
+      "abbreviation": null,
+      "category": "Architecture / Design",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["Architectural design", "Floor plan development"],
+      "known_issues": [
+        "Installation/login problems",
+        "Company CPUs insufficient (employees use personal computers)"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Core design tool for Camila's team."
+    },
+    {
+      "id": "SYS-09",
+      "name": "SketchUp",
+      "abbreviation": null,
+      "category": "3D Modeling",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["3D house modeling"],
+      "known_issues": ["Company CPUs insufficient"],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by all architects except Camila."
+    },
+    {
+      "id": "SYS-10",
+      "name": "Enscape",
+      "abbreviation": null,
+      "category": "3D Rendering",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["3D rendering of architectural projects"],
+      "known_issues": ["Company CPUs insufficient"],
+      "integration_with": ["SketchUp"],
+      "url": null,
+      "notes": "Used by Victoria, Candida, Henrique."
+    },
+    {
+      "id": "SYS-11",
+      "name": "Lumion",
+      "abbreviation": null,
+      "category": "3D Rendering (Alternative)",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["Alternative 3D rendering"],
+      "known_issues": ["Same hardware limitations"],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by Henrique Lima as alternative to Enscape."
+    },
+    {
+      "id": "SYS-12",
+      "name": "Power BI",
+      "abbreviation": "PBI",
+      "category": "Business Intelligence / Dashboards",
+      "status": "active",
+      "replacement": "ConstApp integrated dashboards (partial)",
+      "departments_using": ["supervisao", "scheduling", "qps"],
+      "primary_functions": ["Monitoring dashboards", "Data filtering", "Construction time analysis"],
+      "known_issues": [
+        "Workarounds needed to function",
+        "Dispersed data sources",
+        "Read-only (no annotations)",
+        "Kanban data inconsistency"
+      ],
+      "integration_with": ["PostgreSQL (via Gateway)"],
+      "url": "https://app.powerbi.com",
+      "infrastructure": {
+        "account_type": "Premium (single corporate account)",
+        "gateway": "EC2 Windows instance (power-bi-gateway)",
+        "credentials": "Canva board in #qps-tqm-private Slack channel"
+      },
+      "notes": "Rost and Diego manage dashboards. Gateway hosted on AWS EC2."
+    },
+    {
+      "id": "SYS-13",
+      "name": "Google Drive",
+      "abbreviation": "GDrive",
+      "category": "File Storage",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos", "orcamento"],
+      "primary_functions": ["PDF storage", "Plans", "Contracts", "General documents"],
+      "known_issues": [
+        "Manual organization",
+        "No automatic versioning",
+        "Difficulty finding current version (30,000+ results)",
+        "No cross-department centralization"
+      ],
+      "integration_with": [],
+      "url": "https://drive.google.com",
+      "notes": "Automatic backup planned. No integration with any other system."
+    },
+    {
+      "id": "SYS-14",
+      "name": "Google Calendar",
+      "abbreviation": "GCal",
+      "category": "Calendar / Scheduling",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["rh"],
+      "primary_functions": ["PTO scheduling", "Sick day tracking", "Team availability"],
+      "known_issues": [
+        "Past-date entries don't send notifications",
+        "No integration with HR spreadsheet"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Leaders schedule their team's PTOs. No balance validation."
+    },
+    {
+      "id": "SYS-15",
+      "name": "Slack",
+      "abbreviation": null,
+      "category": "Internal Communication",
+      "status": "active",
+      "replacement": "ConstApp notification hub (partial)",
+      "departments_using": ["scheduling", "inspecao", "financeiro", "utilities", "core_craft", "client_relations", "rh"],
+      "primary_functions": ["Internal communication", "Notification channels (client hold, permit, etc.)", "Slack Bots for automated notifications", "Inspection request channel"],
+      "known_issues": [
+        "Unstable and slow",
+        "Limited field internet prevents proper use",
+        "Team uses WhatsApp instead (lighter, more reliable)",
+        "Did not replace WhatsApp as intended"
+      ],
+      "integration_with": ["AWS Lightsail (Slack bots)"],
+      "url": null,
+      "notes": "Partially replaced by WhatsApp in practice. Bots hosted on AWS Lightsail."
+    },
+    {
+      "id": "SYS-16",
+      "name": "WhatsApp",
+      "abbreviation": "WA",
+      "category": "Communication (External)",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["scheduling", "compras", "core_craft", "warranty", "client_relations", "supervisao", "deposito", "land_dev", "orcamento"],
+      "primary_functions": ["Primary sub communication (90%+ of subs)", "Service requests", "Document sharing", "Service groups (Core Craft has 7)"],
+      "known_issues": [
+        "Not formal, difficult to track",
+        "Communication duplication (WhatsApp + email + Slack)",
+        "Information lost between channels",
+        "Supervisors request directly in groups without Daily Log"
+      ],
+      "integration_with": ["HubSpot (Client Relations)"],
+      "url": null,
+      "notes": "De facto communication standard with subcontractors. Cannot be fully replaced."
+    },
+    {
+      "id": "SYS-17",
+      "name": "Excel / Google Sheets",
+      "abbreviation": null,
+      "category": "Spreadsheets / Productivity",
+      "status": "active",
+      "replacement": "ConstApp (gradual)",
+      "departments_using": ["orcamento", "compras", "financeiro", "scheduling", "supervisao", "inspecao", "warranty", "escritorio_projetos", "permits", "client_relations", "utilities", "core_craft", "deposito", "rh"],
+      "primary_functions": ["Budgets", "Quotations", "Process tracking", "Financial control", "House tracking", "Inspection control", "Utility monitoring"],
+      "known_issues": [
+        "Excessive volume (12+ simultaneous for Compras)",
+        "Similar information in different formats",
+        "No cross-department integration",
+        "Effort duplication",
+        "Each person creates their own version",
+        "Unstructured data, no automation"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by ALL departments. Bernardo's explicit goal is elimination of spreadsheets."
+    },
+    {
+      "id": "SYS-18",
+      "name": "Email (Gmail)",
+      "abbreviation": null,
+      "category": "Formal Communication",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["financeiro", "warranty", "permits", "orcamento", "compras", "utilities", "escritorio_projetos", "inspecao"],
+      "primary_functions": ["Invoice receipt", "Quotation requests", "Formal supplier/client communication", "Contract sending", "Permit document submission"],
+      "known_issues": [
+        "High volume of invoice emails",
+        "Quotations trapped in individual email (no team visibility)",
+        "Manual follow-up on quotations"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Warranty uses email as 100% formal channel. Permits has shared team email."
+    },
+    {
+      "id": "SYS-19",
+      "name": "Brokermint",
+      "abbreviation": null,
+      "category": "Digital Signature Platform",
+      "status": "active_keeping",
+      "replacement": null,
+      "departments_using": ["financeiro"],
+      "primary_functions": ["Digital contract signing"],
+      "known_issues": [],
+      "integration_with": [],
+      "url": null,
+      "notes": "Works well. No issues reported. Used by Bruna Botelho for sub contracts."
+    },
+    {
+      "id": "SYS-20",
+      "name": "Globin",
+      "abbreviation": null,
+      "category": "Takeoff Calculation Software",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["Area, height, depth calculation from plans"],
+      "known_issues": ["Area-to-unit conversion is manual (separate formulas)"],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by Gabriela Medeiros for takeoff calculations."
+    },
+    {
+      "id": "SYS-21",
+      "name": "Photoshop",
+      "abbreviation": null,
+      "category": "Image Editing",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["escritorio_projetos"],
+      "primary_functions": ["Humanized floor plans"],
+      "known_issues": ["Shared license"],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by Gabriela and Candida."
+    },
+    {
+      "id": "SYS-22",
+      "name": "ChatGPT",
+      "abbreviation": null,
+      "category": "Artificial Intelligence",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["ti", "escritorio_projetos"],
+      "primary_functions": ["Takeoff data generation assistance", "User stories (custom GPT 'User Stories Expert')", "Requirements gathering"],
+      "known_issues": ["Risk of user story leakage (visible to entire org on organizational account)"],
+      "integration_with": [],
+      "url": null,
+      "notes": "Used by TI team for development and by Takeoff for data assistance."
+    },
+    {
+      "id": "SYS-23",
+      "name": "County Portals",
+      "abbreviation": null,
+      "category": "Government Portals",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["scheduling", "inspecao", "permits", "utilities"],
+      "primary_functions": ["Lot data lookup", "Inspection scheduling and results", "Permit tracking and review monitoring"],
+      "known_issues": [
+        "Each county has different site with different rules",
+        "No integration possible",
+        "Results not always accurate (Citrus via Slack)",
+        "No API available"
+      ],
+      "counties": [
+        {"name": "Marion", "notes": "No permit expiration warnings; impact fees block Final Electric"},
+        {"name": "Citrus", "notes": "Results via Slack unreliable; waivers and arrows required; longest permit times"},
+        {"name": "Charlotte", "notes": "Standard process"},
+        {"name": "Lake", "notes": "Newer market"},
+        {"name": "Sumter", "notes": "Newer market"}
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "No alternative exists. Playwright used by TI for some automation attempts."
+    },
+    {
+      "id": "SYS-24",
+      "name": "Playwright",
+      "abbreviation": null,
+      "category": "Browser Automation",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["ti"],
+      "primary_functions": ["County portal automation", "Web scraping for inspection results"],
+      "known_issues": [],
+      "integration_with": ["County Portals"],
+      "url": null,
+      "notes": "Used by TI team to automate county portal interactions."
+    },
+    {
+      "id": "SYS-25",
+      "name": "AWS (Amazon Web Services)",
+      "abbreviation": "AWS",
+      "category": "Cloud Platform",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["ti"],
+      "primary_functions": ["Lambda (serverless)", "EventBridge (event routing)", "Step Functions (workflow orchestration)", "Lightsail (Slack bots)", "EC2 Windows (Power BI Gateway)"],
+      "known_issues": [],
+      "integration_with": ["Power BI", "Slack", "PostgreSQL"],
+      "url": "https://aws.amazon.com/console/",
+      "authentication": "MFA required; .pem key for EC2 instances",
+      "notes": "Access via Diego Araujo or Alexandre Lira. Corporate email with MFA."
+    },
+    {
+      "id": "SYS-26",
+      "name": "PostgreSQL",
+      "abbreviation": "PG",
+      "category": "Relational Database",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["ti"],
+      "primary_functions": ["Primary database for ConstApp (Ruby on Rails)"],
+      "known_issues": [],
+      "integration_with": ["ConstApp", "Power BI (via Gateway)"],
+      "url": null,
+      "notes": "Credentials in IT Lakeshore folder and Canva board in #qps-tqm-private."
+    },
+    {
+      "id": "SYS-27",
+      "name": "GitHub",
+      "abbreviation": null,
+      "category": "Code Repository / Version Control",
+      "status": "active",
+      "replacement": null,
+      "departments_using": ["ti"],
+      "primary_functions": ["Source code management for ConstApp"],
+      "known_issues": [],
+      "integration_with": ["Hatchbox (deployment)"],
+      "url": null,
+      "notes": "Access via support@lakeshoredevelopmentfl.com invitation."
+    },
+    {
+      "id": "SYS-28",
+      "name": "iPad Notes / Post-its / Physical Notebook",
+      "abbreviation": null,
+      "category": "Manual Notes",
+      "status": "active",
+      "replacement": "ConstApp mobile app (planned)",
+      "departments_using": ["deposito", "supervisao", "scheduling"],
+      "primary_functions": ["Quick field information recording", "Material receiving notes", "Ad-hoc task tracking"],
+      "known_issues": [
+        "Not integrated with any system",
+        "Improvised personal controls",
+        "Dependent on individual initiative"
+      ],
+      "integration_with": [],
+      "url": null,
+      "notes": "Klauser (warehouse) uses iPad Notes. Thercyo uses physical notebook. Giovana uses whiteboard/paper."
+    }
+  ],
+  "integration_gaps": [
+    {"from": "BuilderTrend", "to": "QuickBooks", "status": "incomplete", "impact": "2h/day manual classification"},
+    {"from": "Zorro", "to": "BuilderTrend", "status": "none", "impact": "Manual data duplication"},
+    {"from": "Zorro", "to": "Excel", "status": "none", "impact": "iPad Notes copied to spreadsheets"},
+    {"from": "BlueBeam", "to": "Excel", "status": "none", "impact": "Manual compilation in Word"},
+    {"from": "Slack", "to": "BuilderTrend", "status": "partial", "impact": "Bots partially configured"},
+    {"from": "Google Drive", "to": "Any system", "status": "none", "impact": "Manual file upload"},
+    {"from": "County Portals", "to": "Any system", "status": "none", "impact": "Manual daily checks"}
+  ],
+  "hardware_issues": {
+    "description": "Company CPUs cannot adequately run AutoCAD, SketchUp, Enscape, BlueBeam",
+    "workaround": "Candida and Gabriela use personal computers",
+    "minimum_specs": {
+      "processor": "Intel i5 (or equivalent) at 3 GHz",
+      "ram": "12 GB minimum",
+      "storage": "SSD required"
+    },
+    "field_internet": "Poor field internet prevents effective use of Slack and BuilderTrend"
+  }
+}

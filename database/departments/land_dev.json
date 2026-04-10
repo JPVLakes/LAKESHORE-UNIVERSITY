@@ -1,0 +1,175 @@
+{
+  "department": "Land Development",
+  "department_id": "land_dev",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8016,
+    "role": "Manages land acquisition, civil engineering, underground infrastructure (civil, sewer, drainage, water, roads), and handoff to vertical construction",
+    "mcp_tools": [
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "land_evaluation",
+      "engineering_studies",
+      "permit_acquisition",
+      "site_work_execution",
+      "building_handoff"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Vinicius Sobrinho",
+      "email": "vsobrinho@lakeshoredevelopmentfl.com",
+      "role": "Land Development Manager — manages entire process from lead capture through infrastructure completion and handoff to building team"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Land Evaluation and Acquisition",
+      "description": "Capture leads (with or without land), evaluate what can be built on a parcel, assess infrastructure feasibility. Many leads, few active projects. Uses ClickUp for lead management.",
+      "proficiency_level": "advanced",
+      "applies_to": ["land_dev", "client_relations"]
+    },
+    {
+      "topic": "Civil Engineering and Studies",
+      "description": "Commission soil studies, topography surveys, and civil engineering projects for underground infrastructure. Separate from architectural design of houses.",
+      "proficiency_level": "advanced",
+      "applies_to": ["land_dev"]
+    },
+    {
+      "topic": "Underground Infrastructure (Site Work)",
+      "description": "All underground systems: civil works, sewer, drainage, water, and roads. Land Dev handles everything below grade; Building handles everything above grade (vertical construction).",
+      "proficiency_level": "advanced",
+      "applies_to": ["land_dev", "utilities", "permits"]
+    },
+    {
+      "topic": "Land Development Permits",
+      "description": "Separate permit process from building permits. Requires civil engineering plans, county submission, and approval tracking. BT usage is minimal for land (different pace, usually one sub at a time).",
+      "proficiency_level": "advanced",
+      "applies_to": ["land_dev", "permits"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Lead Management and Evaluation",
+      "steps": [
+        "Review incoming land leads in ClickUp",
+        "Evaluate parcel feasibility (what can be built)",
+        "If client has purchase option: assess construction potential",
+        "If client owns land: deeper investment in analysis",
+        "Update lead status in ClickUp"
+      ],
+      "frequency": "Continuous",
+      "systems_used": ["ClickUp", "WhatsApp"],
+      "critical_decisions": ["Parcel viability assessment", "Investment level for analysis"]
+    },
+    {
+      "name": "Site Work Execution",
+      "steps": [
+        "Source and contract subcontractors for site work",
+        "Coordinate underground infrastructure execution (civil, sewer, drainage, water, roads)",
+        "Monitor progress and quality",
+        "Manage schedule and resolve field issues"
+      ],
+      "frequency": "Per active project",
+      "systems_used": ["Builder Trend", "WhatsApp"],
+      "critical_decisions": ["Sub selection for site work", "Quality acceptance of underground work"]
+    },
+    {
+      "name": "Handoff to Building",
+      "steps": [
+        "Verify all underground infrastructure complete",
+        "Document final status of area",
+        "Formal handoff to Building team for vertical construction"
+      ],
+      "frequency": "Per completed land development project",
+      "systems_used": ["Builder Trend"],
+      "critical_decisions": ["Confirming infrastructure is ready for vertical construction"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Project Management (limited usage)",
+      "features_used": [
+        "Basic project tracking in Builder Trend",
+        "Daily log entries for site work progress"
+      ],
+      "api_endpoints": []
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-14",
+      "direction": "outbound",
+      "partner_department": "Scheduling + Permits",
+      "trigger": "Land development complete, area ready for vertical construction",
+      "data_exchanged": "Infrastructure completion documentation, area readiness confirmation",
+      "impact": "Transition from underground to vertical construction — enables building permits and scheduling"
+    },
+    {
+      "id": "H-land-projetos",
+      "direction": "inbound",
+      "partner_department": "Escritorio de Projetos",
+      "trigger": "Architectural plans that inform infrastructure requirements",
+      "data_exchanged": "Site plans, utility placement needs",
+      "impact": "Infrastructure design must accommodate planned building layout"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-land-01",
+      "description": "Too early to identify specific software needs — department has low volume (few active projects)",
+      "severity": "low",
+      "current_workaround": "Manual management via ClickUp and WhatsApp",
+      "proposed_solution": "Evaluate as volume grows; potentially integrate with Const App"
+    },
+    {
+      "id": "PP-land-02",
+      "description": "BT data extraction for land projects is very difficult (BT not designed for this workflow)",
+      "severity": "medium",
+      "current_workaround": "QPS team (Diego) helps with manual data extraction",
+      "proposed_solution": "Custom land development module in Const App"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Land Evaluation Expertise",
+      "description": "Vinicius knows how to evaluate parcel feasibility — soil conditions, infrastructure accessibility, county zoning rules, and construction potential. This knowledge is not documented.",
+      "holders": ["Vinicius Sobrinho"],
+      "risk_if_lost": "Land acquisition decisions would lack engineering insight"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Land Development Fundamentals",
+      "topics": ["Parcel evaluation criteria", "Soil and topography study interpretation", "Underground infrastructure types", "Permit process for land development"],
+      "target_audience": ["New land dev staff"],
+      "priority": "medium",
+      "quiz_coverage": "Evaluation criteria, infrastructure types, permit flow"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Land development permit must be approved before site work begins",
+      "regulation": "County building/planning department requirements",
+      "verification": "Permit document filed before sub mobilization"
+    },
+    {
+      "requirement": "Environmental review may apply near protected areas (e.g., Withlacoochee State Forest)",
+      "regulation": "County environmental ordinances",
+      "verification": "Environmental clearance obtained where required"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Lead-to-project conversion rate",
+      "target": "Track and improve over time (currently low volume)",
+      "measurement": "ClickUp lead status tracking"
+    },
+    {
+      "metric": "Infrastructure completion timeline",
+      "target": "Per project plan",
+      "measurement": "Builder Trend milestone tracking"
+    }
+  ]
+}

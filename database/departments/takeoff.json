@@ -1,0 +1,421 @@
+{
+  "department": "Take-Off / Levantamento Quantitativo",
+  "department_id": "takeoff",
+  "category": "Projects",
+  "ai_agent": {
+    "port": 8010,
+    "role": "Manages material quantity estimation from architectural plans using BlueBeam, Software Globin, and ChatGPT. Produces detailed takeoff lists that feed Budget and Purchasing departments. Handles spec home templates and custom home unique takeoffs.",
+    "mcp_tools": [
+      "manage_takeoff",
+      "get_takeoff_completion",
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "project_executivo_received -> bluebeam_calibration -> material_quantification -> waste_factor_10pct -> compile_word_list -> save_to_drive -> notify_budget",
+      "vendor_takeoff_enabled -> send_plans_to_vendor -> receive_vendor_quote -> cross_reference_internal -> validate_variance -> approve_or_escalate",
+      "model_change -> identify_affected_categories -> re_quantify -> move_old_to_revision -> replace_with_new -> notify_budget_and_purchasing",
+      "block_takeoff -> globin_analysis -> chatgpt_estimation -> calculate_components -> add_waste_factor -> send_to_budget"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Gabriela Medeiros",
+      "email": "gmedeiros@lakeshoredevelopmentfl.com",
+      "role": "Lead Takeoff Architect - primary responsibility for material quantification using BlueBeam, Software Globin, and ChatGPT. Creates humanized plans. Manages waste factor calculations and vendor takeoff cross-referencing."
+    },
+    {
+      "name": "Candida Tenorio",
+      "email": "",
+      "role": "Architect (Brazil-based) - BlueBeam takeoff specialist, material quantification, works remotely on takeoff tasks"
+    },
+    {
+      "name": "Luana Morais",
+      "email": "lmorais@lakeshoredevelopmentfl.com",
+      "role": "Architect - coordinates sending projects to external engineer, receives project executivo PDFs, manages document flow between Design Office and Takeoff"
+    },
+    {
+      "name": "Henrique Lima",
+      "email": "hlima@lakeshoredevelopmentfl.com",
+      "role": "Architect (Brazil-based) - 3D rendering with Enscape and Lumion, supports takeoff with visual verification"
+    },
+    {
+      "name": "Victoria Vidal",
+      "email": "",
+      "role": "Architect - 3D rendering with Enscape, supports visualization for takeoff accuracy verification"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "BlueBeam Calibration Mandatory",
+      "description": "BlueBeam scale calibration using reference dimensions (cotas) is MANDATORY before any measurement. If calibration uses wrong reference dimension, ALL measurements are proportionally wrong and must be re-done. Calibration error is the most common source of takeoff inaccuracy.",
+      "proficiency_level": "advanced",
+      "applies_to": ["all_takeoffs", "bluebeam"]
+    },
+    {
+      "topic": "10% Waste Factor",
+      "description": "A standard 10% waste factor is added to every material quantity in the takeoff. This accounts for cutting waste, breakage, installation variance, and material defects. Different subs may use slightly different quantities (~10% natural variance is considered acceptable).",
+      "proficiency_level": "intermediate",
+      "applies_to": ["all_materials", "spec_homes", "custom_homes"]
+    },
+    {
+      "topic": "Software Globin + ChatGPT for Blocks",
+      "description": "Software Globin auto-detects certain quantities from construction PDFs (areas, lengths, counts). Gabriela uses ChatGPT as a calculation assistant for unit conversions and complex volume calculations. Results are cross-verified between Globin, BlueBeam, and manual calculations. Never blindly trust software output.",
+      "proficiency_level": "advanced",
+      "applies_to": ["blocks", "concrete", "material_estimation"]
+    },
+    {
+      "topic": "Material Categories for Takeoff",
+      "description": "Complete takeoff covers: concrete (slabs, footers/vergas), CMU/lintel blocks, drywall, flooring/revestimentos, countertops, lighting (pontual), plumbing fixtures, doors and windows (with opening direction), exterior finish (stucco, painting), roofing (with angle calculation for shingle area), trims, brackets (mao francesa). Each category has specific measurement methodology.",
+      "proficiency_level": "advanced",
+      "applies_to": ["all_takeoffs"]
+    },
+    {
+      "topic": "Spec vs Custom Takeoff Differences",
+      "description": "Spec homes: takeoff done once per model, rarely revised, template quantities reused across all houses of that model. Custom homes: every project requires unique takeoff from scratch. Client changes during construction (tile instead of vinyl, different countertop) require partial re-takeoff of affected categories only.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["workflow_management"]
+    },
+    {
+      "topic": "Vendor Takeoff Process",
+      "description": "Some vendors do their own takeoff from plans (foundation materials, precast, trusses). Items are marked 'Enable Vendor Takeoff' in the system. Vendor receives plans, returns total price. Internal team cross-references vendor quantities against internal estimates for reasonableness. Under 10% variance accepted; 10-15% flagged for Budget review; over 15% escalated to Samuel Torres.",
+      "proficiency_level": "advanced",
+      "applies_to": ["vendor_management", "validation"]
+    },
+    {
+      "topic": "CAS Creed vs CMEX Nomenclature",
+      "description": "CAS Creed and CMEX use completely different item naming systems for the same materials. Example: CAS Creed '8x8x16 regular block' = CMEX 'Standard CMU Block 8-inch'. No permanent equivalence table exists. Manual item-by-item mapping required for every price comparison. 15-30% price difference possible between vendors for same material.",
+      "proficiency_level": "advanced",
+      "applies_to": ["vendor_comparison", "blocks", "precast"]
+    },
+    {
+      "topic": "Block Takeoff Components",
+      "description": "Block takeoff includes: regular blocks, lintel blocks, rough blocks, 3/4 blocks, column blocks (blocos de coluna), sand (areia), cement (cimento), freight (frete), environmental fee (taxa ambiental). Each component calculated separately using Globin + ChatGPT estimation.",
+      "proficiency_level": "advanced",
+      "applies_to": ["masonry", "blocks"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "BlueBeam Material Quantification",
+      "steps": [
+        "Receive project executivo PDF from Luana (via engineer)",
+        "Open PDF in BlueBeam",
+        "Calibrate scale using reference dimensions (cotas) - MANDATORY",
+        "Trace areas for concrete slabs, footers, and lintels",
+        "Count and measure CMU/lintel blocks",
+        "Measure drywall wall areas",
+        "Calculate flooring and countertop areas",
+        "Count lighting points, plumbing fixtures",
+        "Count and classify doors and windows (with opening direction)",
+        "Calculate exterior finish areas (stucco, painting)",
+        "Calculate roofing area with angle adjustment for shingles",
+        "Measure trim lengths and bracket quantities",
+        "Compile all results manually into Word document",
+        "Add 10% waste factor to each item",
+        "Save takeoff PDF to Google Drive in project folder"
+      ],
+      "frequency": "Per new model (spec) or per project (custom)",
+      "systems_used": ["BlueBeam", "Microsoft Word", "Google Drive"],
+      "critical_decisions": [
+        "Scale calibration reference selection",
+        "Whether to include non-standard items for custom homes",
+        "Waste factor adjustment for irregular shapes"
+      ]
+    },
+    {
+      "name": "Block and Concrete Estimation (No Vendor Takeoff)",
+      "steps": [
+        "Import construction plans into Software Globin",
+        "Run Globin auto-detection for areas and counts",
+        "Use ChatGPT for volume calculations and unit conversions",
+        "Cross-verify Globin results with BlueBeam measurements",
+        "Calculate all block components: regular, lintel, rough, 3/4, column",
+        "Calculate ancillary materials: sand, cement, freight, environmental fee",
+        "Forward quantities to Budget team for cost calculation (quantity x unit price)"
+      ],
+      "frequency": "Per project/model",
+      "systems_used": ["Software Globin", "ChatGPT", "BlueBeam", "Excel Spreadsheets"],
+      "critical_decisions": [
+        "Globin output verification (never trust blindly)",
+        "Unit conversion accuracy (sqft to sqm, cubic yards to cubic feet)"
+      ]
+    },
+    {
+      "name": "Vendor Takeoff Management",
+      "steps": [
+        "Identify services where vendor does their own takeoff (foundation, precast, trusses)",
+        "Mark item as 'Enable Vendor Takeoff' in takeoff list",
+        "Send project plans to vendor via email",
+        "Receive vendor's price/quantity response",
+        "Cross-reference vendor quantities against internal BlueBeam estimates",
+        "Evaluate variance: <10% accept, 10-15% flag for Budget, >15% escalate to Samuel Torres",
+        "Record final approved quantities"
+      ],
+      "frequency": "Per project/model for applicable services",
+      "systems_used": ["Email", "Excel Spreadsheets", "Google Drive"],
+      "critical_decisions": [
+        "Whether vendor methodology is superior to internal measurement",
+        "Variance threshold escalation decisions"
+      ]
+    },
+    {
+      "name": "Document Version Management",
+      "steps": [
+        "Upload new takeoff documents to project folder in Google Drive",
+        "Move old version to 'revision' subfolder",
+        "Replace active document with new version",
+        "Manually notify Budget team of updated quantities (no automated notification)"
+      ],
+      "frequency": "Ongoing as revisions occur",
+      "systems_used": ["Google Drive"],
+      "critical_decisions": [
+        "Whether change affects only specific categories or entire takeoff",
+        "Whether Budget team needs to revise their estimates"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Quotation & Take-Off Management",
+      "features_used": [
+        "Take-off page (/quotation/take_off) - define service quantities per model",
+        "Model 1774 reference: 19 cost codes, 33 services, 74 components",
+        "Supply type classification: Stocked (27 items), Quoted (6 items), By Sub (10 items)",
+        "Enable Vendor Takeoff - transfer takeoff responsibility to vendor",
+        "Plans tracking: 17/16 plans completed (IN PROGRESS status)"
+      ],
+      "api_endpoints": [
+        "/quotation/take_off - GET/POST takeoff quantities per model",
+        "/quotation/take_off/{model_id}/completion - GET completion percentage",
+        "/quotation/take_off/{model_id}/services - GET service breakdown",
+        "/daily-logs - GET daily log entries"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-04",
+      "direction": "inbound",
+      "partner_department": "Escritorio de Projetos / Permits",
+      "trigger": "Floor Plan Complete - project executivo PDF received from engineer via Luana",
+      "data_exchanged": "Project executivo PDF, floor plan, design book, spec sheet, model type (spec/custom), county",
+      "impact": "Takeoff cannot begin without calibrated project executivo PDF. Floor plan quality directly affects takeoff accuracy."
+    },
+    {
+      "id": "H-TK-BUDGET",
+      "direction": "outbound",
+      "partner_department": "Orcamento / Budget",
+      "trigger": "Takeoff complete - material quantities compiled and saved to Drive",
+      "data_exchanged": "Takeoff PDF with all material quantities by category, waste factor included, supply type classification",
+      "impact": "Budget team cannot create cost estimates without takeoff quantities. Currently NO automatic notification when takeoff is updated."
+    },
+    {
+      "id": "H-TK-COMPRAS",
+      "direction": "outbound",
+      "partner_department": "Compras / Purchasing",
+      "trigger": "Takeoff quantities approved and budget created",
+      "data_exchanged": "Material quantities list for procurement, vendor specifications",
+      "impact": "Purchasing depends on takeoff accuracy for correct order quantities"
+    },
+    {
+      "id": "H-TK-SCHED",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "Material quantities available from blocks phase onward",
+      "data_exchanged": "Material quantities and specifications for scheduling material delivery timing",
+      "impact": "Scheduling uses takeoff quantities to coordinate material delivery with construction phases"
+    },
+    {
+      "id": "H-TK-PERMITS",
+      "direction": "outbound",
+      "partner_department": "Permits",
+      "trigger": "Floor plan and design documents ready",
+      "data_exchanged": "Floor plan documents for permit application submission",
+      "impact": "Permit application requires floor plan documents from the design/takeoff team"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-TK-01",
+      "description": "Company CPUs are too weak to run architecture and takeoff software (BlueBeam, AutoCAD, SketchUp, Enscape). Candida and Gabriela must use personal computers.",
+      "severity": "high",
+      "current_workaround": "Staff use personal computers with adequate GPU; company reimburses or provides allowance",
+      "proposed_solution": "Procure workstation-class laptops with dedicated GPU for all architecture/takeoff staff"
+    },
+    {
+      "id": "PP-TK-02",
+      "description": "Manual BlueBeam-to-Word compilation. All measurement results from BlueBeam must be manually compiled into a Word document. This is slow, error-prone, and the primary bottleneck in the takeoff process.",
+      "severity": "high",
+      "current_workaround": "Gabriela and Candida manually transfer all measurements to Word one by one",
+      "proposed_solution": "Use BlueBeam's paid spreadsheet integration feature (already licensed but never used) or build automated export pipeline from BlueBeam to structured data format"
+    },
+    {
+      "id": "PP-TK-03",
+      "description": "BlueBeam auto-spreadsheet feature never used. The paid feature that links BlueBeam measurements directly to spreadsheets has never been explored or configured.",
+      "severity": "medium",
+      "current_workaround": "Manual compilation continues; feature sits unused",
+      "proposed_solution": "Training session on BlueBeam spreadsheet integration; pilot with one model to validate workflow improvement"
+    },
+    {
+      "id": "PP-TK-04",
+      "description": "Takeoff changes do not automatically notify Budget team. When quantities are updated, Budget continues working with outdated data until manually informed.",
+      "severity": "high",
+      "current_workaround": "Manual notification via email or verbal communication (often delayed or forgotten)",
+      "proposed_solution": "Automated notification system that alerts Budget team when any takeoff document is updated, with change summary showing affected categories"
+    },
+    {
+      "id": "PP-TK-05",
+      "description": "3,500 items to update manually when models change. When a model design changes, there is no template/duplication mechanism to propagate changes across related takeoffs.",
+      "severity": "high",
+      "current_workaround": "Manual item-by-item update of all 3,500+ items across all affected takeoffs",
+      "proposed_solution": "Template-based takeoff system with model inheritance: change a parent model and propagate to all derived takeoffs with delta review"
+    },
+    {
+      "id": "PP-TK-06",
+      "description": "Vendor naming conventions incompatible between CAS Creed and CMEX. No equivalence table exists; manual mapping required for every price comparison.",
+      "severity": "medium",
+      "current_workaround": "Team manually searches CMEX catalog item-by-item to find CAS Creed equivalents",
+      "proposed_solution": "Build and maintain a vendor nomenclature equivalence database with fuzzy matching support"
+    },
+    {
+      "id": "PP-TK-07",
+      "description": "Custom home takeoff volatility. Clients change specifications during construction (tile instead of vinyl, different countertop materials) requiring partial re-takeoff of affected categories.",
+      "severity": "medium",
+      "current_workaround": "Re-quantify only affected categories; old takeoff goes to revision folder",
+      "proposed_solution": "Modular takeoff system where individual categories can be updated independently with automatic downstream notification"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Gabriela's Waste Estimation Methodology",
+      "description": "Gabriela has developed refined waste estimation knowledge beyond the standard 10% factor. For irregular shapes, complex floor plans, and specific materials (e.g., tile with pattern matching), she adjusts waste factors upward. For large uniform areas, she may reduce slightly. This nuanced estimation prevents both material shortages and excessive overordering.",
+      "holders": ["Gabriela Medeiros"],
+      "risk_if_lost": "High - replacement would revert to flat 10% which causes either shortages (complex shapes) or excess inventory (simple shapes)"
+    },
+    {
+      "topic": "Natural Variance in Block Quantities (~10%)",
+      "description": "Different subcontractors mount blocks differently, leading to approximately 10% natural variance in block counts for the same house model. This is considered acceptable by the company. Knowledge of which subs consistently over-request vs under-request helps prevent disputes and material waste.",
+      "holders": ["Gabriela Medeiros", "Felipe Nery"],
+      "risk_if_lost": "Medium - could lead to unnecessary disputes with subs over quantity differences"
+    },
+    {
+      "topic": "Vendor Naming Conventions and Equivalences",
+      "description": "Working knowledge of how CAS Creed item names map to CMEX, Cemex, and other vendor catalogs. No formal equivalence table exists. Includes knowledge of unit differences (per unit vs per pallet vs per cubic yard) that must be normalized before price comparison.",
+      "holders": ["Gabriela Medeiros", "Pedro Henrique Cordeiro"],
+      "risk_if_lost": "High - vendor price comparison would become impossible without this knowledge; risk of overpaying for materials"
+    },
+    {
+      "topic": "BlueBeam Calibration Best Practices",
+      "description": "Knowledge of which reference dimensions to use for calibration per architect and engineer (some architects use different scaling conventions). Includes awareness of common calibration pitfalls and how to detect when calibration is off by checking known dimensions.",
+      "holders": ["Gabriela Medeiros", "Candida Tenorio"],
+      "risk_if_lost": "High - incorrect calibration leads to proportionally wrong measurements across entire takeoff"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "BlueBeam Takeoff Fundamentals",
+      "topics": [
+        "BlueBeam interface and navigation",
+        "Mandatory scale calibration using reference dimensions",
+        "Area measurement for floors, walls, and roofing",
+        "Linear measurement for trim, baseboard, and casings",
+        "Point counting for fixtures, lights, and hardware",
+        "Volume calculation for concrete (slabs, footers, lintels)",
+        "10% waste factor application",
+        "Compiling results into Word document format"
+      ],
+      "target_audience": ["new_takeoff_staff", "architects"],
+      "priority": "high",
+      "quiz_coverage": "Calibration process, measurement types, waste factor, compilation workflow, common errors"
+    },
+    {
+      "module": "AI-Assisted Estimation",
+      "topics": [
+        "Software Globin workflow: import, auto-detect, manual review",
+        "ChatGPT for calculation assistance and unit conversions",
+        "Cross-verification between Globin, BlueBeam, and manual calculations",
+        "Block component calculation: regular, lintel, rough, 3/4, column",
+        "Never trust software output blindly - verification protocol"
+      ],
+      "target_audience": ["takeoff_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Globin import process, ChatGPT prompt best practices, verification methodology"
+    },
+    {
+      "module": "Vendor Takeoff Validation",
+      "topics": [
+        "Enable Vendor Takeoff feature and when to use it",
+        "Cross-referencing vendor quantities against internal estimates",
+        "Variance thresholds: <10% accept, 10-15% flag, >15% escalate",
+        "CAS Creed vs CMEX nomenclature mapping",
+        "Unit normalization for price comparison (each vs pallet vs cubic yard)"
+      ],
+      "target_audience": ["takeoff_staff", "budget_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Vendor takeoff process, variance escalation, nomenclature challenges"
+    },
+    {
+      "module": "Material Timing Dependencies (CPM)",
+      "topics": [
+        "Foundation materials: ordered after UP Inspection, arrive AFTER approval",
+        "Trusses: ETA = Foundation Material ETA + 2 weeks; never Monday delivery",
+        "Blocks: arrive 2 days AFTER slab pouring (cure time)",
+        "Lumber: delivered to back of property (theft risk)",
+        "Trim set: requires Garage Door + Electronic Locker first",
+        "Tile and vinyl: must arrive before labor is scheduled"
+      ],
+      "target_audience": ["takeoff_staff", "scheduling"],
+      "priority": "medium",
+      "quiz_coverage": "Material delivery timing rules, CPM phase dependencies"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "BlueBeam calibration must be verified before any measurement is recorded",
+      "regulation": "Internal quality standard - measurement accuracy requirement",
+      "verification": "Calibration reference dimension documented in takeoff file header"
+    },
+    {
+      "requirement": "Foundation concrete quantities must match exactly between internal takeoff and vendor takeoff (zero tolerance)",
+      "regulation": "Structural safety requirement",
+      "verification": "Both internal and vendor quantities documented and compared; any discrepancy requires engineering review"
+    },
+    {
+      "requirement": "All takeoff documents must be versioned with old versions moved to revision folder",
+      "regulation": "Internal document management policy",
+      "verification": "Revision folder contains superseded versions; active folder contains only current version"
+    },
+    {
+      "requirement": "10% waste factor applied to all material quantities",
+      "regulation": "Internal procurement standard to prevent material shortages",
+      "verification": "Waste factor line item visible in compiled takeoff document for each material category"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Takeoff completion time per model",
+      "target": "< 5 business days for spec home; < 10 for custom",
+      "measurement": "Days from project executivo receipt to takeoff PDF saved in Drive"
+    },
+    {
+      "metric": "Takeoff accuracy (actual vs estimated quantities)",
+      "target": "< 10% variance between takeoff and actual material used",
+      "measurement": "Post-construction comparison of takeoff quantities vs actual PO quantities"
+    },
+    {
+      "metric": "Vendor takeoff variance rate",
+      "target": "< 15% of vendor takeoffs require escalation",
+      "measurement": "Percentage of vendor takeoffs exceeding 15% variance from internal estimate"
+    },
+    {
+      "metric": "Budget notification delay",
+      "target": "< 1 business day from takeoff update to Budget team notification",
+      "measurement": "Time between takeoff document update and Budget team acknowledgement"
+    },
+    {
+      "metric": "Cost code coverage",
+      "target": "All 19 cost codes covered per model takeoff",
+      "measurement": "Number of cost codes with complete material quantities vs total required"
+    }
+  ]
+}

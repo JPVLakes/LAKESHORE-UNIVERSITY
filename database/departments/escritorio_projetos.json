@@ -1,0 +1,452 @@
+{
+  "department": "Escritorio de Projetos (Design Office)",
+  "department_id": "escritorio_projetos",
+  "category": "Projects",
+  "ai_agent": {
+    "port": 8011,
+    "role": "Manages architectural project development, portfolio of 27+ home models, custom home design lifecycle from client contact to contract signing, 3D rendering, document management, and design-to-execution handoff. Coordinates pre-contract tracking and cross-departmental document distribution.",
+    "mcp_tools": [
+      "initialize_project",
+      "get_project",
+      "upload_document",
+      "get_documents",
+      "create_concept",
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "client_contact -> concept_meeting -> design_development -> pre_agreement -> full_design -> engineering -> budget_creation -> client_approval -> contract_signing -> execution_handoff",
+      "strategic_meeting -> new_model_design -> standardize_specs -> budget_template_by_county -> release_for_sale",
+      "project_executivo_received -> save_to_drive -> notify_takeoff -> takeoff_complete -> notify_budget -> budget_review -> camila_review -> approval",
+      "plan_change_identified -> feasibility_check -> update_plans -> version_old_as_superseded -> notify_all_departments",
+      "design_book_assembly -> floor_plans -> elevations -> spec_sheet -> 3d_renderings -> material_selections -> distribute"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Camila Martins",
+      "email": "cmartins@lakeshoredevelopmentfl.com",
+      "role": "Director - overall management of pre-contract process, custom home design development, portfolio strategy, takeoff approval for finishes, client presentations, budget review alignment with design intent"
+    },
+    {
+      "name": "Luana Morais",
+      "email": "lmorais@lakeshoredevelopmentfl.com",
+      "role": "Architect - coordinates sending projects to external engineer, receives project executivo PDFs, manages document flow, takeoff coordination"
+    },
+    {
+      "name": "Gabriela Medeiros",
+      "email": "gmedeiros@lakeshoredevelopmentfl.com",
+      "role": "Architect - material takeoff using BlueBeam, humanized floor plans, cross-functional with Takeoff department"
+    },
+    {
+      "name": "Henrique Lima",
+      "email": "hlima@lakeshoredevelopmentfl.com",
+      "role": "Architect (Brazil-based) - 3D rendering using Enscape and Lumion, visualization for client presentations and marketing"
+    },
+    {
+      "name": "Victoria Vidal",
+      "email": "",
+      "role": "Architect - 3D rendering with Enscape, visualization support"
+    },
+    {
+      "name": "Candida Tenorio",
+      "email": "",
+      "role": "Architect (Brazil-based) - takeoff with BlueBeam, material quantification specialist"
+    },
+    {
+      "name": "Maria Caroline Elizeu",
+      "email": "",
+      "role": "New team member - end-user bridge between architecture and software development, user acceptance testing for Const App"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "27+ Home Models Portfolio",
+      "description": "Lakeshore maintains a portfolio of 27+ standardized home models (spec homes) including Palmer, Dominica, and others. Each model has standardized specifications: door sizes, roof height, flooring, areas, kitchens, cabinets. Models have budget templates that vary by county (Marion, Citrus, Charlotte). A single model can be replicated up to 50 times.",
+      "proficiency_level": "advanced",
+      "applies_to": ["spec_homes", "portfolio_management"]
+    },
+    {
+      "topic": "Custom vs Spec Home Workflow",
+      "description": "Spec homes follow simplified flow: strategic meeting -> design -> standard budget by county -> released for sale. Custom homes require individual design, pre-agreement payment from client, unique budget creation, and extensive client interaction. Custom clients frequently change specifications (finishes, floors, cabinets) making budget a moving target.",
+      "proficiency_level": "advanced",
+      "applies_to": ["workflow_management", "client_management"]
+    },
+    {
+      "topic": "Project Lifecycle Stages",
+      "description": "Full lifecycle: 1) Client Contact, 2) Concept Meeting (Day 1 tracking), 3) Design Development (~1 week to first proposal), 4) Pre-Agreement (financial commitment for full design), 5) Full Design (structural, elevations, 3D), 6) Engineering (external engineer returns PDF), 7) Budget Creation (Samuel/team), 8) Client Approval (condensed budget format), 9) Contract Signing, 10) Execution Handoff to Cris.",
+      "proficiency_level": "advanced",
+      "applies_to": ["custom_homes", "project_management"]
+    },
+    {
+      "topic": "Design Book Assembly",
+      "description": "The design book is a critical output document containing: floor plans, elevations, specification sheets, 3D renderings, material selections. Spec homes have standardized design books per model with variations only for elevations. Custom homes have unique evolving design books. Used by Budget, Permits, Field, and Client Relations.",
+      "proficiency_level": "advanced",
+      "applies_to": ["documentation", "all_departments"]
+    },
+    {
+      "topic": "Allowance vs Fixed Value Logic",
+      "description": "Custom home budgets use allowances (provisao/verba estimada) for items with unknown exact cost, such as finishing materials, lighting, and fixtures. The budget presented to clients shows condensed categories (e.g., 'flooring') rather than individual line items. This creates a gap between client-facing and internal budget views. Allowances are defined by Camila and Felipe before contract signing.",
+      "proficiency_level": "advanced",
+      "applies_to": ["custom_homes", "budget_integration"]
+    },
+    {
+      "topic": "Model 1774 Reference Structure",
+      "description": "Model 1774 (1,774 sqft) is a reference spec home with 19 cost categories, 95 services, and 206 cost line items. Categories span from Contract through Lot Variances. This model serves as a template for understanding the cost structure of all Lakeshore models.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["spec_homes", "budget_reference"]
+    },
+    {
+      "topic": "Revision Impact Assessment",
+      "description": "Client-requested design changes trigger cascading impacts across departments: Takeoff (re-quantify affected items), Budget (revise cost estimates), Scheduling (assess timeline impact), Permits (structural changes may need permit revision), Compras (adjust POs), Field (distribute updated plans). The team must assess feasibility based on construction stage, engineering recalculation needs, and permit implications.",
+      "proficiency_level": "advanced",
+      "applies_to": ["change_management", "cross_departmental"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Custom Home Design Development",
+      "steps": [
+        "Receive client request via Camila, Bernardo, or Juliana",
+        "Schedule concept meeting with client",
+        "Start tracking in ClickUp (Day 1)",
+        "Develop architectural plan in AutoCAD (~1 week to first proposal)",
+        "Present proposal to client",
+        "If approved: present pre-agreement (fee for full design development)",
+        "Full design: structural plans, elevations, 3D renderings (team collaboration)",
+        "Luana sends project to external engineer",
+        "Receive project executivo PDF from engineer",
+        "Route to Budget team (Samuel/Felipe) for takeoff and costing",
+        "Budget returns to Camila for client presentation (condensed format)",
+        "Client approves budget -> request construction contract"
+      ],
+      "frequency": "Per custom client",
+      "systems_used": ["AutoCAD", "SketchUp", "Enscape", "ClickUp", "Google Drive", "Email"],
+      "critical_decisions": [
+        "Design feasibility within budget expectations",
+        "Allowance vs fixed value classification for finishing items",
+        "Whether structural changes require engineering recalculation"
+      ]
+    },
+    {
+      "name": "Spec Home Model Development",
+      "steps": [
+        "Strategic meeting with Camila, Bernardo, Samuel, and Leo",
+        "Develop new model plans in AutoCAD/SketchUp",
+        "Standardize specifications: doors, roof height, floors, areas, kitchens, cabinets",
+        "Send to Budget team for standard budget creation",
+        "Budget template created with county variations (Marion, Citrus, Charlotte)",
+        "Model released for sale after budget finalization"
+      ],
+      "frequency": "Per new model (strategic decision)",
+      "systems_used": ["AutoCAD", "SketchUp", "Excel Spreadsheets", "Google Drive"],
+      "critical_decisions": [
+        "Portfolio strategy: which new models to develop",
+        "Standardization level for cost optimization"
+      ]
+    },
+    {
+      "name": "Document Management and Distribution",
+      "steps": [
+        "Store PDFs in Google Drive 'administration' folder",
+        "Attach documents to Lakeshore standard contract package",
+        "Organize by phase: Pre-contract (survey, client data, property data), Contract (budget, spec sheet, design book, plans, draw schedule)",
+        "Mark superseded versions in Google Drive",
+        "Notify affected parties of document updates (manual process)"
+      ],
+      "frequency": "Continuous",
+      "systems_used": ["Google Drive", "BuilderTrend", "Email"],
+      "critical_decisions": [
+        "Which departments need notification of document changes",
+        "Whether floor plan update affects permits (triggers re-review)"
+      ]
+    },
+    {
+      "name": "3D Rendering and Visualization",
+      "steps": [
+        "Model project in 3D using SketchUp",
+        "Apply materials and lighting in Enscape or Lumion",
+        "Generate final renderings",
+        "Create humanized floor plans (Gabriela/Candida using Photoshop)",
+        "Distribute for client presentation and marketing via Google Drive"
+      ],
+      "frequency": "Per new model or custom project",
+      "systems_used": ["SketchUp", "Enscape", "Lumion", "Photoshop", "Google Drive"],
+      "critical_decisions": [
+        "Material selection accuracy for renderings matching actual specifications"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Project Management",
+      "features_used": [
+        "Portfolio Management (/models) - browse draft and ready models",
+        "Contract Development (/contract_development) - initialize and manage contracts from ready models",
+        "Model 1774 reference: READY status with 95 services and 206 cost line items",
+        "3 contracts tracked: CTR-2026-0001, CTR-2026-0002, CTR-2026-0003"
+      ],
+      "api_endpoints": [
+        "/models - GET list of models, POST create new model",
+        "/models/{id} - GET model details including cost structure",
+        "/contract_development - GET/POST contract management",
+        "/projects - GET/POST project initialization",
+        "/projects/{id} - GET project details"
+      ]
+    },
+    {
+      "module": "Document Management",
+      "features_used": [
+        "Document upload and versioning per project",
+        "Design book organization (floor plans, elevations, spec sheets, renderings)",
+        "Pre-permit and approved document sections",
+        "Cross-department document distribution"
+      ],
+      "api_endpoints": [
+        "/documents - GET/POST document management",
+        "/documents/{id} - GET document details, PUT update",
+        "/projects/{id}/documents - GET project-specific documents"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-04",
+      "direction": "outbound",
+      "partner_department": "Permits / Scheduling / Takeoff / Budget",
+      "trigger": "Floor Plan Complete - design documents finalized and project executivo received from engineer",
+      "data_exchanged": "Floor plan PDF, design book, spec sheet, model type, county assignment, project specifications",
+      "impact": "Critical handoff that triggers four parallel downstream workflows: permit application, takeoff quantification, budget creation, and scheduling preparation. Any delay here blocks the entire construction pipeline."
+    },
+    {
+      "id": "H-EP-BUDGET",
+      "direction": "outbound",
+      "partner_department": "Orcamento / Budget",
+      "trigger": "Design book and takeoff ready for budget creation",
+      "data_exchanged": "Plans, spec sheets, design books, allowance vs fixed value definitions, county-specific requirements",
+      "impact": "Budget cannot be created without design specifications. For custom homes, allowance definitions directly affect contract pricing."
+    },
+    {
+      "id": "H-EP-EXEC",
+      "direction": "outbound",
+      "partner_department": "Execution (Cris)",
+      "trigger": "Contract signed by client",
+      "data_exchanged": "Signed contract + all design documents (design book, spec sheet, floor plan, draw schedule)",
+      "impact": "Construction cannot begin without complete execution handoff package"
+    },
+    {
+      "id": "H-EP-CR",
+      "direction": "outbound",
+      "partner_department": "Client Relations",
+      "trigger": "Project status changes (design stages, budget ready, contract status)",
+      "data_exchanged": "Project status information, design previews, rendering images for client communication",
+      "impact": "Client Relations needs project status for customer communication and expectations management"
+    },
+    {
+      "id": "H-EP-FIELD",
+      "direction": "outbound",
+      "partner_department": "Field / Supervisors",
+      "trigger": "Updated plans during construction (revision)",
+      "data_exchanged": "Updated floor plans, design specifications, change details",
+      "impact": "Field must have current plans to avoid building with outdated specifications"
+    },
+    {
+      "id": "H-EP-ENG",
+      "direction": "bidirectional",
+      "partner_department": "External Engineer",
+      "trigger": "Architecture design complete -> send for engineering; Engineer returns project executivo",
+      "data_exchanged": "Architectural plans (outbound), project executivo PDF (inbound)",
+      "impact": "Engineering turnaround directly affects project timeline; executivo PDF is prerequisite for takeoff"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-EP-01",
+      "description": "No pre-contract tracking system exists. No way to formally track new project leads, design deliveries, client approvals, and cancellations from initial contact to contract signing.",
+      "severity": "high",
+      "current_workaround": "Camila tracks informally via ClickUp and personal notes; no company-wide visibility",
+      "proposed_solution": "Pre-contract pipeline module with stages (Lead, Concept, Pre-Agreement, Design, Budget, Contract) and full visibility for management"
+    },
+    {
+      "id": "PP-EP-02",
+      "description": "Poor change management for design revisions. Revisions during active construction are not well tracked or communicated to field and project managers. Risk of building with outdated plans.",
+      "severity": "high",
+      "current_workaround": "Manual notification via email/Slack; field may not receive updates in time",
+      "proposed_solution": "Automated revision notification system with mandatory acknowledgement from all affected departments before construction can proceed with updated plans"
+    },
+    {
+      "id": "PP-EP-03",
+      "description": "Company CPUs inadequate for architecture software. AutoCAD, SketchUp, Enscape, and Lumion require GPU-intensive machines that company laptops cannot handle.",
+      "severity": "high",
+      "current_workaround": "Gabriela and Candida use personal computers; installation/licensing issues with company devices",
+      "proposed_solution": "Procure workstation-class laptops with dedicated GPUs for all architecture staff; cloud rendering option for Enscape/Lumion"
+    },
+    {
+      "id": "PP-EP-04",
+      "description": "3,500 items to update manually between models. When a model design changes, all affected takeoffs, specifications, and budgets must be updated item by item with no template or duplication mechanism.",
+      "severity": "high",
+      "current_workaround": "Manual update of each item one by one; error-prone and time-consuming",
+      "proposed_solution": "Model inheritance system: parent model with derived variants. Changes to parent propagate automatically to children with delta review and approval."
+    },
+    {
+      "id": "PP-EP-05",
+      "description": "Custom client budget presented condensed (categories not line items) creates gap between client expectations and internal tracking. Allowances add further ambiguity.",
+      "severity": "medium",
+      "current_workaround": "Camila manages expectations verbally; detailed internal budget maintained separately",
+      "proposed_solution": "Dual-view budget system: client-facing condensed view and internal detailed view, automatically synchronized"
+    },
+    {
+      "id": "PP-EP-06",
+      "description": "Architecture team works in isolation with little cross-departmental interaction. Field should participate in design review; scheduling should be aware of design complexity.",
+      "severity": "medium",
+      "current_workaround": "Issues discovered during construction rather than design phase",
+      "proposed_solution": "Design review meetings with field supervisors for complex projects; digital review board for cross-department feedback"
+    },
+    {
+      "id": "PP-EP-07",
+      "description": "Floor plan updates sometimes not received by Permits team. When Camila/Felipe add or update plans, the permits team should receive them automatically but currently does not.",
+      "severity": "medium",
+      "current_workaround": "Manual forwarding of updated documents to Permits; sometimes forgotten",
+      "proposed_solution": "Automated document distribution: when floor plan is updated in project folder, all subscribed departments receive notification and access to new version"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Camila's Design Standards and Patterns",
+      "description": "Camila holds the institutional knowledge of Lakeshore's design standards, including standard door sizes, roof heights, kitchen layouts, cabinet specifications, and finishing level definitions (Level 1-4 for spec homes). She also knows the rationale behind each standard and when exceptions are acceptable.",
+      "holders": ["Camila Martins"],
+      "risk_if_lost": "Critical - design consistency across all models would be lost; no documented standard exists for many specifications"
+    },
+    {
+      "topic": "Allowance vs Fixed Value Classification Logic",
+      "description": "The rules for when to use an allowance (estimated budget provision) vs a fixed value in custom home budgets are undocumented. Camila and Felipe decide based on: how far along the client is in material selection, whether the material category is volatile in price, and historical experience with similar custom projects.",
+      "holders": ["Camila Martins", "Felipe Nery"],
+      "risk_if_lost": "High - incorrect classification leads to either contract disputes (fixed value too low) or client confusion (too many allowances)"
+    },
+    {
+      "topic": "Model Variation Patterns by County",
+      "description": "Same model has variations by county due to different wind speed requirements (120 mph Marion vs 140-150 mph Charlotte), different utility providers, different inspection requirements, and different permit fees. Camila and the team know which specifications change per county and which remain constant.",
+      "holders": ["Camila Martins", "Luana Morais"],
+      "risk_if_lost": "High - models may be built with wrong specifications for the county, creating compliance issues"
+    },
+    {
+      "topic": "Engineering Sub Relationships",
+      "description": "Knowledge of preferred engineers for different project types, their turnaround times, pricing, and common revision requests. Includes understanding of which engineers handle residential vs commercial and which respond faster for urgent projects.",
+      "holders": ["Luana Morais"],
+      "risk_if_lost": "Medium - would need to rebuild relationships and learn new engineers' workflows"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Lakeshore Design Standards",
+      "topics": [
+        "27+ model portfolio overview and design philosophy",
+        "Standard specifications: doors, windows, roof heights, kitchens, cabinets",
+        "Spec home levels (Level 1-4) and their finishing differences",
+        "County-specific design variations (wind speed, materials, utilities)",
+        "Design book assembly and content requirements"
+      ],
+      "target_audience": ["new_architecture_staff", "project_managers"],
+      "priority": "high",
+      "quiz_coverage": "Model identification, specification standards, county variations, design book components"
+    },
+    {
+      "module": "Custom Home Design Process",
+      "topics": [
+        "Client intake and concept meeting best practices",
+        "Pre-agreement process and financial commitment",
+        "Design development workflow: concept to execution handoff",
+        "Allowance vs fixed value decision framework",
+        "Managing client changes during design and construction",
+        "Budget presentation format (condensed vs detailed)"
+      ],
+      "target_audience": ["design_staff", "client_relations"],
+      "priority": "high",
+      "quiz_coverage": "Lifecycle stages, pre-agreement purpose, allowance logic, revision impact assessment"
+    },
+    {
+      "module": "Cross-Department Document Distribution",
+      "topics": [
+        "Which documents go to which departments and when",
+        "H-04 handoff: floor plan triggers for Permits, Takeoff, Budget, Scheduling",
+        "Document versioning and supersede protocol",
+        "Design book components and their downstream consumers",
+        "Revision notification requirements"
+      ],
+      "target_audience": ["all_design_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Document routing rules, versioning protocol, handoff triggers"
+    },
+    {
+      "module": "3D Rendering and Visualization",
+      "topics": [
+        "SketchUp modeling standards for Lakeshore models",
+        "Enscape rendering workflow and settings",
+        "Lumion alternative rendering pipeline",
+        "Humanized floor plan creation with Photoshop",
+        "Material library management for accurate visualizations"
+      ],
+      "target_audience": ["rendering_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Rendering workflow, material accuracy, output formats"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All projects must have a signed pre-agreement before full design development begins for custom homes",
+      "regulation": "Internal policy - financial commitment before design investment",
+      "verification": "Pre-agreement document signed and filed in project folder before design hours are logged"
+    },
+    {
+      "requirement": "Design documents must be versioned with superseded copies clearly marked",
+      "regulation": "Internal document management policy",
+      "verification": "Google Drive folder shows clear versioning; no duplicate active versions exist"
+    },
+    {
+      "requirement": "Floor plan must be sent to Permits before permit application can begin",
+      "regulation": "County building code requirement - architectural plans required for permit",
+      "verification": "Permits team confirms receipt of current floor plan version before submission"
+    },
+    {
+      "requirement": "Structural changes to plans require engineering review before implementation",
+      "regulation": "Florida Building Code - structural modifications must be engineer-approved",
+      "verification": "Updated project executivo PDF from engineer on file before structural change proceeds"
+    },
+    {
+      "requirement": "Wind speed specifications must match county requirements (120 mph Marion, 140-150 mph Charlotte)",
+      "regulation": "Florida Building Code wind speed zones",
+      "verification": "Engineering calculations reference correct wind speed for project county"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Design-to-contract cycle time (custom homes)",
+      "target": "< 8 weeks from concept meeting to contract signing",
+      "measurement": "Days from first client meeting to signed contract date"
+    },
+    {
+      "metric": "Model portfolio size",
+      "target": "Maintain 27+ active models with budget templates",
+      "measurement": "Count of models with READY status and approved budget templates"
+    },
+    {
+      "metric": "Engineering turnaround time",
+      "target": "< 2 weeks from plan submission to project executivo return",
+      "measurement": "Days from Luana sending to engineer to PDF receipt"
+    },
+    {
+      "metric": "Design revision impact",
+      "target": "< 3 business days to assess and communicate revision impact to all departments",
+      "measurement": "Days from revision request to all department notifications sent"
+    },
+    {
+      "metric": "Pre-contract tracking coverage",
+      "target": "100% of custom home leads tracked from contact to contract/cancellation",
+      "measurement": "Percentage of custom leads with complete stage tracking in system"
+    },
+    {
+      "metric": "Document version accuracy",
+      "target": "Zero incidents of outdated documents reaching field",
+      "measurement": "Count of incidents where field received non-current document version"
+    }
+  ]
+}

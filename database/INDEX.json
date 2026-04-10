@@ -1,0 +1,236 @@
+{
+  "version": "1.0.0",
+  "project": "Lakeshore University Knowledge Database",
+  "created": "2026-04-10",
+  "description": "Unified knowledge base for employees and AI agents across 21 departments at Lakeshore Development. Built from 65+ hours of employee interviews across 19 departments, CEO directives, QPS/Drive documentation, and ConstApp platform analysis. Covers organizational structure, workflows, pain points, business rules, and systems inventory.",
+  "company": {
+    "name": "Lakeshore Development",
+    "ceo": "Bernardo Lira",
+    "industry": "Residential Construction",
+    "model": "Cost-plus pricing",
+    "markets": ["Ocala", "Wedgefield", "High-end Custom"],
+    "scale_target": "500 homes simultaneously"
+  },
+  "departments": {
+    "scheduling": {
+      "knowledge": "knowledge/dept_scheduling.md",
+      "database": "database/departments/scheduling.json",
+      "quiz": "quizzes/quiz_scheduling.md",
+      "agent_id": 8003,
+      "staff_count": 7,
+      "leader": "Daniela Santiago"
+    },
+    "financeiro": {
+      "knowledge": "knowledge/dept_financeiro.md",
+      "database": "database/departments/financeiro.json",
+      "quiz": "quizzes/quiz_financeiro.md",
+      "agent_id": 8004,
+      "staff_count": 8,
+      "leader": "Fernanda Franco"
+    },
+    "supervisao": {
+      "knowledge": "knowledge/dept_supervisao.md",
+      "database": "database/departments/supervisao.json",
+      "quiz": "quizzes/quiz_supervisao.md",
+      "agent_id": 8005,
+      "staff_count": 6,
+      "leader": "Samuel Torres (via PMs)"
+    },
+    "inspecao": {
+      "knowledge": "knowledge/dept_inspecao.md",
+      "database": "database/departments/inspecao.json",
+      "quiz": "quizzes/quiz_inspecao.md",
+      "agent_id": 8006,
+      "staff_count": 1,
+      "leader": "Dandara Souza"
+    },
+    "compras": {
+      "knowledge": "knowledge/dept_compras.md",
+      "database": "database/departments/compras.json",
+      "quiz": null,
+      "agent_id": 8007,
+      "staff_count": 4,
+      "leader": "Brenda Amorim"
+    },
+    "orcamento": {
+      "knowledge": "knowledge/dept_orcamento.md",
+      "database": "database/departments/orcamento.json",
+      "quiz": "quizzes/quiz_orcamento.md",
+      "agent_id": 8008,
+      "staff_count": 4,
+      "leader": "Felipe Nery"
+    },
+    "permits": {
+      "knowledge": "knowledge/dept_permits.md",
+      "database": "database/departments/permits.json",
+      "quiz": "quizzes/quiz_permits.md",
+      "agent_id": 8009,
+      "staff_count": 3,
+      "leader": "Cassia Silva"
+    },
+    "warranty": {
+      "knowledge": "knowledge/dept_warranty.md",
+      "database": "database/departments/warranty.json",
+      "quiz": "quizzes/quiz_warranty.md",
+      "agent_id": 8010,
+      "staff_count": 3,
+      "leader": "Taylane Silva"
+    },
+    "client_relations": {
+      "knowledge": "knowledge/dept_client_relations.md",
+      "database": "database/departments/client_relations.json",
+      "quiz": "quizzes/quiz_client_relations.md",
+      "agent_id": 8011,
+      "staff_count": 3,
+      "leader": "Juliana Theodoro"
+    },
+    "utilities": {
+      "knowledge": "knowledge/dept_utilities.md",
+      "database": "database/departments/utilities.json",
+      "quiz": "quizzes/quiz_utilities.md",
+      "agent_id": 8012,
+      "staff_count": 1,
+      "leader": "Dandara Souza"
+    },
+    "escritorio_projetos": {
+      "knowledge": "knowledge/dept_escritorio_projetos.md",
+      "database": "database/departments/escritorio_projetos.json",
+      "quiz": "quizzes/quiz_escritorio_projetos.md",
+      "agent_id": 8013,
+      "staff_count": 8,
+      "leader": "Camila Martins"
+    },
+    "takeoff": {
+      "knowledge": "knowledge/dept_takeoff.md",
+      "database": "database/departments/takeoff.json",
+      "quiz": "quizzes/quiz_takeoff.md",
+      "agent_id": 8014,
+      "staff_count": 3,
+      "leader": "Gabriela Medeiros"
+    },
+    "core_craft": {
+      "knowledge": "knowledge/dept_core_craft.md",
+      "database": "database/departments/core_craft.json",
+      "quiz": "quizzes/quiz_core_craft.md",
+      "agent_id": 8015,
+      "staff_count": 8,
+      "leader": "Yuri Melo"
+    },
+    "deposito": {
+      "knowledge": "knowledge/dept_deposito.md",
+      "database": "database/departments/deposito.json",
+      "quiz": "quizzes/quiz_deposito.md",
+      "agent_id": 8016,
+      "staff_count": 1,
+      "leader": "Klauser Silva"
+    },
+    "land_dev": {
+      "knowledge": "knowledge/dept_land.md",
+      "database": "database/departments/land_dev.json",
+      "quiz": "quizzes/quiz_land_dev.md",
+      "agent_id": 8017,
+      "staff_count": 1,
+      "leader": "Vinicius Sobrinho"
+    },
+    "rh": {
+      "knowledge": "knowledge/dept_rh.md",
+      "database": "database/departments/rh.json",
+      "quiz": "quizzes/quiz_rh.md",
+      "agent_id": 8018,
+      "staff_count": 2,
+      "leader": "Dani Campos"
+    },
+    "ti": {
+      "knowledge": "knowledge/dept_ti.md",
+      "database": "database/departments/ti.json",
+      "quiz": "quizzes/quiz_ti.md",
+      "agent_id": 8019,
+      "staff_count": 4,
+      "leader": "Evandro Macedo"
+    },
+    "qps": {
+      "knowledge": "knowledge/dept_qps.md",
+      "database": "database/departments/qps.json",
+      "quiz": "quizzes/quiz_qps.md",
+      "agent_id": 8022,
+      "staff_count": 4,
+      "leader": "Fortine/Don"
+    },
+    "coordenador": {
+      "knowledge": "knowledge/dept_coordenador.md",
+      "database": "database/departments/coordenador.json",
+      "quiz": "quizzes/quiz_coordenador.md",
+      "agent_id": 8001,
+      "staff_count": 4,
+      "leader": "Samuel Torres"
+    },
+    "compliance": {
+      "knowledge": "knowledge/dept_compliance.md",
+      "database": "database/departments/compliance.json",
+      "quiz": null,
+      "agent_id": 8020,
+      "staff_count": 1,
+      "leader": "Bruna Botelho"
+    },
+    "preacher": {
+      "knowledge": "knowledge/dept_preacher.md",
+      "database": "database/departments/preacher.json",
+      "quiz": "quizzes/quiz_preacher.md",
+      "agent_id": 8021,
+      "staff_count": 0,
+      "leader": "Company Chaplain"
+    }
+  },
+  "cross_references": {
+    "handoffs": "database/cross-references/handoffs.json",
+    "workflow_chains": "database/cross-references/workflow_chains.json",
+    "pain_points": "database/cross-references/pain_points.json",
+    "business_rules": "database/cross-references/business_rules.json",
+    "systems_inventory": "database/cross-references/systems_inventory.json"
+  },
+  "knowledge_base": {
+    "organograma": "knowledge/01_ORGANOGRAMA.md",
+    "inventario_ferramentas": "knowledge/02_INVENTARIO_FERRAMENTAS.md",
+    "glossario": "knowledge/03_GLOSSARIO.md",
+    "mapa_dependencias": "knowledge/04_MAPA_DEPENDENCIAS.md",
+    "fluxo_spec_home": "knowledge/05_FLUXO_SPEC_HOME.md",
+    "fluxo_custom_home": "knowledge/06_FLUXO_CUSTOM_HOME.md",
+    "catalogo_dores": "knowledge/07_CATALOGO_DORES.md",
+    "ceo_directives": "knowledge/shared_ceo_directives.md",
+    "compliance_shared": "knowledge/shared_compliance.md"
+  },
+  "platform": {
+    "current": "BuilderTrend (BT1 + BT2)",
+    "replacement": "ConstApp (Hatchbox)",
+    "constapp_url": "https://6e8kz.hatchboxapp.com",
+    "constapp_stack": "Ruby 3.4.5 / Rails",
+    "constapp_modules": 16,
+    "constapp_services": 156,
+    "constapp_coverage": "65% (42.5% full + 22.6% partial)"
+  },
+  "statistics": {
+    "total_departments": 21,
+    "total_staff": 72,
+    "total_mcp_tools": 61,
+    "total_workflow_chains": 9,
+    "total_handoffs": 15,
+    "total_pain_points": 18,
+    "total_pain_points_full_catalog": 97,
+    "total_platform_modules": 20,
+    "total_systems": 28,
+    "total_interview_hours": 65,
+    "counties": ["Marion", "Citrus", "Charlotte", "Lake", "Sumter"],
+    "cycle_times": {
+      "ocala": "10 months",
+      "wedgefield": "12 months",
+      "high_end": "14 months"
+    }
+  },
+  "ai_agents": {
+    "total": 21,
+    "model": "qwen3:8b (Ollama local)",
+    "framework": "A2A (Agent-to-Agent)",
+    "port_range": "8001-8022",
+    "metaverse_repo": "JPVLakes/METAVERSE-LAKESHORE"
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "created": "2026-04-10",
+  "description": "9 major workflow chains that span multiple departments at Lakeshore Development. Each chain represents an end-to-end business process with defined triggers, steps, and outputs.",
+  "workflow_chains": [
+    {
+      "id": "WF-01",
+      "name": "Lead-to-Contract Pipeline",
+      "trigger": "New client inquiry or investment opportunity",
+      "steps": [
+        {"order": 1, "agent": "client_relations", "action": "create_lead", "output": "lead_id, client_info", "tools": ["HubSpot", "WhatsApp"]},
+        {"order": 2, "agent": "escritorio_projetos", "action": "request_concept_design", "output": "concept_floor_plan, renderings", "tools": ["AutoCAD", "SketchUp", "Enscape"]},
+        {"order": 3, "agent": "client_relations", "action": "present_concept_to_client", "output": "client_feedback, approved_concept", "tools": ["HubSpot", "Email"]},
+        {"order": 4, "agent": "escritorio_projetos", "action": "finalize_floor_plan", "output": "final_floor_plan, spec_sheet, design_book", "tools": ["AutoCAD", "Google Drive"]},
+        {"order": 5, "agent": "takeoff", "action": "perform_takeoff", "output": "material_quantities, cost_codes", "tools": ["BlueBeam", "Globin"]},
+        {"order": 6, "agent": "orcamento", "action": "create_budget", "output": "budget_estimate, cost_breakdown", "tools": ["BuilderTrend", "Excel"]},
+        {"order": 7, "agent": "client_relations", "action": "present_budget_to_client", "output": "client_approval", "tools": ["HubSpot", "Email"]},
+        {"order": 8, "agent": "financeiro", "action": "prepare_contract", "output": "signed_contract", "tools": ["Brokermint", "BuilderTrend"]}
+      ],
+      "employee_equivalent": "New home sales cycle (custom home path)",
+      "estimated_duration": "2-4 weeks (spec) / 4-8 weeks (custom)",
+      "critical_path": true,
+      "handoffs_involved": ["H-04", "H-05", "H-15"],
+      "notes": "Spec homes skip steps 1-3 and 7 (no client involvement until after construction). Custom homes require multiple client feedback cycles."
+    },
+    {
+      "id": "WF-02",
+      "name": "Material Procurement",
+      "trigger": "Takeoff completed and budget approved",
+      "steps": [
+        {"order": 1, "agent": "takeoff", "action": "deliver_material_list", "output": "takeoff_quantities_by_cost_code", "tools": ["BlueBeam", "Excel"]},
+        {"order": 2, "agent": "orcamento", "action": "validate_budget_alignment", "output": "approved_purchase_list", "tools": ["BuilderTrend", "Excel"]},
+        {"order": 3, "agent": "compras", "action": "create_purchase_orders", "output": "purchase_orders, vendor_confirmations", "tools": ["BuilderTrend", "Zorro", "Excel"]},
+        {"order": 4, "agent": "compras", "action": "receive_materials", "output": "receiving_records, stock_updates", "tools": ["Zorro", "iPad Notes"]},
+        {"order": 5, "agent": "deposito", "action": "store_and_track_inventory", "output": "inventory_levels, location_data", "tools": ["Zorro", "Excel"]},
+        {"order": 6, "agent": "deposito", "action": "distribute_to_jobsite", "output": "sales_orders, delivery_confirmation", "tools": ["Zorro", "WhatsApp"]},
+        {"order": 7, "agent": "compras", "action": "reconcile_distribution", "output": "cost_allocation_by_house", "tools": ["Excel", "BuilderTrend"]},
+        {"order": 8, "agent": "financeiro", "action": "process_invoices", "output": "payment_records", "tools": ["BuilderTrend", "QuickBooks"]}
+      ],
+      "employee_equivalent": "Material procurement and warehouse management cycle",
+      "estimated_duration": "Ongoing throughout construction (bulk monthly + as-needed)",
+      "critical_path": true,
+      "handoffs_involved": ["H-05"],
+      "notes": "12+ spreadsheets open simultaneously by Compras. Zorro does not integrate with any other system. Distribution tracking is the weakest link."
+    },
+    {
+      "id": "WF-03",
+      "name": "Construction Phase Execution",
+      "trigger": "Survey received tag placed in Builder Trend + draw released",
+      "steps": [
+        {"order": 1, "agent": "scheduling", "action": "identify_new_house", "output": "house_added_to_schedule", "tools": ["BuilderTrend"]},
+        {"order": 2, "agent": "scheduling", "action": "schedule_phase1_services", "output": "sub_assignments, dates", "tools": ["BuilderTrend", "WhatsApp"]},
+        {"order": 3, "agent": "supervisao", "action": "verify_service_completion", "output": "checklist_done, daily_log", "tools": ["BuilderTrend", "Power BI"]},
+        {"order": 4, "agent": "inspecao", "action": "request_inspection", "output": "inspection_scheduled", "tools": ["County Portals", "Slack"]},
+        {"order": 5, "agent": "inspecao", "action": "report_inspection_result", "output": "pass_fail_hold_status", "tools": ["County Portals", "BuilderTrend"]},
+        {"order": 6, "agent": "scheduling", "action": "advance_to_next_phase", "output": "next_phase_services_scheduled", "tools": ["BuilderTrend", "WhatsApp"]},
+        {"order": 7, "agent": "financeiro", "action": "release_draw_for_next_phase", "output": "draw_released", "tools": ["BuilderTrend", "QuickBooks"]},
+        {"order": 8, "agent": "scheduling", "action": "repeat_for_phases_2_3", "output": "all_phases_complete", "tools": ["BuilderTrend"]}
+      ],
+      "employee_equivalent": "Full construction execution from ground to finish",
+      "estimated_duration": "Ocala: 10 months, Wedgefield: 12 months, High-end: 14 months",
+      "critical_path": true,
+      "handoffs_involved": ["H-01", "H-02", "H-03", "H-08", "H-12"],
+      "notes": "CPM gates enforce Phase 1 -> Phase 2 -> Phase 3 -> Phase 4 sequence. Each phase requires all inspections passed before advancing."
+    },
+    {
+      "id": "WF-04",
+      "name": "Inspection-Rework Cycle",
+      "trigger": "Service completion reported by Scheduling via Slack inspection channel",
+      "steps": [
+        {"order": 1, "agent": "scheduling", "action": "request_inspection", "output": "inspection_request_posted", "tools": ["Slack"]},
+        {"order": 2, "agent": "supervisao", "action": "pre_inspect_quality", "output": "field_verification", "tools": ["BuilderTrend", "Photos"]},
+        {"order": 3, "agent": "inspecao", "action": "schedule_with_county", "output": "inspection_date, inspector_assigned", "tools": ["County Portals"]},
+        {"order": 4, "agent": "inspecao", "action": "send_access_code", "output": "access_granted", "tools": ["SMS"]},
+        {"order": 5, "agent": "inspecao", "action": "receive_result", "output": "pass_or_fail_or_hold", "tools": ["County Portals", "BuilderTrend"]},
+        {"order": 6, "agent": "supervisao", "action": "coordinate_rework_if_failed", "output": "rework_completed", "tools": ["WhatsApp", "BuilderTrend"], "condition": "Only if inspection failed"},
+        {"order": 7, "agent": "financeiro", "action": "pay_reinspection_fee", "output": "fee_paid", "tools": ["QuickBooks"], "condition": "Only if reinspection required"},
+        {"order": 8, "agent": "inspecao", "action": "reschedule_inspection", "output": "reinspection_date", "tools": ["County Portals"], "condition": "Only if failed"}
+      ],
+      "employee_equivalent": "Inspection coordination and rework management",
+      "estimated_duration": "1-3 days per inspection (longer if hold or rework)",
+      "critical_path": true,
+      "handoffs_involved": ["H-08", "H-13"],
+      "notes": "8-12 inspections per house. Frame inspection is the most critical gate (Phase 2). Holds freeze entire house with no automatic notification of removal."
+    },
+    {
+      "id": "WF-05",
+      "name": "Payment Authorization",
+      "trigger": "Monitor/Supervisor marks checklist done in Builder Trend",
+      "steps": [
+        {"order": 1, "agent": "supervisao", "action": "mark_checklist_done", "output": "payment_trigger", "tools": ["BuilderTrend"]},
+        {"order": 2, "agent": "scheduling", "action": "verify_service_in_schedule", "output": "schedule_confirmation", "tools": ["BuilderTrend"]},
+        {"order": 3, "agent": "financeiro", "action": "match_po_to_invoice", "output": "matched_payment_record", "tools": ["BuilderTrend", "QuickBooks"]},
+        {"order": 4, "agent": "financeiro", "action": "classify_in_quickbooks", "output": "class_assigned (CMER + house_number)", "tools": ["QuickBooks"]},
+        {"order": 5, "agent": "financeiro", "action": "submit_for_approval", "output": "approval_request", "tools": ["BuilderTrend"]},
+        {"order": 6, "agent": "coordenador", "action": "approve_payment", "output": "payment_approved", "tools": ["BuilderTrend"], "notes": "Leo's approval required for all payments"},
+        {"order": 7, "agent": "financeiro", "action": "execute_payment", "output": "payment_processed", "tools": ["QuickBooks", "Bank"]},
+        {"order": 8, "agent": "financeiro", "action": "reconcile_accounts", "output": "reconciled_records", "tools": ["QuickBooks"]}
+      ],
+      "employee_equivalent": "Accounts payable cycle for subcontractor payments",
+      "estimated_duration": "24-72 hours from checklist done to payment",
+      "critical_path": false,
+      "handoffs_involved": ["H-01", "H-07"],
+      "notes": "86 bills/day require ~2 hours just for QuickBooks class entry. Invoices without PO (supervisor-authorized repairs) are a major pain point. FOCO split: 40-40-20, ECOWAN split: 40-30-30."
+    },
+    {
+      "id": "WF-06",
+      "name": "Permit Pipeline",
+      "trigger": "First draw received or contract signed",
+      "steps": [
+        {"order": 1, "agent": "permits", "action": "request_survey", "output": "survey_document", "tools": ["Email", "BuilderTrend"]},
+        {"order": 2, "agent": "utilities", "action": "determine_water_sewer_system", "output": "system_type (septic/gravity)", "tools": ["County Portals", "Excel"]},
+        {"order": 3, "agent": "permits", "action": "gather_documents", "output": "energy_calc, floor_plan, trusses, septic_info", "tools": ["Email", "Google Drive"]},
+        {"order": 4, "agent": "financeiro", "action": "pay_permit_fee", "output": "payment_confirmation", "tools": ["QuickBooks"]},
+        {"order": 5, "agent": "permits", "action": "submit_application", "output": "application_submitted, tracking_number", "tools": ["County Portals", "Email"]},
+        {"order": 6, "agent": "permits", "action": "monitor_review_status", "output": "ready_to_issue_status", "tools": ["County Portals"]},
+        {"order": 7, "agent": "permits", "action": "print_stamped_documents", "output": "stamped_document_package", "tools": ["Printer"]},
+        {"order": 8, "agent": "permits", "action": "deliver_to_field", "output": "field_has_approved_docs", "tools": ["Physical delivery"]},
+        {"order": 9, "agent": "permits", "action": "register_builders_risk", "output": "insurance_active", "tools": ["Email", "BuilderTrend"]}
+      ],
+      "employee_equivalent": "Building permit acquisition and document management",
+      "estimated_duration": "4-12 weeks (varies by county; Citrus longest due to waivers)",
+      "critical_path": true,
+      "handoffs_involved": ["H-06", "H-07", "H-10"],
+      "notes": "Permit expires in 180 days. Marion County does NOT send expiration warnings. Each county (Marion, Citrus, Charlotte) has different rules, portals, and processes."
+    },
+    {
+      "id": "WF-07",
+      "name": "Cost Overrun Management",
+      "trigger": "Actual cost exceeds budget estimate (cost-plus model exposure)",
+      "steps": [
+        {"order": 1, "agent": "financeiro", "action": "detect_cost_variance", "output": "variance_report", "tools": ["BuilderTrend", "QuickBooks", "Excel"]},
+        {"order": 2, "agent": "orcamento", "action": "analyze_variance_cause", "output": "root_cause_analysis", "tools": ["Excel", "BuilderTrend"]},
+        {"order": 3, "agent": "client_relations", "action": "notify_client_of_cost_change", "output": "client_notified", "tools": ["HubSpot", "Email"]},
+        {"order": 4, "agent": "client_relations", "action": "obtain_client_approval", "output": "client_authorization", "tools": ["Email", "Brokermint"]},
+        {"order": 5, "agent": "financeiro", "action": "update_budget_records", "output": "adjusted_budget", "tools": ["BuilderTrend", "QuickBooks"]},
+        {"order": 6, "agent": "scheduling", "action": "proceed_with_approved_work", "output": "work_resumed", "tools": ["BuilderTrend", "WhatsApp"]}
+      ],
+      "employee_equivalent": "Change order and cost overrun communication cycle",
+      "estimated_duration": "1-2 weeks (depends on client response time)",
+      "critical_path": false,
+      "handoffs_involved": ["H-11", "H-15"],
+      "notes": "Under Bernardo's cost-plus philosophy, budget is an ESTIMATE, not a cap. Client bears cost variance. This requires rigorous tracking and transparent communication. Common triggers: water/sewer extension, utility client holds, material price changes."
+    },
+    {
+      "id": "WF-08",
+      "name": "Daily Financial Summary",
+      "trigger": "End of business day / scheduled reporting cycle",
+      "steps": [
+        {"order": 1, "agent": "financeiro", "action": "collect_daily_invoices", "output": "invoice_batch", "tools": ["Email", "BuilderTrend"]},
+        {"order": 2, "agent": "financeiro", "action": "match_invoices_to_pos", "output": "matched_records", "tools": ["BuilderTrend"]},
+        {"order": 3, "agent": "financeiro", "action": "classify_in_quickbooks", "output": "classified_entries (86 bills avg)", "tools": ["QuickBooks"]},
+        {"order": 4, "agent": "financeiro", "action": "reconcile_bank_accounts", "output": "reconciliation_report", "tools": ["QuickBooks"]},
+        {"order": 5, "agent": "financeiro", "action": "generate_reports", "output": "DRE, balance_sheet, T99", "tools": ["QuickBooks", "Power BI"]},
+        {"order": 6, "agent": "coordenador", "action": "review_daily_summary", "output": "executive_review_complete", "tools": ["Power BI", "Email"]}
+      ],
+      "employee_equivalent": "Daily accounts payable processing and financial reporting",
+      "estimated_duration": "Daily (2+ hours for QuickBooks classification alone)",
+      "critical_path": false,
+      "handoffs_involved": ["H-01"],
+      "notes": "Bruna Botelho prepares daily reports for CEO Bernardo. QuickBooks class entry is 2h/day for 86 bills. Integration between BT and QuickBooks is incomplete."
+    },
+    {
+      "id": "WF-09",
+      "name": "Utility Coordination",
+      "trigger": "New jobsite created in Builder Trend (water/sewer) + permit received (energy)",
+      "steps": [
+        {"order": 1, "agent": "utilities", "action": "request_ual", "output": "utilities_availability_letter", "tools": ["County Portals", "Email"]},
+        {"order": 2, "agent": "utilities", "action": "determine_system_type", "output": "septic_or_gravity, water_source", "tools": ["Excel"]},
+        {"order": 3, "agent": "utilities", "action": "notify_permits_of_system", "output": "permits_informed", "tools": ["WhatsApp", "Slack"]},
+        {"order": 4, "agent": "utilities", "action": "open_energy_account", "output": "energy_account_number", "tools": ["Utility Company Portal"]},
+        {"order": 5, "agent": "utilities", "action": "determine_tug_side", "output": "tug_side_confirmed", "tools": ["Excel"]},
+        {"order": 6, "agent": "utilities", "action": "notify_scheduling_tug_side", "output": "scheduling_informed", "tools": ["Slack", "Email"]},
+        {"order": 7, "agent": "utilities", "action": "schedule_underground_electric", "output": "underground_date", "tools": ["Utility Company Portal"]},
+        {"order": 8, "agent": "utilities", "action": "coordinate_meter_installation", "output": "meters_installed", "tools": ["Utility Company Portal", "WhatsApp"]},
+        {"order": 9, "agent": "utilities", "action": "manage_septic_if_applicable", "output": "septic_installed_inspected", "tools": ["County Portals", "Email"]},
+        {"order": 10, "agent": "financeiro", "action": "pay_utility_invoices", "output": "invoices_paid", "tools": ["QuickBooks"]}
+      ],
+      "employee_equivalent": "Water, sewer, and energy setup coordination across utility companies",
+      "estimated_duration": "Spans entire construction cycle (DUC can take months)",
+      "critical_path": true,
+      "handoffs_involved": ["H-09", "H-10"],
+      "notes": "Dandara handles both Utilities and Inspections. Triple registration problem: same data entered in spreadsheet + daily logs + BT custom fields. DUC (Duke Energy) has unpredictable timelines. Companies: DUC, FPL, CICLE, WEC."
+    }
+  ]
+}

@@ -1,0 +1,430 @@
+{
+  "department": "Permits / Documentacao",
+  "department_id": "permits",
+  "category": "Projects",
+  "ai_agent": {
+    "port": 8006,
+    "role": "Manages the full permit lifecycle: document collection, county submission, revision tracking, issuance, builders risk, NOC, modifications and extensions. Handles county-specific requirements for Marion, Citrus, Charlotte, Sarasota, and Lake counties.",
+    "mcp_tools": [
+      "get_permits",
+      "update_permit_status",
+      "read_daily_logs",
+      "write_daily_logs",
+      "upload_document",
+      "get_documents"
+    ],
+    "workflow_chains": [
+      "first_draw_received -> request_survey -> request_floor_plan -> request_energy_calc -> request_septic -> request_trusses -> docs_complete -> apply_permit",
+      "permit_applied -> track_revisions -> ready_to_issue -> notify_financeiro -> payment_confirmed -> print_and_send_to_field",
+      "permit_issued -> builders_risk_upload -> builders_risk_payment -> noc_preparation -> client_signature -> noc_filed",
+      "permit_expiring -> request_extension -> extension_approved_or_denied",
+      "model_change -> permit_modification -> resubmission -> re_review"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Cassia Silva (Cacia)",
+      "email": "csilva@lakeshoredevelopmentfl.com",
+      "role": "Permits Leader - overall permit management, contract creation, builders risk control, printing oversight, NOC preparation, custom home permit assignments, field document delivery"
+    },
+    {
+      "name": "Kaio Vinicius",
+      "email": "kvinicius@lakeshoredevelopmentfl.com",
+      "role": "Permits Coordinator - document requests and follow-up, county submissions, revision tracking, status updates, application execution for both spec and custom homes"
+    },
+    {
+      "name": "Andreia",
+      "email": "",
+      "role": "Printing - responsible for printing approved permit documents with county stamps for field delivery"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Spec Home Document Sequence",
+      "description": "The mandatory document collection sequence for spec homes is always: 1) Survey (prerequisite for all others), 2) Floor Plan (~5 days), 3) Energy Calculations (same day), 4) Septic (~7 days), 5) Trusses (uses pilot/model file). Survey must be received before requesting floor plan, energy calc, and septic.",
+      "proficiency_level": "advanced",
+      "applies_to": ["spec_homes", "all_counties"]
+    },
+    {
+      "topic": "Color Code System",
+      "description": "Permit tracking spreadsheet uses color codes: RED = document requested/awaiting, GREEN = document received/ready to issue, YELLOW = model change requiring document update, BLUE = hold/impediment blocking progress, PINK = permit approved and issued, WHITE = printed and sent to field.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["permit_tracking", "all_staff"]
+    },
+    {
+      "topic": "County-Specific Requirements",
+      "description": "All counties require: Floor Plan, Energy Calculations, Septic Document, Trusses, Survey, NOC, Product Approval List. Additional requirements vary: Marion County needs Application Form; Citrus County needs Application Forms + Civic Application; Sarasota needs Drainage Plan + Application Form. Citrus has ~40% waiver rate for lot height issues and recurring Arrows (drainage signage) problems.",
+      "proficiency_level": "advanced",
+      "applies_to": ["marion_county", "citrus_county", "sarasota_county"]
+    },
+    {
+      "topic": "Permit Validity and Expiration",
+      "description": "Permits are generally valid for 6 months (condominiums: 1 year). Expiration date resets automatically with each scheduled inspection. If permit expires 2+ times, risk of complete cancellation. Florida Section 553.79(14): permit expires if no inspection activity in 180 days. Marion County no longer sends email warnings for expiration.",
+      "proficiency_level": "advanced",
+      "applies_to": ["all_counties", "compliance"]
+    },
+    {
+      "topic": "Builders Risk and NOC Process",
+      "description": "Builders Risk insurance can ONLY be filed AFTER permit payment is confirmed by Financeiro. NOC (Notice of Commencement) requires client signature and is a meticulous document with full project data. System must block builders risk advancement without confirmed financial payment.",
+      "proficiency_level": "advanced",
+      "applies_to": ["insurance", "compliance"]
+    },
+    {
+      "topic": "Custom Home Permits",
+      "description": "Custom homes have no standardized permit stages. May require additional documents: wetland determination, HOA approval, demolition permit, well permits, septic-specific documentation. Pre-agreement status authorized by Bernardo. Knowledge concentrated in Kaio and Cassia - high risk if either leaves.",
+      "proficiency_level": "advanced",
+      "applies_to": ["custom_homes"]
+    },
+    {
+      "topic": "Marion County 6-Month Window",
+      "description": "Marion County permits have a strict 6-month validity window. Team no longer receives email warnings about expiration - they discover it only when trying to schedule an inspection. This is a critical operational risk.",
+      "proficiency_level": "advanced",
+      "applies_to": ["marion_county"]
+    },
+    {
+      "topic": "Citrus County Waivers",
+      "description": "Approximately 40% of homes in Citrus County require a Waiver due to lot height being below minimum county requirements. The Arrows issue (drainage signage documentation) is also a recurrent problem causing delays. Both require formal county submissions.",
+      "proficiency_level": "advanced",
+      "applies_to": ["citrus_county"]
+    },
+    {
+      "topic": "Permit Revision Stages in Const App",
+      "description": "The permit revision process follows 6 stages: 1) 91 Review, 2) Building, 3) Zoning, 4) Fee, 5) NOC, 6) Builder's Risk. Each stage must be tracked and completed sequentially.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["const_app", "revision_tracking"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Document Request and Follow-up",
+      "steps": [
+        "Check permit spreadsheet for new houses triggered by first draw",
+        "Identify house number, address, county, and project folder",
+        "Request Survey from surveyor (Anel or Kaio) via email with address and parcel ID",
+        "Upon survey receipt, request Floor Plan, Energy Calculations, Septic, and Trusses from respective subs",
+        "Update color-coded status for each document (red=requested, green=received)",
+        "When all documents received, mark house as green (ready to apply)"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Permit Spreadsheet", "Email", "Google Drive", "BuilderTrend"],
+      "critical_decisions": [
+        "Whether to request documents in parallel or wait for survey first",
+        "Whether a waiver is needed (Citrus County lot height assessment)",
+        "Whether custom home requires non-standard documents"
+      ]
+    },
+    {
+      "name": "County Submission and Tracking",
+      "steps": [
+        "Verify all documents complete and received",
+        "Create submission folder: Energy, Floor Plan, Site Plan, Survey + county-specific docs",
+        "Submit permit application to county via email",
+        "Record Permit Number received from county",
+        "Move house from application table to county-specific table",
+        "Monitor status: pending, approved, denied via county portal"
+      ],
+      "frequency": "Per project (when docs complete)",
+      "systems_used": ["County Portals (Accela)", "Email", "Permit Spreadsheet", "Google Drive"],
+      "critical_decisions": [
+        "Whether submission is complete for the specific county",
+        "Whether denied status requires corrective action or resubmission"
+      ]
+    },
+    {
+      "name": "Permit Issuance and Field Delivery",
+      "steps": [
+        "Identify permits with 'Ready to Issue' status",
+        "Notify Financeiro (Cintia) for permit payment on county site",
+        "Confirm payment received from Financeiro",
+        "Mark house as pink (approved) in spreadsheet",
+        "Andreia prints documents with county stamps",
+        "Deliver printed folder to Cassia",
+        "Cassia sends approved documents to the field",
+        "Mark as white (printed/sent) in spreadsheet"
+      ],
+      "frequency": "Per approved permit",
+      "systems_used": ["Permit Spreadsheet", "Email", "Printer", "County Portal"],
+      "critical_decisions": [
+        "Verify only stamped (county-sealed) versions go to field",
+        "Confirm builders risk cannot proceed without payment confirmation"
+      ]
+    },
+    {
+      "name": "Daily Log Documentation",
+      "steps": [
+        "Record document requests and receipts from subs",
+        "Log permit applications and status changes",
+        "Document revision cases and hold situations",
+        "Tag entries with standardized permit tags (#P - PERMIT APPLIED, #P - SURVEY CHECKLIST DONE, etc.)"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["BuilderTrend Daily Logs"],
+      "critical_decisions": []
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Permitting & Regulatory Compliance",
+      "features_used": [
+        "Permit Management - track permits with stages (Not Started, Applied, Issued, Canceled)",
+        "Permit Application - submit and monitor application documents (Energy Calc, Floor Plan, NOC, Survey)",
+        "Permit Revision - monitor county review process (91 Review, Building, Zoning, Fee, NOC, Builder's Risk)",
+        "Documentation - manage document stamps and field packets (PRE-PERMIT, APPROVED, MISCELLANEOUS)",
+        "Modifications & Extensions - handle permit changes after issuance"
+      ],
+      "api_endpoints": [
+        "/permits - GET list of permits, POST create new permit",
+        "/permits/{id}/status - PUT update permit status",
+        "/permits/{id}/documents - GET/POST manage permit documents",
+        "/permits/{id}/revisions - GET revision history",
+        "/daily-logs - GET/POST daily log entries"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-04",
+      "direction": "outbound",
+      "partner_department": "Scheduling / Budget / Takeoff",
+      "trigger": "Floor Plan Complete - all pre-permit documents received and house marked green",
+      "data_exchanged": "Floor plan PDF, survey documents, energy calculations, model specifications",
+      "impact": "Critical path - without floor plan, takeoff cannot begin; without takeoff, budget cannot be created; without budget, scheduling is blocked"
+    },
+    {
+      "id": "H-PERM-FIN-01",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Permit status changes to 'Ready to Issue'",
+      "data_exchanged": "Permit number, county portal link, payment amount for permit release fee",
+      "impact": "Payment must be made before permit can be issued. Builders Risk filing blocked until payment confirmed."
+    },
+    {
+      "id": "H-PERM-FIN-02",
+      "direction": "inbound",
+      "partner_department": "Financeiro",
+      "trigger": "Permit payment confirmed by Financeiro (Cintia)",
+      "data_exchanged": "Payment confirmation, receipt from county portal",
+      "impact": "Enables builders risk filing and permit issuance to field"
+    },
+    {
+      "id": "H-PERM-PROJ",
+      "direction": "inbound",
+      "partner_department": "Escritorio de Projetos",
+      "trigger": "Floor plan and project data ready from Design Office",
+      "data_exchanged": "Floor plan PDF, project specifications, model type, county assignment",
+      "impact": "Cannot begin permit document collection without floor plan"
+    },
+    {
+      "id": "H-PERM-UTIL",
+      "direction": "bidirectional",
+      "partner_department": "Utilities",
+      "trigger": "Septic vs gravity system determination affects permit documentation needs",
+      "data_exchanged": "Water/sewer system type (septic vs gravity), utility availability letter (UAL), permit number",
+      "impact": "Septic system requires DOH inspection and specific documentation in permit package"
+    },
+    {
+      "id": "H-PERM-CR",
+      "direction": "bidirectional",
+      "partner_department": "Client Relations",
+      "trigger": "NOC requires client signature; CR requests permit status updates",
+      "data_exchanged": "NOC document for signature, permit status for client communication",
+      "impact": "NOC cannot be filed without client signature; CR needs permit timeline for client expectations"
+    },
+    {
+      "id": "H-PERM-FIELD",
+      "direction": "outbound",
+      "partner_department": "Field / Supervisors",
+      "trigger": "Permit approved and printed with county stamps",
+      "data_exchanged": "Physical folder with stamped approved documents",
+      "impact": "Construction cannot begin without stamped permit documents on site (mandatory in Citrus County)"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-15",
+      "description": "No email warning for permit expiration from Marion County. Team discovers expiration only when attempting to schedule an inspection, creating risk of permit cancellation if expired 2+ times.",
+      "severity": "high",
+      "current_workaround": "Manual checking of county portal periodically; team discovers expiration 'by surprise'",
+      "proposed_solution": "Automated monitoring of permit expiration dates with alerts at 30, 15, and 7 days before expiration. System should track last inspection date and calculate remaining validity window."
+    },
+    {
+      "id": "PP-16",
+      "description": "Wrong document versions reaching field. No version control system means outdated floor plans or permit documents may be sent to construction supervisors, causing building errors.",
+      "severity": "high",
+      "current_workaround": "Manual file management with 'revision' folders in Google Drive; relies on team diligence",
+      "proposed_solution": "Automated document versioning with mandatory supersede workflow. Only latest stamped version accessible to field. Alert when document is updated that has already been sent to field."
+    },
+    {
+      "id": "PP-PERM-03",
+      "description": "Permit modifications and extensions are managed entirely manually with no standardized tracking or deadline alerts.",
+      "severity": "medium",
+      "current_workaround": "Spreadsheet notes and manual email follow-up with county",
+      "proposed_solution": "Structured modification/extension tracking with automated deadline reminders and county submission templates"
+    },
+    {
+      "id": "PP-PERM-04",
+      "description": "16+ POs and daily logs duplicated for same owner in condominiums, creating excessive administrative burden.",
+      "severity": "medium",
+      "current_workaround": "Manual duplication of entries across all units",
+      "proposed_solution": "Batch entry support for multi-unit projects with single owner"
+    },
+    {
+      "id": "PP-PERM-05",
+      "description": "Communication of hold status is not centralized for the entire company. Different departments may not know a house is on hold.",
+      "severity": "medium",
+      "current_workaround": "Manual notification via email and Slack to affected parties",
+      "proposed_solution": "Centralized hold status visible across all department dashboards with automatic notification"
+    },
+    {
+      "id": "PP-PERM-06",
+      "description": "Custom home permit process has no standardization. Each project may require unique documents that are not predictable in advance.",
+      "severity": "medium",
+      "current_workaround": "Cassia and Kaio manage ad hoc based on experience; knowledge concentrated in two people",
+      "proposed_solution": "Custom home permit checklist builder with library of possible requirements per county, with ability to add non-standard items"
+    },
+    {
+      "id": "PP-PERM-07",
+      "description": "Waivers and Arrows in Citrus County generate recurrent rework affecting ~40% of houses.",
+      "severity": "medium",
+      "current_workaround": "Kaio handles each waiver individually; knows the process but it is not documented",
+      "proposed_solution": "Automated waiver detection based on lot data (height check), with pre-filled waiver application templates"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "County-Specific Process Nuances",
+      "description": "Each county (Marion, Citrus, Charlotte, Sarasota, Lake) has distinct submission requirements, revision stages, portal interfaces, and timing expectations. Marion County does not require permit before site work (can proceed until Form). Citrus County requires permit BEFORE any construction begins. Knowledge of which inspectors to contact, portal navigation, and common rejection reasons is held by Kaio and Cassia.",
+      "holders": ["Cassia Silva", "Kaio Vinicius"],
+      "risk_if_lost": "Critical - new staff would face weeks of learning curve per county; risk of submission errors, rejections, and construction delays"
+    },
+    {
+      "topic": "Waiver Documentation Process",
+      "description": "The process for requesting lot height waivers in Citrus County (~40% of houses), including the correct forms, measurement methodology, supporting documentation, and county reviewer preferences. Also includes knowledge of Arrows (drainage signage) requirements and common submission pitfalls.",
+      "holders": ["Kaio Vinicius"],
+      "risk_if_lost": "High - waiver rejections would delay 40% of Citrus County projects; process is undocumented"
+    },
+    {
+      "topic": "Timing Windows and County Responsiveness",
+      "description": "Expected turnaround times by county and document type: survey (immediate), energy calc (same day), floor plan (~5 days), septic (~7 days). Knowledge of when counties are slow (holidays, staff changes), which reviewers are thorough vs lenient, and optimal submission timing to avoid backlogs.",
+      "holders": ["Kaio Vinicius", "Cassia Silva"],
+      "risk_if_lost": "Medium - suboptimal timing would lead to longer permit cycles and missed windows"
+    },
+    {
+      "topic": "Sub Relationships for Permit Documents",
+      "description": "Preferred surveyor contacts (Anel, AMB Surveying), energy calculation providers (Quick eCalcs at $200), floor plan architects (Gizelle Holz & Eliane at $750), septic consultants (Rapid Septic Consulting at $600), truss engineers (Truss Direct LLC). Includes knowledge of each sub's reliability, turnaround, and pricing.",
+      "holders": ["Kaio Vinicius"],
+      "risk_if_lost": "Medium - would need to rebuild vendor relationships and negotiate new pricing"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Permit Fundamentals",
+      "topics": [
+        "Understanding the permit lifecycle: application through issuance",
+        "Document sequence for spec homes (Survey -> Floor Plan -> Energy Calc -> Septic -> Trusses)",
+        "Color code system for permit tracking",
+        "County portal navigation (Accela for Marion and Citrus)",
+        "Permit validity rules: 6-month window, inspection resets, expiration risks"
+      ],
+      "target_audience": ["new_permits_staff", "client_relations"],
+      "priority": "high",
+      "quiz_coverage": "Permit stages, color codes, document sequence, county requirements, expiration rules"
+    },
+    {
+      "module": "County-Specific Requirements",
+      "topics": [
+        "Marion County: application form, no pre-construction permit requirement, 6-month window",
+        "Citrus County: civic application, waiver process (~40%), Arrows requirements, permit required before construction",
+        "Sarasota County: drainage plan requirements",
+        "Charlotte County: planned expansion requirements",
+        "Common rejection reasons and resubmission workflow by county"
+      ],
+      "target_audience": ["permits_staff"],
+      "priority": "high",
+      "quiz_coverage": "County-specific document requirements, waiver triggers, rejection handling"
+    },
+    {
+      "module": "Builders Risk and NOC",
+      "topics": [
+        "Builders Risk filing process and payment dependency",
+        "NOC preparation and client signature requirements",
+        "Financial integration: payment confirmation before builders risk",
+        "Daily log tagging for permit milestones"
+      ],
+      "target_audience": ["permits_staff", "financeiro"],
+      "priority": "medium",
+      "quiz_coverage": "Builders risk prerequisites, NOC workflow, daily log tags"
+    },
+    {
+      "module": "Custom Home Permits",
+      "topics": [
+        "Differences from spec home process",
+        "Special requirements: HOA approval, demolition permits, wetland determination",
+        "Pre-agreement status and authorization flow",
+        "Managing non-standard document collections"
+      ],
+      "target_audience": ["permits_staff"],
+      "priority": "medium",
+      "quiz_coverage": "Custom home special requirements, pre-agreement flow, document variability"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Active permit must be on-site before construction begins in Citrus County",
+      "regulation": "Citrus County Building Code",
+      "verification": "Verify stamped permit documents delivered to field supervisor before any construction activity"
+    },
+    {
+      "requirement": "Permit expires if no inspection scheduled within 180 days",
+      "regulation": "Florida Section 553.79(14)",
+      "verification": "Track last inspection date per permit; alert at 150 days with no activity"
+    },
+    {
+      "requirement": "NOC must be filed with client signature before construction begins",
+      "regulation": "Florida Construction Lien Law",
+      "verification": "Signed NOC document on file before first construction activity"
+    },
+    {
+      "requirement": "Builders Risk insurance filed only after permit payment confirmation",
+      "regulation": "Internal policy - insurance validity requires active permit",
+      "verification": "System blocks builders risk filing without Financeiro payment confirmation"
+    },
+    {
+      "requirement": "Only county-stamped document versions accessible to field personnel",
+      "regulation": "County building inspection requirements",
+      "verification": "Field folder contains only documents with official county stamp/seal"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Average permit cycle time (application to issuance)",
+      "target": "< 7 weeks for spec homes, < 12 weeks for custom",
+      "measurement": "Days from first draw notification to permit issued date"
+    },
+    {
+      "metric": "Document collection completion rate",
+      "target": "All 5 core documents within 10 business days of first draw",
+      "measurement": "Days from first draw to all documents marked green"
+    },
+    {
+      "metric": "County rejection rate",
+      "target": "< 15% first-submission rejection",
+      "measurement": "Number of rejected submissions / total submissions per quarter"
+    },
+    {
+      "metric": "Waiver success rate (Citrus County)",
+      "target": "> 90% first-attempt approval",
+      "measurement": "Approved waivers / total waiver applications"
+    },
+    {
+      "metric": "Permit expiration incidents",
+      "target": "Zero permits expired without extension",
+      "measurement": "Count of permits that expired due to missed monitoring"
+    },
+    {
+      "metric": "Field delivery turnaround",
+      "target": "< 2 business days from payment confirmation to field delivery",
+      "measurement": "Days from Financeiro payment to physical folder sent to field"
+    }
+  ]
+}

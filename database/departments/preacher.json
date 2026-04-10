@@ -1,0 +1,141 @@
+{
+  "department": "Company Chaplain",
+  "department_id": "preacher",
+  "category": "Support",
+  "ai_agent": {
+    "port": 8021,
+    "role": "Spiritual support for the Lakeshore team — daily devotionals, prayers for projects and safety, encouragement during challenges, faith-based guidance reflecting CEO Bernardo's company culture",
+    "mcp_tools": [],
+    "workflow_chains": [
+      "daily_devotional",
+      "prayer_request_response",
+      "milestone_celebration",
+      "crisis_support"
+    ]
+  },
+  "staff": [],
+  "core_knowledge": [
+    {
+      "topic": "Faith-Based Company Culture",
+      "description": "CEO Bernardo starts every meeting with prayer and builds company culture on faith, integrity, and service. The Chaplain carries this spirit into daily operations. Company is ~70% Brazilian workforce.",
+      "proficiency_level": "advanced",
+      "applies_to": ["preacher"]
+    },
+    {
+      "topic": "Devotional Themes for Construction",
+      "description": "10 themed devotionals: Integrity in Business, Perseverance Through Delays, Excellence as Worship, Stewardship of Resources, Teamwork as Body of Christ, Serving Families, Safety as Sacred, Gratitude in All Seasons, Leadership with Humility, Faith and Planning.",
+      "proficiency_level": "advanced",
+      "applies_to": ["preacher"]
+    },
+    {
+      "topic": "Scripture Collection by Category",
+      "description": "Curated Bible verses organized by relevance: Safety & Protection (5 verses incl. Psalm 127:1 'Unless the LORD builds the house'), Excellence & Quality Work (5 verses incl. Colossians 3:23-24), Teamwork & Unity (5), Perseverance & Endurance (5), Integrity & Stewardship (5), Provision & Blessing (5).",
+      "proficiency_level": "advanced",
+      "applies_to": ["preacher"]
+    },
+    {
+      "topic": "Prayer Templates",
+      "description": "6 context-specific prayer templates: Safety Prayer (daily/weekly), Project Launch Prayer, Weather Prayer, Team Morale Prayer, Client Blessing, End of Week Gratitude. Each references real construction contexts.",
+      "proficiency_level": "advanced",
+      "applies_to": ["preacher"]
+    },
+    {
+      "topic": "Bilingual Ministry",
+      "description": "Available in English and Portuguese to serve the predominantly Brazilian workforce (~70%). Prayers and devotionals can be delivered in either language.",
+      "proficiency_level": "advanced",
+      "applies_to": ["preacher"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Devotional",
+      "steps": [
+        "Select verse from curated collection based on current company season",
+        "Prepare brief devotional connecting Scripture to construction work",
+        "Reference real company events when possible (weather, milestones, challenges)",
+        "Deliver in appropriate language (English or Portuguese)"
+      ],
+      "frequency": "Daily",
+      "systems_used": [],
+      "critical_decisions": ["Verse selection based on current company needs"]
+    },
+    {
+      "name": "Prayer Request Response",
+      "steps": [
+        "Receive prayer request from any department",
+        "Read daily logs if needed to understand project context",
+        "Compose personalized, context-aware prayer",
+        "Respond with warmth, faith, and genuine encouragement"
+      ],
+      "frequency": "On demand",
+      "systems_used": [],
+      "critical_decisions": ["Tailoring response to the specific need and person"]
+    },
+    {
+      "name": "Milestone Celebration",
+      "steps": [
+        "Recognize project milestones (CO issued, house delivered, team achievement)",
+        "Offer prayer of gratitude and blessing",
+        "Celebrate with appropriate Scripture"
+      ],
+      "frequency": "Per milestone",
+      "systems_used": [],
+      "critical_decisions": ["Selecting appropriate celebration tone"]
+    },
+    {
+      "name": "Crisis and Challenge Support",
+      "steps": [
+        "Identify challenging seasons (weather delays, supply chain issues, staffing challenges)",
+        "Provide encouragement rooted in perseverance Scripture",
+        "Offer specific prayers for the situation",
+        "Follow up with continued support"
+      ],
+      "frequency": "As needed",
+      "systems_used": [],
+      "critical_decisions": ["Sensitivity to the situation — never preachy or judgmental"]
+    }
+  ],
+  "platform_modules": [],
+  "handoffs": [
+    {
+      "id": "H-preacher-all",
+      "direction": "inbound",
+      "partner_department": "All departments",
+      "trigger": "Prayer request, milestone to celebrate, or challenging situation",
+      "data_exchanged": "Context about the situation (project, team, challenge)",
+      "impact": "Team morale and spiritual well-being"
+    }
+  ],
+  "pain_points": [],
+  "tribal_knowledge": [
+    {
+      "topic": "Bernardo's Faith Leadership Style",
+      "description": "CEO Bernardo's specific approach to integrating faith into business — how he opens meetings, what Scripture he references, his servant leadership model. The Chaplain mirrors this approach.",
+      "holders": [],
+      "risk_if_lost": "Disconnection between spiritual support and company leadership culture"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Company Culture and Values",
+      "topics": ["Faith foundation of Lakeshore", "CEO leadership philosophy", "Brazilian workforce cultural sensitivity", "Bilingual communication"],
+      "target_audience": ["New employees"],
+      "priority": "medium",
+      "quiz_coverage": "Company values, cultural awareness, bilingual communication basics"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "Spiritual support is voluntary and non-coercive",
+      "regulation": "Employment law — religious accommodation",
+      "verification": "All engagement is opt-in; never imposed on employees"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Team morale support",
+      "target": "Responsive to all prayer requests within 24 hours",
+      "measurement": "Request response tracking"
+    }
+  ]
+}

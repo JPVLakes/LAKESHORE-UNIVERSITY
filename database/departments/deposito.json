@@ -1,0 +1,245 @@
+{
+  "department": "Deposito (Warehouse)",
+  "department_id": "deposito",
+  "category": "Purchasing",
+  "ai_agent": {
+    "port": 8017,
+    "role": "Central material hub — receiving, quality control, FIFO stock rotation, distribution to job sites, and reorder point monitoring",
+    "mcp_tools": [
+      "check_stock",
+      "set_reorder_point",
+      "read_purchase_orders"
+    ],
+    "workflow_chains": [
+      "material_receiving_qc",
+      "dispatch_to_jobsite",
+      "reorder_notification",
+      "daily_reconciliation"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Klauser Silva (Seu Clauser)",
+      "email": "",
+      "role": "Warehouse Manager — physical stock control, receiving, QC inspection, Zorro Sales Orders, material distribution, FIFO rotation, draft handling"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Material Receiving and QC",
+      "description": "Verify delivery against PO (type, quantity, condition), inspect for damage, sign delivery receipt, register in Zorro, notify Compras. Rejection workflow includes photography, partial acceptance, and immediate Compras notification.",
+      "proficiency_level": "advanced",
+      "applies_to": ["deposito", "compras"]
+    },
+    {
+      "topic": "FIFO Stock Rotation",
+      "description": "First In First Out rotation for all stocked materials. Critical for perishable or time-sensitive items (cement, drywall). Older stock dispatched before newer arrivals.",
+      "proficiency_level": "advanced",
+      "applies_to": ["deposito"]
+    },
+    {
+      "topic": "Zorro Sales Orders and Drafts",
+      "description": "Every material exit creates a Zorro Sales Order tied to a house number. Clauser uses draft SOs to separate/reserve materials before formal dispatch. Drafts are not confirmed until dispatch occurs, creating tracking uncertainty.",
+      "proficiency_level": "advanced",
+      "applies_to": ["deposito", "compras"]
+    },
+    {
+      "topic": "Reorder Point Management",
+      "description": "Safety stock: 2-week buffer for critical materials (concrete, lumber, rebar, blocks). Increases to 3-week buffer during peak season (March-June). Automated monitoring via set_reorder_point tool triggers Compras alerts.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["deposito", "compras"]
+    },
+    {
+      "topic": "Destination Allocation by Project",
+      "description": "Each delivery tagged with project/house number. Staging areas organized by active project. Priority: active construction phase > pre-staging > general stock.",
+      "proficiency_level": "advanced",
+      "applies_to": ["deposito", "scheduling"]
+    },
+    {
+      "topic": "Supply Type Classification",
+      "description": "Stocked (full warehouse cycle), Quoted (requires vendor quotation, tracked via PO), By Sub (provided by subcontractor, bypasses warehouse).",
+      "proficiency_level": "intermediate",
+      "applies_to": ["deposito", "compras", "orcamento"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Morning Routine",
+      "steps": [
+        "Review incoming deliveries scheduled for today from Compras delivery calendar",
+        "Check overnight stock alerts (items below reorder point)",
+        "Prepare outgoing pick lists for scheduled dispatches"
+      ],
+      "frequency": "Daily (morning)",
+      "systems_used": ["Zorro", "Excel Spreadsheets"],
+      "critical_decisions": ["Prioritizing dispatch when multiple houses need same material"]
+    },
+    {
+      "name": "Midday Operations",
+      "steps": [
+        "Process receipts for morning deliveries — update Zorro stock levels",
+        "Execute material dispatches to job sites per Scheduling requests",
+        "Handle walk-in requests from field supervisors (urgent material needs)"
+      ],
+      "frequency": "Daily (midday)",
+      "systems_used": ["Zorro", "Builder Trend"],
+      "critical_decisions": ["Approving urgent field requests vs maintaining scheduled allocations"]
+    },
+    {
+      "name": "End of Day Reconciliation",
+      "steps": [
+        "Reconcile Zorro Sales Orders against physical dispatch log",
+        "Flag discrepancies (missing exits, unconfirmed drafts, quantity mismatches)",
+        "Update reorder status — notify Compras of items approaching threshold",
+        "Secure warehouse and update next-day delivery schedule"
+      ],
+      "frequency": "Daily (end of day)",
+      "systems_used": ["Zorro", "Excel Spreadsheets"],
+      "critical_decisions": ["Flagging discrepancies for Compras resolution"]
+    },
+    {
+      "name": "Assignment-to-Takeoff Reconciliation",
+      "steps": [
+        "Check materials assigned to specific houses against takeoff specifications",
+        "Identify over-allocation or misallocation",
+        "Flag discrepancies to Compras (Brenda) for resolution"
+      ],
+      "frequency": "Daily",
+      "systems_used": ["Zorro", "Excel Spreadsheets", "Builder Trend"],
+      "critical_decisions": ["Identifying when more material was sent than takeoff calls for"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Stock Management (Const App)",
+      "features_used": [
+        "Stock Levels — view cumulative stock requirements",
+        "Material Purchases — track POs and delivery status",
+        "Material Pickups — coordinate supplier pickups",
+        "Extraordinary Orders — out-of-schedule material requests"
+      ],
+      "api_endpoints": [
+        "/stock/stock_levels",
+        "/stock/stock_material_purchases",
+        "/stock/material_pickups",
+        "/stock/extraordinary_orders"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-dep-compras-recv",
+      "direction": "inbound",
+      "partner_department": "Compras",
+      "trigger": "Purchase order placed with supplier",
+      "data_exchanged": "PO details, delivery schedule, material specs",
+      "impact": "Warehouse prepares receiving bay and QC checklist"
+    },
+    {
+      "id": "H-dep-scheduling-recv",
+      "direction": "inbound",
+      "partner_department": "Scheduling",
+      "trigger": "Material request 48 hours before phase start",
+      "data_exchanged": "Pick list with house number, material type, quantities needed",
+      "impact": "Materials must be staged and ready for dispatch"
+    },
+    {
+      "id": "H-dep-compras-send",
+      "direction": "outbound",
+      "partner_department": "Compras",
+      "trigger": "Stock falls below reorder point or delivery discrepancy found",
+      "data_exchanged": "Reorder alerts, receipt confirmations, discrepancy reports",
+      "impact": "Triggers replenishment orders or supplier dispute resolution"
+    },
+    {
+      "id": "H-dep-financeiro-send",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Distribution data for cost closing",
+      "data_exchanged": "Zorro Sales Order data, per-house material distribution records",
+      "impact": "Enables accurate cost-per-house calculation for financial closing"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-dep-01",
+      "description": "Clauser cannot autonomously validate incoming shipments against PO details or takeoff quantities — depends on Brenda for discrepancy resolution",
+      "severity": "medium",
+      "current_workaround": "Flag discrepancies to Compras and wait for response",
+      "proposed_solution": "Give warehouse read access to takeoff data for independent validation"
+    },
+    {
+      "id": "PP-dep-02",
+      "description": "Drafts in Zorro create tracking uncertainty — materials separated but not formally dispatched",
+      "severity": "medium",
+      "current_workaround": "Compras filters including drafts when reconciling",
+      "proposed_solution": "Auto-confirm drafts after 24 hours or require same-day confirmation"
+    },
+    {
+      "id": "PP-dep-03",
+      "description": "Confirmed houses sometimes show missing exit records in Zorro during closing",
+      "severity": "high",
+      "current_workaround": "Manual reconciliation during closing checklist",
+      "proposed_solution": "Automated alerts when house enters closing phase with incomplete exit records"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Material Staging and Priority Logic",
+      "description": "Clauser knows which houses are high priority based on construction phase, supervisor urgency, and upcoming inspection schedules. This informal priority system is not documented anywhere.",
+      "holders": ["Klauser Silva"],
+      "risk_if_lost": "New warehouse staff would dispatch materials without understanding construction priority"
+    },
+    {
+      "topic": "Supplier Delivery Patterns",
+      "description": "Clauser knows which suppliers deliver reliably, which frequently short-ship, and which require special receiving procedures (e.g., trusses need crane, concrete needs immediate pour coordination).",
+      "holders": ["Klauser Silva"],
+      "risk_if_lost": "Receiving errors and site coordination failures"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Warehouse Operations",
+      "topics": ["Zorro Sales Orders and drafts", "FIFO rotation principles", "QC inspection checklist", "Delivery receipt process", "Rejection workflow"],
+      "target_audience": ["New warehouse staff"],
+      "priority": "high",
+      "quiz_coverage": "Receiving flow, QC checks, Zorro data entry, rejection escalation"
+    },
+    {
+      "module": "Reorder and Safety Stock",
+      "topics": ["Reorder point calculation", "Safety stock by material type", "Seasonal adjustment (peak March-June)", "Compras notification protocol"],
+      "target_audience": ["Warehouse staff", "Purchasing team"],
+      "priority": "medium",
+      "quiz_coverage": "Buffer calculations, critical material list, notification triggers"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All material exits must have a Zorro Sales Order with house number",
+      "regulation": "Internal policy — cost-plus transparency per CEO directive",
+      "verification": "Daily reconciliation of Zorro SOs vs physical dispatch log"
+    },
+    {
+      "requirement": "Materials must match PO specifications before acceptance",
+      "regulation": "Florida Building Code — approved materials per plans",
+      "verification": "Visual QC inspection on receiving with photo documentation for rejections"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Receiving accuracy",
+      "target": ">98% of deliveries match PO on first check",
+      "measurement": "Weekly count of discrepancies vs total deliveries"
+    },
+    {
+      "metric": "Dispatch timeliness",
+      "target": "100% of scheduled dispatches completed same day",
+      "measurement": "Daily count of fulfilled vs pending dispatch requests"
+    },
+    {
+      "metric": "Stock-out events",
+      "target": "0 stock-outs for critical materials (concrete, lumber, rebar, blocks)",
+      "measurement": "Monthly count of emergency reorders"
+    }
+  ]
+}

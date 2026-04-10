@@ -1,0 +1,510 @@
+{
+  "department": "Inspecao (Inspections & Permitting)",
+  "department_id": "inspecao",
+  "category": "Construction",
+  "ai_agent": {
+    "port": 8005,
+    "role": "Inspections and permitting specialist managing 29 inspection types across multiple counties, coordinating county-specific scheduling requirements, and tracking hold types that gate construction progress",
+    "mcp_tools": [
+      "read_inspections",
+      "read_inspection_detail",
+      "update_inspection",
+      "create_inspection",
+      "read_daily_logs",
+      "write_daily_logs",
+      "get_permits"
+    ],
+    "workflow_chains": [
+      "inspection_result_to_scheduling",
+      "hold_placed_to_construction_stop",
+      "hold_removed_to_construction_resume",
+      "permit_issued_to_phase_unlock",
+      "impact_fee_paid_to_final_electric",
+      "inspection_failed_to_rework_request",
+      "county_submission_to_inspection_schedule"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Dandara Souza",
+      "email": "cpm2@lakeshoresoftware.inc",
+      "role": "Inspections & Utilities Coordinator (Sole Person)"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "29 Inspection Types",
+      "description": "Master all 29 inspection types required for residential construction in Florida. These span foundation (footer, slab, monolithic), structural (framing, tie-down, roof nailing), mechanical (rough plumbing, rough electrical, rough HVAC, gas line), insulation, drywall, and final inspections (final plumbing, final electrical, final mechanical, final building). Each has specific prerequisites and required documentation.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Hold Types: Inspection Hold vs Final Hold",
+      "description": "Critical distinction: Inspection Hold blocks ALL construction activity on the house until resolved. Final Hold allows construction to continue but blocks Certificate of Occupancy (CO). Incorrectly classifying a hold type can either halt construction unnecessarily or allow work to proceed that must be torn out later.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "County-Specific Scheduling Rules",
+      "description": "Each county has completely different inspection scheduling procedures. Marion County requires email requests (inspector responsiveness varies). Citrus County uses an online portal with submissions required by 15:30 the day before. Charlotte County has no portal or email; inspections must be scheduled in person at the site. These differences require maintaining parallel workflows.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Impact Fees and Final Electric",
+      "description": "Impact fees must be paid before Final Electric inspection can be scheduled. This is a common blocker (PP-18) because the fee payment is handled by a different department and there is no automatic notification when it is paid. Dandara must manually check fee status before scheduling Final Electric.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Permit Application and Tracking",
+      "description": "Understand the full permit lifecycle: application preparation, submission to county, plan review process, revision requests, permit issuance, and permit expiration tracking. Each county has different review timelines (Marion: 2-4 weeks, Citrus: 1-3 weeks, Charlotte: 3-5 weeks).",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Utilities Coordination",
+      "description": "Dandara also handles utility connections (water, sewer, electric, gas). Each utility company has different lead times, application processes, and connection scheduling requirements. Utility availability can affect construction timeline significantly.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Inspector Responsiveness Patterns",
+      "description": "Tribal knowledge about which county inspectors are responsive, which ones require follow-up calls, and which ones have preferred communication methods. This knowledge directly affects how far in advance inspections must be requested to ensure timely scheduling.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    },
+    {
+      "topic": "Re-Inspection Procedures",
+      "description": "When an inspection fails, understand the correction verification process, re-inspection request procedures (county-specific), and priority scheduling to minimize delay. Some counties allow same-day re-inspection for minor items; others require full reschedule.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Inspections & Utilities Coordinator"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Daily Inspection Scheduling",
+      "steps": [
+        "Review houses ready for inspection (from Supervisao Checklist Done + Scheduling notifications)",
+        "Identify inspection type needed for each house",
+        "Check county-specific scheduling requirements",
+        "Marion County: send email to inspector with house details and requested inspection type",
+        "Citrus County: submit via online portal before 15:30 cutoff",
+        "Charlotte County: coordinate site visit with inspector directly",
+        "Record scheduled inspection date and type in platform",
+        "Notify Scheduling and Supervisao of upcoming inspections"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "County Portals", "Email", "WhatsApp"],
+      "critical_decisions": [
+        "Whether all prerequisites are met before requesting inspection",
+        "Priority ordering when multiple houses need inspections on same day",
+        "Whether to request next-day inspection or allow buffer for corrections"
+      ]
+    },
+    {
+      "name": "Inspection Result Processing",
+      "steps": [
+        "Receive inspection results from county (email, portal, or site report)",
+        "Record pass/fail status in platform",
+        "For passed inspections: update house status and notify Scheduling (H-08)",
+        "For failed inspections: document correction items required",
+        "Notify Supervisao of failed items for correction coordination (H-14)",
+        "Schedule re-inspection once corrections are confirmed complete",
+        "Update hold status if applicable"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "County Portals", "Email", "WhatsApp"],
+      "critical_decisions": [
+        "Whether failed items require Inspection Hold or can proceed as Final Hold",
+        "Whether corrections need engineering review before re-inspection"
+      ]
+    },
+    {
+      "name": "Hold Management",
+      "steps": [
+        "Monitor all active holds across all houses",
+        "Check for hold resolution conditions (corrections made, fees paid, permits issued)",
+        "Update hold status when conditions are met",
+        "Notify Scheduling that hold is removed so construction can resume",
+        "Note: No automatic notification when holds are removed (PP-17)"
+      ],
+      "frequency": "daily",
+      "systems_used": ["LakeshoreSoftware.inc", "County Portals"],
+      "critical_decisions": [
+        "Whether to remove hold based on partial correction completion",
+        "Whether hold type should be escalated from Final Hold to Inspection Hold"
+      ]
+    },
+    {
+      "name": "Permit Application & Tracking",
+      "steps": [
+        "Receive permit request from Scheduling or Engineering",
+        "Prepare permit application with required documentation",
+        "Submit to county building department (method varies by county)",
+        "Track plan review status",
+        "Respond to revision requests from county reviewer",
+        "Record permit issuance date and permit number",
+        "Monitor permit expiration dates for active projects",
+        "Notify Scheduling when permit is issued (phase unlock trigger)"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["LakeshoreSoftware.inc", "County Portals", "Email"],
+      "critical_decisions": [
+        "Whether permit revision request requires engineering involvement",
+        "Whether to appeal a permit denial or modify plans"
+      ]
+    },
+    {
+      "name": "Impact Fee Tracking for Final Electric",
+      "steps": [
+        "Check which houses are approaching Final Electric inspection stage",
+        "Verify impact fee payment status with Financeiro",
+        "If fees not paid: escalate to Financeiro with urgency (blocks Final Electric)",
+        "Once fees confirmed paid: schedule Final Electric inspection",
+        "Document fee payment date for audit trail"
+      ],
+      "frequency": "weekly",
+      "systems_used": ["LakeshoreSoftware.inc", "County Records"],
+      "critical_decisions": [
+        "Whether to escalate unpaid impact fees to management",
+        "Whether delay in fee payment requires rescheduling other final inspections"
+      ]
+    },
+    {
+      "name": "Utility Connection Coordination",
+      "steps": [
+        "Submit utility connection applications (water, sewer, electric, gas)",
+        "Track application status with each utility company",
+        "Schedule meter installations and final connections",
+        "Coordinate utility inspections (separate from county building inspections)",
+        "Verify utility connection before Certificate of Occupancy request"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["LakeshoreSoftware.inc", "Utility Company Portals", "Phone"],
+      "critical_decisions": [
+        "Whether utility company lead time affects construction schedule",
+        "Whether temporary power/water is needed during construction"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Inspections V2",
+      "features_used": [
+        "Inspection scheduling and tracking",
+        "29 inspection type categorization",
+        "Pass/fail result recording",
+        "Hold type management (Inspection Hold vs Final Hold)",
+        "Re-inspection scheduling",
+        "Inspection history per house",
+        "County-specific workflow configuration"
+      ],
+      "api_endpoints": [
+        "/api/v1/inspections",
+        "/api/v1/inspections/{id}",
+        "/api/v1/inspections/{id}/result",
+        "/api/v1/inspections/{id}/hold",
+        "/api/v1/inspections/house/{houseId}",
+        "/api/v1/inspections/county/{countyId}",
+        "/api/v1/inspections/types"
+      ]
+    },
+    {
+      "module": "Permitting",
+      "features_used": [
+        "Permit application tracking",
+        "Plan review status monitoring",
+        "Permit issuance recording",
+        "Permit expiration alerts",
+        "County-specific permit requirements",
+        "Document attachment for permit applications"
+      ],
+      "api_endpoints": [
+        "/api/v1/permits",
+        "/api/v1/permits/{id}",
+        "/api/v1/permits/house/{houseId}",
+        "/api/v1/permits/{id}/status",
+        "/api/v1/permits/{id}/documents"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-08",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Inspection Result",
+      "data_exchanged": "Pass/fail status, inspection type, correction items if failed, re-inspection date if applicable, hold type placed",
+      "impact": "Passed inspections unlock next phase activities in Scheduling. Failed inspections block scheduling and require correction coordination. This is the primary gate between construction phases."
+    },
+    {
+      "id": "H-14",
+      "direction": "sends_to",
+      "partner_department": "Supervisao",
+      "trigger": "Inspection Failed",
+      "data_exchanged": "Failed inspection items, correction requirements, which sub is responsible for corrections, re-inspection timeline",
+      "impact": "Supervisao must coordinate with sub crews to make corrections before re-inspection can be scheduled. Delay in communication delays the correction and re-inspection cycle."
+    },
+    {
+      "id": "H-15",
+      "direction": "receives_from",
+      "partner_department": "Supervisao",
+      "trigger": "Ready for Inspection",
+      "data_exchanged": "House ID, inspection type needed, supervisor pre-check confirmation, completion date",
+      "impact": "Dandara cannot schedule inspections without knowing which houses are ready. Late notification from Supervisao means missed scheduling windows (especially Citrus County 15:30 cutoff)."
+    },
+    {
+      "id": "H-16",
+      "direction": "receives_from",
+      "partner_department": "Financeiro",
+      "trigger": "Impact Fee Paid",
+      "data_exchanged": "Fee payment confirmation, receipt number, house ID",
+      "impact": "Final Electric inspection cannot be scheduled until impact fees are confirmed paid (PP-18). No automatic notification exists, requiring manual checking."
+    },
+    {
+      "id": "H-17",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Hold Removed",
+      "data_exchanged": "Hold removal confirmation, house ID, which activities are now unblocked",
+      "impact": "No automatic notification when holds are removed (PP-17). Scheduling may not know construction can resume, causing unnecessary idle time."
+    },
+    {
+      "id": "H-18",
+      "direction": "sends_to",
+      "partner_department": "Scheduling",
+      "trigger": "Permit Issued",
+      "data_exchanged": "Permit number, issue date, scope of permitted work, expiration date",
+      "impact": "Permit issuance enables scheduling of permitted work activities. Delay in communication means scheduling cannot plan ahead."
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-17",
+      "description": "No automatic notification when a hold is removed from a house. Scheduling and Supervisao must manually check hold status, leading to idle time where construction could resume but nobody knows the hold has been lifted.",
+      "severity": "high",
+      "current_workaround": "Dandara sends WhatsApp messages when she remembers to notify, but with 29 inspection types across dozens of houses, notifications are frequently missed or delayed",
+      "proposed_solution": "Automated hold removal notification system that pushes alerts to Scheduling and Supervisao when any hold status changes, with configurable notification preferences per department"
+    },
+    {
+      "id": "PP-18",
+      "description": "Impact fees block Final Electric inspection, but there is no integration between fee payment tracking (Financeiro) and inspection scheduling (Inspecao). Dandara must manually check with Financeiro whether fees are paid before scheduling Final Electric.",
+      "severity": "high",
+      "current_workaround": "Weekly manual check with Financeiro on fee payment status for all houses approaching Final Electric stage; sometimes fees are paid but notification takes days",
+      "proposed_solution": "Direct integration between payment system and inspection scheduling; auto-flag houses eligible for Final Electric when impact fee payment is confirmed"
+    },
+    {
+      "id": "PP-19",
+      "description": "Single point of failure: Dandara is the sole person handling all inspections AND utilities across all counties. No backup, no cross-training, no documentation of county-specific procedures.",
+      "severity": "high",
+      "current_workaround": "When Dandara is absent, inspections are not scheduled and construction stalls on houses awaiting inspection",
+      "proposed_solution": "Cross-train at least one additional person on inspection procedures; document all county-specific workflows; create automated scheduling rules for routine inspections"
+    },
+    {
+      "id": "PP-20",
+      "description": "County portal inconsistency: each county has a different system (email, portal, in-person) requiring Dandara to maintain multiple workflows simultaneously with no unified interface",
+      "severity": "medium",
+      "current_workaround": "Dandara maintains mental model of which county uses which system and switches between them throughout the day",
+      "proposed_solution": "Unified inspection request interface in platform that auto-routes to correct county system (API integration where portal exists, email template where email is used)"
+    },
+    {
+      "id": "PP-21",
+      "description": "No visibility into inspector availability or scheduling conflicts at the county level; inspections are requested without knowing if the inspector has capacity on the requested date",
+      "severity": "medium",
+      "current_workaround": "Dandara has learned county inspector patterns through experience (tribal knowledge) and schedules accordingly",
+      "proposed_solution": "Historical data analysis of inspection scheduling patterns to predict inspector availability; buffer day recommendations by county"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "County Inspector Timing Patterns",
+      "description": "Dandara knows the typical response times and scheduling patterns for each county inspector. For example, Marion County inspectors are typically available within 2 days for routine inspections but may take a week for specialty inspections. Citrus County is faster (next-day for routine) but strictly enforces the 15:30 cutoff. Charlotte County inspectors have unpredictable schedules.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Inspector Responsiveness and Communication Preferences",
+      "description": "Individual inspectors have preferred communication methods. Some respond faster to phone calls, others to email, some prefer text. Dandara knows which approach works best for each inspector, which directly affects how quickly inspections can be scheduled.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Fee Timing Differences by County",
+      "description": "Impact fee amounts, calculation methods, and payment timing requirements differ by county. Some counties require fees before permit issuance, others before Final Electric, and some have split-payment options. Dandara knows the exact requirements for each county and project type.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Common Fail Patterns by Inspection Type",
+      "description": "Dandara has observed which inspection types most commonly fail and for which reasons. This allows her to flag potential issues to Supervisao before the inspection, reducing fail rates. For example, rough plumbing inspections frequently fail due to missing cleanouts or improper venting.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "medium"
+    },
+    {
+      "topic": "Utility Company Lead Times and Contacts",
+      "description": "Each utility company (Duke Energy, TECO, local water authorities) has different application procedures, lead times, and key contacts. Dandara maintains personal relationships with utility company representatives that expedite connection scheduling.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Hold Type Classification Edge Cases",
+      "description": "Some inspection failures fall in gray areas between Inspection Hold and Final Hold. Dandara has learned from experience which failures truly require construction stoppage vs which can be addressed in parallel with ongoing work. Misclassification either stops construction unnecessarily or allows problematic work to be covered.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "high"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "29 Inspection Types Mastery",
+      "topics": [
+        "Complete list of 29 inspection types",
+        "Prerequisites for each inspection type",
+        "Required documentation per inspection",
+        "Common fail items per type",
+        "Inspection sequencing rules (which inspections must pass before others)"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "high",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Hold Type Management",
+      "topics": [
+        "Inspection Hold vs Final Hold definitions",
+        "When to apply each hold type",
+        "Hold removal criteria and process",
+        "Impact of each hold type on construction schedule",
+        "Edge cases and gray areas in hold classification"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "County-Specific Procedures",
+      "topics": [
+        "Marion County: email procedures, inspector contacts, timing",
+        "Citrus County: portal login, submission deadline (15:30), interface navigation",
+        "Charlotte County: site-only scheduling, inspector availability patterns",
+        "Other counties: procedures as coverage expands"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Permitting Lifecycle",
+      "topics": [
+        "Permit application preparation",
+        "County submission procedures",
+        "Plan review tracking",
+        "Revision response procedures",
+        "Permit expiration monitoring"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "high",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "Utilities Coordination",
+      "topics": [
+        "Utility connection types (water, sewer, electric, gas)",
+        "Application procedures per utility company",
+        "Lead time expectations",
+        "Meter installation coordination",
+        "Temporary vs permanent utility connections"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Impact Fees and Financial Prerequisites",
+      "topics": [
+        "Impact fee types and calculation methods",
+        "County-specific fee timing requirements",
+        "Fee payment verification procedures",
+        "Final Electric inspection prerequisites",
+        "Coordination with Financeiro department"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All required inspections must pass before proceeding to the next construction phase",
+      "regulation": "FBC",
+      "verification": "Inspection results recorded in platform; phase unlock requires all prerequisite inspections showing pass status"
+    },
+    {
+      "requirement": "Inspection Hold must halt all construction activity on the affected house until resolved",
+      "regulation": "FBC",
+      "verification": "System blocks scheduling of new activities when Inspection Hold is active; daily log review confirms no work performed during hold"
+    },
+    {
+      "requirement": "Building permits must be issued before construction begins on any permitted activity",
+      "regulation": "County",
+      "verification": "Permit number and issue date recorded in platform; scheduling system checks permit status before allowing activity scheduling"
+    },
+    {
+      "requirement": "Impact fees must be paid before Final Electric inspection can be requested",
+      "regulation": "County",
+      "verification": "Fee payment confirmation from Financeiro must be on file before Final Electric inspection request is submitted to county"
+    },
+    {
+      "requirement": "Inspection requests must be submitted within county-specific deadlines",
+      "regulation": "County",
+      "verification": "Citrus County submissions verified before 15:30 daily; Marion County emails tracked for response; Charlotte County site visits scheduled within county hours"
+    },
+    {
+      "requirement": "Certificate of Occupancy requires all final inspections passed and all holds removed",
+      "regulation": "FBC",
+      "verification": "System checklist verifying all 29 applicable inspections show pass status and no active holds before CO application"
+    },
+    {
+      "requirement": "Utility connections must be inspected and approved before occupancy",
+      "regulation": "County",
+      "verification": "Utility inspection results recorded; utility company approval letters on file"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Inspection Pass Rate (First Attempt)",
+      "target": ">80% of inspections pass on first attempt",
+      "measurement": "Number of first-attempt passes divided by total inspections requested, tracked by inspection type and county"
+    },
+    {
+      "metric": "Inspection Scheduling Turnaround",
+      "target": "Inspection scheduled within 1 business day of Ready for Inspection notification",
+      "measurement": "Time between Ready for Inspection notification from Supervisao and inspection request submitted to county"
+    },
+    {
+      "metric": "Hold Duration",
+      "target": "Average hold duration <5 business days",
+      "measurement": "Days between hold placement and hold removal, tracked by hold type (Inspection Hold vs Final Hold)"
+    },
+    {
+      "metric": "Permit Processing Time",
+      "target": "Permit issued within county-standard timeline (varies by county)",
+      "measurement": "Days between permit application submission and permit issuance, tracked by county and permit type"
+    },
+    {
+      "metric": "Re-Inspection Rate",
+      "target": "<20% of inspections require re-inspection",
+      "measurement": "Number of re-inspections divided by total inspections, tracked by inspection type to identify systemic issues"
+    },
+    {
+      "metric": "Impact Fee to Final Electric Lag",
+      "target": "Final Electric scheduled within 2 business days of impact fee payment confirmation",
+      "measurement": "Days between fee payment confirmation and Final Electric inspection scheduling"
+    },
+    {
+      "metric": "Hold Notification Timeliness",
+      "target": "100% of hold changes communicated to Scheduling within 2 hours",
+      "measurement": "Time between hold status change and notification sent to Scheduling (currently unmeasured due to PP-17)"
+    }
+  ]
+}

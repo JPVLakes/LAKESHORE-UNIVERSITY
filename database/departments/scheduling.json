@@ -1,0 +1,529 @@
+{
+  "department": "Scheduling",
+  "department_id": "scheduling",
+  "category": "Construction",
+  "ai_agent": {
+    "port": 8003,
+    "role": "Construction scheduling coordinator managing 3-phase CPM pipeline across all active projects, tracking 66 activities per house from Clear Lot to Final Punch",
+    "mcp_tools": [
+      "read_schedules",
+      "read_schedule_detail",
+      "update_schedule",
+      "create_schedule_task",
+      "get_price_table",
+      "update_price",
+      "exchange_subcontractor",
+      "schedule_service",
+      "reschedule_service",
+      "adjust_quantity",
+      "send_supplier_email",
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "draw_released_to_phase_unlock",
+      "survey_received_to_phase1_initiation",
+      "floor_plan_change_to_phase1_update",
+      "checklist_done_to_payment_trigger",
+      "inspection_result_to_reschedule",
+      "material_change_to_schedule_update",
+      "subcontractor_swap_to_reschedule"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Daniela Santiago",
+      "email": "dsantiago@lakeshoresoftware.inc",
+      "role": "Phase 3 Lead / Scheduling Manager"
+    },
+    {
+      "name": "Mauricio Vieira",
+      "email": "mvieira@lakeshoresoftware.inc",
+      "role": "Phase 1 Scheduler"
+    },
+    {
+      "name": "Giovana Sousa",
+      "email": "gsousa@lakeshoresoftware.inc",
+      "role": "Phase 1 Scheduler"
+    },
+    {
+      "name": "Joao Victor Serra",
+      "email": "jserra@lakeshoresoftware.inc",
+      "role": "Phase 2 Scheduler"
+    },
+    {
+      "name": "Thercyo Pereira",
+      "email": "tpereira@lakeshoresoftware.inc",
+      "role": "Phase 2 Scheduler"
+    },
+    {
+      "name": "Antonio Santos",
+      "email": "asantos@lakeshoresoftware.inc",
+      "role": "Phase 3 Scheduler"
+    },
+    {
+      "name": "Guilherme Barbosa",
+      "email": "gbarbosa@lakeshoresoftware.inc",
+      "role": "Phase 3 Scheduler"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "CPM (Critical Path Method) with 66 Activities",
+      "description": "Master the full 66-activity CPM network covering all three construction phases. Understand dependencies, float, and critical path identification to prevent schedule slippage across the entire house construction pipeline.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 1 Scheduler", "Phase 2 Scheduler", "Phase 3 Scheduler", "Phase 3 Lead"]
+    },
+    {
+      "topic": "4 Process Types",
+      "description": "Understand the four distinct process types used in the CPM: sequential (strict order), parallel (concurrent execution), milestone (gate checks), and contingency (weather/material delays). Each process type has different scheduling rules and buffer requirements.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 1 Scheduler", "Phase 2 Scheduler", "Phase 3 Scheduler", "Phase 3 Lead"]
+    },
+    {
+      "topic": "Phase 1: Pre-Construction & Foundation",
+      "description": "Sequence: Clear Lot, Stake/Layout, Engineering Loads Calculation, Pad/Fill, Compaction Test, Form Foundation, Underground Plumbing (UP). Each step has county-specific permit and inspection requirements.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 1 Scheduler"]
+    },
+    {
+      "topic": "Phase 2: Rough & Structure",
+      "description": "Sequence: Rough Plumbing, Drain Lines, Framing, Termite Treatment, Insulation, Drywall. Coordination with multiple trades working simultaneously requires careful sequencing to avoid conflicts.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 2 Scheduler"]
+    },
+    {
+      "topic": "Phase 3: Finish",
+      "description": "Sequence: Paint, Tile, Vinyl/LVP, Cabinets, Trim/Millwork, Fixtures, Final Punch. Finish phase is most sensitive to change orders and material availability. Non-linear execution is common.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 3 Scheduler", "Phase 3 Lead"]
+    },
+    {
+      "topic": "Subcontractor Management",
+      "description": "Maintain relationships with subcontractor crews, understand their capacity limits, scheduling preferences, and quality history. Know when and how to swap subs without disrupting the schedule.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Phase 1 Scheduler", "Phase 2 Scheduler", "Phase 3 Scheduler"]
+    },
+    {
+      "topic": "County-Specific Requirements",
+      "description": "Different counties (Marion, Citrus, Charlotte, etc.) have different inspection schedules, permit requirements, and workflow rules. Schedulers must know which rules apply to each project location.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Phase 1 Scheduler", "Phase 2 Scheduler", "Phase 3 Scheduler", "Phase 3 Lead"]
+    },
+    {
+      "topic": "Price Table Management",
+      "description": "Understand the pricing structure for each activity, how to read and update the price table, and how price changes affect budgets and subcontractor payments.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Phase 3 Lead"]
+    },
+    {
+      "topic": "Material Lead Times & Procurement",
+      "description": "Track material availability for critical items (trusses, windows, cabinets, countertops). Late material changes (PP-08) are a major pain point requiring immediate schedule adjustment.",
+      "proficiency_level": "intermediate",
+      "applies_to": ["Phase 2 Scheduler", "Phase 3 Scheduler"]
+    },
+    {
+      "topic": "Phase Non-Linearity Heuristics",
+      "description": "Understand that phases do not always execute in strict linear order. Phase 3 activities in particular may overlap, skip, or reorder based on material availability, trade crew scheduling, and site conditions.",
+      "proficiency_level": "advanced",
+      "applies_to": ["Phase 3 Lead", "Phase 3 Scheduler"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "Phase 1 Scheduling Pipeline",
+      "steps": [
+        "Check for new 'Survey Received' tags on projects",
+        "Verify engineering loads calculation is complete",
+        "Schedule Clear Lot with approved sub",
+        "Schedule Stake/Layout after lot clearing",
+        "Coordinate Pad/Fill delivery and equipment",
+        "Order Compaction Test after pad completion",
+        "Schedule Foundation Forming crew",
+        "Schedule Underground Plumbing (UP) after forms",
+        "Request Phase 1 inspection upon completion"
+      ],
+      "frequency": "daily",
+      "systems_used": ["BuilderTrend", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether compaction test results require re-work before proceeding",
+        "Which sub crew to assign based on current capacity",
+        "Whether weather delay requires full reschedule"
+      ]
+    },
+    {
+      "name": "Phase 2 Scheduling Pipeline",
+      "steps": [
+        "Verify Phase 1 inspection passed",
+        "Schedule Rough Plumbing and Drain Lines",
+        "Coordinate Framing crew and material delivery",
+        "Schedule Termite Treatment (must happen before insulation)",
+        "Schedule Insulation after all roughs pass inspection",
+        "Schedule Drywall delivery and hanging crew",
+        "Request Phase 2 inspections (multiple trades)"
+      ],
+      "frequency": "daily",
+      "systems_used": ["BuilderTrend", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether to overlap rough trades or sequence them",
+        "Framing material substitution approval",
+        "Drywall scheduling around humidity/weather"
+      ]
+    },
+    {
+      "name": "Phase 3 Scheduling Pipeline",
+      "steps": [
+        "Verify Phase 2 drywall completion and inspection",
+        "Schedule Paint crew (first finish trade)",
+        "Schedule Tile after paint (wet areas)",
+        "Schedule Vinyl/LVP flooring",
+        "Coordinate Cabinet delivery and installation",
+        "Schedule Trim/Millwork crew",
+        "Schedule Fixture installation (plumbing, electrical)",
+        "Schedule Final Punch walkthrough",
+        "Request final inspections"
+      ],
+      "frequency": "daily",
+      "systems_used": ["BuilderTrend", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Non-linear phase execution order based on material availability",
+        "Cabinet delivery date changes requiring full reschedule",
+        "Change order impact on finish timeline"
+      ]
+    },
+    {
+      "name": "Draw Released Processing",
+      "steps": [
+        "Receive Draw Released notification from Finance",
+        "Verify which phase the draw unlocks",
+        "Update project status to allow scheduling of next phase activities",
+        "Notify relevant phase scheduler to begin scheduling",
+        "Update BuilderTrend with phase unlock date"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["BuilderTrend", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether all prerequisites are met before unlocking phase"
+      ]
+    },
+    {
+      "name": "Subcontractor Swap",
+      "steps": [
+        "Identify underperforming or unavailable sub",
+        "Check alternative sub availability and pricing",
+        "Get approval for price differential if applicable",
+        "Update schedule with new sub assignment",
+        "Notify site supervisor of crew change",
+        "Send confirmation to new sub via WhatsApp/email"
+      ],
+      "frequency": "per-project",
+      "systems_used": ["BuilderTrend", "WhatsApp", "LakeshoreSoftware.inc"],
+      "critical_decisions": [
+        "Whether the price increase for replacement sub is acceptable",
+        "Whether delay from swap exceeds delay from waiting for original sub"
+      ]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Task Management",
+      "features_used": [
+        "Task creation and assignment",
+        "Task status tracking (scheduled/in-progress/complete)",
+        "Subcontractor assignment to tasks",
+        "Task dependency visualization",
+        "Bulk task scheduling"
+      ],
+      "api_endpoints": [
+        "/api/v1/schedules",
+        "/api/v1/schedules/{id}",
+        "/api/v1/schedules/{id}/tasks",
+        "/api/v1/schedules/{id}/tasks/{taskId}",
+        "/api/v1/price-table",
+        "/api/v1/price-table/{id}"
+      ]
+    },
+    {
+      "module": "Construction Phase Tracking",
+      "features_used": [
+        "Phase gate management (Phase 1/2/3)",
+        "Draw release tracking",
+        "Phase completion percentage",
+        "Cross-phase dependency alerts",
+        "Phase timeline visualization"
+      ],
+      "api_endpoints": [
+        "/api/v1/projects/{id}/phases",
+        "/api/v1/projects/{id}/phases/{phaseId}/status",
+        "/api/v1/projects/{id}/timeline"
+      ]
+    },
+    {
+      "module": "Subcontractor Management",
+      "features_used": [
+        "Sub crew directory and availability",
+        "Performance history and ratings",
+        "Sub swap workflow",
+        "Capacity tracking per trade"
+      ],
+      "api_endpoints": [
+        "/api/v1/subcontractors",
+        "/api/v1/subcontractors/{id}/availability",
+        "/api/v1/subcontractors/{id}/performance"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-02",
+      "direction": "receives_from",
+      "partner_department": "Financeiro",
+      "trigger": "Draw Released",
+      "data_exchanged": "Draw approval confirmation with phase identifier and funding amount",
+      "impact": "Phase cannot begin scheduling until draw is released; delays cascade to all downstream activities in that phase"
+    },
+    {
+      "id": "H-03",
+      "direction": "receives_from",
+      "partner_department": "Engenharia",
+      "trigger": "Survey Received",
+      "data_exchanged": "Site survey data, lot dimensions, elevation, and engineering loads calculation results",
+      "impact": "Phase 1 cannot be initiated without survey data; missing 'Survey Received' tag (PP-07) causes houses to be skipped in scheduling queue"
+    },
+    {
+      "id": "H-04",
+      "direction": "receives_from",
+      "partner_department": "Engenharia",
+      "trigger": "Floor Plan Changed",
+      "data_exchanged": "Updated floor plan with structural modifications, material changes, and dimensional adjustments",
+      "impact": "Phase 1 schedule must be updated; late changes (PP-08) require rework of sub assignments and material orders"
+    },
+    {
+      "id": "H-05",
+      "direction": "sends_to",
+      "partner_department": "Supervisao",
+      "trigger": "Activity Scheduled",
+      "data_exchanged": "Scheduled date, assigned subcontractor, scope of work, material requirements",
+      "impact": "Supervisors cannot plan daily routes without knowing which houses have scheduled activities"
+    },
+    {
+      "id": "H-06",
+      "direction": "receives_from",
+      "partner_department": "Inspecao",
+      "trigger": "Inspection Result",
+      "data_exchanged": "Pass/fail status, correction items if failed, re-inspection date",
+      "impact": "Failed inspections block scheduling of next phase activities; delays cascade through CPM"
+    },
+    {
+      "id": "H-07",
+      "direction": "sends_to",
+      "partner_department": "Financeiro",
+      "trigger": "Phase Completion",
+      "data_exchanged": "Completed activity list, sub payment amounts from price table, change order adjustments",
+      "impact": "Sub payments cannot be processed until scheduling confirms phase completion"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-06",
+      "description": "Triple data entry: schedulers must enter the same information into BuilderTrend, the internal platform, and WhatsApp group updates manually",
+      "severity": "high",
+      "current_workaround": "Manual copy-paste between systems; some schedulers maintain personal spreadsheets as intermediate step",
+      "proposed_solution": "Unified data entry with automatic sync across BuilderTrend and internal platform; WhatsApp integration via API for automated notifications"
+    },
+    {
+      "id": "PP-07",
+      "description": "Survey Received tag missing from projects causes houses to be invisible in scheduling queue, leading to delayed Phase 1 initiation",
+      "severity": "high",
+      "current_workaround": "Schedulers manually check with engineering weekly for unreceived surveys; some houses discovered only when supervisor asks why nothing is scheduled",
+      "proposed_solution": "Automated Survey Received detection from engineering workflow; alert when project exists without survey tag beyond threshold days"
+    },
+    {
+      "id": "PP-08",
+      "description": "Late material changes (especially cabinets, windows, countertops) after scheduling is complete force full reschedule of affected activities and sub crews",
+      "severity": "high",
+      "current_workaround": "Schedulers manually identify all affected activities and contact each sub individually; often results in gaps where crews are reassigned elsewhere",
+      "proposed_solution": "Change order impact analysis tool that auto-identifies all affected activities in CPM and suggests reschedule options with sub availability check"
+    },
+    {
+      "id": "PP-09",
+      "description": "No visibility into subcontractor capacity across all active projects; schedulers may over-schedule a sub crew without knowing",
+      "severity": "medium",
+      "current_workaround": "Schedulers call or WhatsApp subs to check availability before scheduling; relies on sub honesty about capacity",
+      "proposed_solution": "Sub capacity dashboard showing all scheduled work across projects with utilization percentage and conflict alerts"
+    },
+    {
+      "id": "PP-10",
+      "description": "Phase 3 non-linear execution makes template-based scheduling inaccurate; Daniela's mental heuristics are not codified",
+      "severity": "medium",
+      "current_workaround": "Daniela personally reviews and adjusts Phase 3 schedules; other schedulers follow templates that may not reflect reality",
+      "proposed_solution": "Codify Phase 3 decision tree based on material availability, trade capacity, and site conditions into scheduling rules engine"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "Phase 3 Non-Linearity Heuristics",
+      "description": "Daniela Santiago holds the mental model for when Phase 3 activities can be reordered. For example, if cabinet delivery is delayed 2+ weeks, she knows to pull tile and vinyl forward, but only if paint is fully cured. If trim carpenter is available but cabinets are not installed, she knows which trim items can be done pre-cabinet vs post-cabinet.",
+      "holders": ["Daniela Santiago"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "County Workflow Differences",
+      "description": "Each county has different scheduling rhythms. Marion County inspectors are available Monday-Thursday only. Citrus County requires portal submissions by 15:30 the day before. Charlotte County has no portal and requires site-only scheduling. These differences affect how far in advance activities must be scheduled.",
+      "holders": ["Daniela Santiago", "Mauricio Vieira"],
+      "risk_if_lost": "high"
+    },
+    {
+      "topic": "Subcontractor Reliability Ratings",
+      "description": "Informal knowledge of which subs consistently show up on time, which ones need a day buffer, which ones do quality work but are slow, and which ones are fast but need more QC oversight. Not documented anywhere.",
+      "holders": ["Daniela Santiago", "Joao Victor Serra", "Thercyo Pereira"],
+      "risk_if_lost": "medium"
+    },
+    {
+      "topic": "Weather Impact Rules of Thumb",
+      "description": "When rain is forecast, experienced schedulers know which activities can proceed (interior roughs, drywall if dried-in) and which must be rescheduled (foundation pour, pad compaction, exterior paint). Buffer days vary by activity type.",
+      "holders": ["Mauricio Vieira", "Giovana Sousa"],
+      "risk_if_lost": "medium"
+    },
+    {
+      "topic": "Engineering Loads Bottleneck Patterns",
+      "description": "Certain floor plan types consistently take longer for engineering loads calculation. Schedulers who know these patterns can pre-schedule around expected delays rather than waiting for the calculation to complete.",
+      "holders": ["Mauricio Vieira"],
+      "risk_if_lost": "medium"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "CPM Fundamentals for Construction Scheduling",
+      "topics": [
+        "Critical Path Method theory and application",
+        "66-activity network for residential construction",
+        "4 process types and their scheduling rules",
+        "Float calculation and critical path identification",
+        "Dependency types (FS, FF, SS, SF)"
+      ],
+      "target_audience": ["new hires"],
+      "priority": "high",
+      "quiz_coverage": "partial"
+    },
+    {
+      "module": "3-Phase Construction Pipeline",
+      "topics": [
+        "Phase 1: Pre-Construction & Foundation sequence",
+        "Phase 2: Rough & Structure sequence",
+        "Phase 3: Finish sequence and non-linear execution",
+        "Phase gate requirements and draw release triggers",
+        "Inter-phase dependencies and handoffs"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "high",
+      "quiz_coverage": "covered"
+    },
+    {
+      "module": "Subcontractor Capacity Planning",
+      "topics": [
+        "Sub crew capacity assessment methods",
+        "Multi-project sub utilization tracking",
+        "Sub swap decision criteria and process",
+        "Performance tracking and quality expectations"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Productivity Benchmarking",
+      "topics": [
+        "Activity duration benchmarks by trade",
+        "Crew size to productivity ratios",
+        "Weather and site condition adjustment factors",
+        "Variance tracking and schedule recovery techniques"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "medium",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "Unified Data Entry Workflow",
+      "topics": [
+        "Single-source data entry in platform",
+        "Auto-sync verification with BuilderTrend",
+        "WhatsApp notification integration",
+        "Data quality checks and validation rules"
+      ],
+      "target_audience": ["all staff"],
+      "priority": "high",
+      "quiz_coverage": "gap"
+    },
+    {
+      "module": "County-Specific Scheduling Rules",
+      "topics": [
+        "Marion County inspection and permit rules",
+        "Citrus County portal deadlines and procedures",
+        "Charlotte County site-only workflow",
+        "County-specific buffer day requirements"
+      ],
+      "target_audience": ["new hires", "all staff"],
+      "priority": "medium",
+      "quiz_coverage": "partial"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "All scheduled activities must have valid permits before work begins",
+      "regulation": "FBC",
+      "verification": "Cross-reference scheduled activities with permit status in Inspecao department records before confirming sub schedule"
+    },
+    {
+      "requirement": "Foundation work must pass compaction test before concrete pour is scheduled",
+      "regulation": "FBC",
+      "verification": "Compaction test results must be on file and passing before foundation forming crew is scheduled"
+    },
+    {
+      "requirement": "Termite treatment must be completed before insulation is installed",
+      "regulation": "FBC",
+      "verification": "Termite treatment certificate must be uploaded before insulation activity can be scheduled"
+    },
+    {
+      "requirement": "All rough inspections must pass before drywall can be scheduled",
+      "regulation": "County",
+      "verification": "Inspection results from Inspecao department must show all roughs (plumbing, electrical, mechanical) passed"
+    },
+    {
+      "requirement": "Subcontractors must have current insurance and licensing on file",
+      "regulation": "County",
+      "verification": "Sub management module shows valid insurance and license expiration dates beyond scheduled work dates"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "Schedule Adherence Rate",
+      "target": ">85% of activities completed within 1 day of scheduled date",
+      "measurement": "Compare scheduled date vs actual completion date for each activity across all active projects"
+    },
+    {
+      "metric": "Phase Cycle Time",
+      "target": "Phase 1: 15 days, Phase 2: 25 days, Phase 3: 30 days",
+      "measurement": "Calendar days from first activity start to last activity completion per phase per house"
+    },
+    {
+      "metric": "Subcontractor No-Show Rate",
+      "target": "<5% of scheduled activities result in no-show",
+      "measurement": "Count of no-show incidents divided by total scheduled sub appointments per month"
+    },
+    {
+      "metric": "Reschedule Rate",
+      "target": "<15% of activities require rescheduling after initial scheduling",
+      "measurement": "Count of rescheduled activities divided by total activities scheduled per month"
+    },
+    {
+      "metric": "Houses in Active Construction",
+      "target": "Track total houses in each phase at any time",
+      "measurement": "Weekly count of houses in Phase 1, Phase 2, Phase 3, and completed"
+    },
+    {
+      "metric": "Draw-to-Schedule Lag",
+      "target": "<2 business days from draw release to first activity scheduled",
+      "measurement": "Days between draw release notification and first scheduled activity in unlocked phase"
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "department": "Utilities",
+  "department_id": "utilities",
+  "category": "Client",
+  "ai_agent": {
+    "port": 8015,
+    "role": "Coordinates all utility services (water, sewer, electric, septic, gas) from availability verification through meter installation and account closing",
+    "mcp_tools": [
+      "read_daily_logs"
+    ],
+    "workflow_chains": [
+      "ual_verification",
+      "energy_account_opening",
+      "water_meter_installation",
+      "septic_management",
+      "account_closing",
+      "utility_monitoring"
+    ]
+  },
+  "staff": [
+    {
+      "name": "Dandara Souza",
+      "email": "",
+      "role": "Utilities Coordinator — also handles Inspections. Manages water/sewer/energy/septic for all projects, UAL requests, TUG side determination, account opening/closing"
+    }
+  ],
+  "core_knowledge": [
+    {
+      "topic": "Water Availability Analysis",
+      "description": "5 options from UAL: Standard (normal connection), Info Not Available (rare, payment to verify), Benefited/Benef (extension ready, extra cost → client hold), Extension (line extension needed, high cost → client hold), Well (no water access, install well). Each triggers different workflow.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities", "permits", "client_relations"]
+    },
+    {
+      "topic": "Sewer System Analysis",
+      "description": "4 options: Gravity (public system, rare in Marion), Septic (private, most common in Marion, no extra cost), Nitrogen (efficient septic, extra cost → client hold), LPS (Charlotte County system, mid-tier). System type determines documentation for Permits.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities", "permits"]
+    },
+    {
+      "topic": "TUG Side Determination",
+      "description": "Side of the electrical box on the house. CICLE: always garage side. DUC/FPL/WEC: must ask utility company engineer. Critical info for Scheduling (RF Electric). Wrong side = significant extra cost.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities", "scheduling"]
+    },
+    {
+      "topic": "UAL Process",
+      "description": "Utility Availability Letter requested from MCU by email with address and parcel. Results distributed to: Drive folder, BT folder, BT Schedule fields, Utilities spreadsheet, Slack Permit channel, and Canva Red Flags for special cases.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities", "permits"]
+    },
+    {
+      "topic": "Energy Company Procedures",
+      "description": "Four companies with different processes: DUC (portal, long timelines, open at permit), FPL (portal, similar to DUC), CICLE/Recitrus (forms, signatures, open after 2nd draw), WEC (pay per connection). Each has unique underground electric and meter installation flows.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities"]
+    },
+    {
+      "topic": "Septic Installation Coordination",
+      "description": "Triggered by Roof Assembly inspection approval. Steps: verify stakes, request service (Alisbird for conventional Marion, Howard for nitrogen Marion, different company for Citrus), manage connection (Alisbird does it free, Howard requires separate plumber Colano), DOH inspection, get owner signature via CR.",
+      "proficiency_level": "advanced",
+      "applies_to": ["utilities", "inspecao", "client_relations"]
+    }
+  ],
+  "daily_workflows": [
+    {
+      "name": "New Jobsite Utility Setup",
+      "steps": [
+        "Receive notification of new jobsite via Slack",
+        "Identify house, address, water/sewer/energy companies",
+        "Request UAL by email to water/sewer company",
+        "Register request date in Utilities spreadsheet",
+        "On receipt: analyze water availability (5 options)",
+        "Analyze sewer availability (4 options)",
+        "Register in Daily Logs with specific tags",
+        "Register in BT custom fields (companies and systems)",
+        "If extra cost: notify Slack for Client Relations → client approval → Financeiro"
+      ],
+      "frequency": "Per new jobsite",
+      "systems_used": ["Slack", "Email", "Utilities Spreadsheet", "Builder Trend"],
+      "critical_decisions": ["Identifying extra costs that trigger client holds"]
+    },
+    {
+      "name": "Energy Account and Underground Electric",
+      "steps": [
+        "Receive permit notification via Slack",
+        "Identify energy company via interactive maps",
+        "Open account (varies by company)",
+        "Forward opening invoice to Financeiro",
+        "Determine TUG side and inform Scheduling",
+        "After TUG Inspection approval: notify company for underground electric scheduling",
+        "Schedule in Daily Logs with 3-week timeline",
+        "Verify invoice (>$1K over budget → client hold)",
+        "Coordinate electric meter installation"
+      ],
+      "frequency": "Per project (triggered by permit receipt)",
+      "systems_used": ["Company portals (DUC, FPL, CICLE, WEC)", "Email", "Slack", "Builder Trend"],
+      "critical_decisions": ["TUG side determination", "Identifying underground electric cost overruns"]
+    },
+    {
+      "name": "Account Closing Post-Sale",
+      "steps": [
+        "Receive closing notification",
+        "Verify accounts are in Lakeshore's name",
+        "Cancel energy (simple process)",
+        "Cancel water (requires document + signature)"
+      ],
+      "frequency": "Per house sold",
+      "systems_used": ["Company portals", "Email", "Utilities Spreadsheet"],
+      "critical_decisions": ["Timing of account cancellation vs owner transfer"]
+    }
+  ],
+  "platform_modules": [
+    {
+      "module": "Utility (Const App)",
+      "features_used": [
+        "Utility configurations (27 configs)",
+        "Water/sewer management",
+        "Energy management",
+        "Septic tracking",
+        "Monitoring"
+      ],
+      "api_endpoints": [
+        "/utility/configs",
+        "/utility/water_sewer",
+        "/utility/energy",
+        "/utility/septic",
+        "/utility/monitoring"
+      ]
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-09",
+      "direction": "outbound",
+      "partner_department": "Scheduling",
+      "trigger": "TUG side determined by energy company",
+      "data_exchanged": "TUG side (garage side vs other), company name, timeline",
+      "impact": "RF Electric installation depends on correct TUG side — wrong side = costly rework"
+    },
+    {
+      "id": "H-10",
+      "direction": "outbound",
+      "partner_department": "Permits",
+      "trigger": "Water/sewer system type determined from UAL",
+      "data_exchanged": "System type (gravity/septic/nitrogen/LPS), water availability status",
+      "impact": "Determines permit documentation requirements"
+    },
+    {
+      "id": "H-11",
+      "direction": "outbound",
+      "partner_department": "Client Relations",
+      "trigger": "Extra cost identified (extension, nitrogen, well, underground >$1K over budget)",
+      "data_exchanged": "Cost details, utility type, documentation",
+      "impact": "Client approval required before proceeding — blocks pipeline"
+    },
+    {
+      "id": "H-util-financeiro",
+      "direction": "outbound",
+      "partner_department": "Financeiro",
+      "trigger": "Account opening invoice received or construction charges due",
+      "data_exchanged": "Invoice details, PO updates, payment requests",
+      "impact": "Payment delays can block meter installation and underground scheduling"
+    }
+  ],
+  "pain_points": [
+    {
+      "id": "PP-util-01",
+      "description": "Triple registration required — same information entered in spreadsheet, Daily Logs, AND BT custom fields",
+      "severity": "high",
+      "current_workaround": "Manual entry in all three locations",
+      "proposed_solution": "Single entry point with automated sync to other systems"
+    },
+    {
+      "id": "PP-util-02",
+      "description": "Utility companies are difficult to work with — poor responsiveness, meters installed without notification or stolen",
+      "severity": "medium",
+      "current_workaround": "Weekly field monitoring by data loggers after 1-month mark",
+      "proposed_solution": "Automated utility company status polling where APIs available"
+    },
+    {
+      "id": "PP-util-03",
+      "description": "Unpredictable timelines from utility companies, especially DUC (Duke Energy)",
+      "severity": "medium",
+      "current_workaround": "Open DUC accounts immediately at permit receipt to buffer timeline",
+      "proposed_solution": "Historical timeline data to improve ETA predictions"
+    },
+    {
+      "id": "PP-util-04",
+      "description": "TUG side installed on wrong side causes significant additional cost",
+      "severity": "high",
+      "current_workaround": "Double-check with energy company engineer before communicating to Scheduling",
+      "proposed_solution": "Mandatory TUG side confirmation workflow with approval step"
+    }
+  ],
+  "tribal_knowledge": [
+    {
+      "topic": "County-Company Combinations",
+      "description": "Dandara knows the specific rules for each combination of county and utility company — different forms, contacts, timelines, and procedures. Each county (Marion, Citrus, Charlotte) has different companies with unique processes.",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "New staff would need months to learn all county-company combinations; errors would cause delays"
+    },
+    {
+      "topic": "Septic Installer Preferences",
+      "description": "Which installer to use based on county and type: Alisbird (Marion conventional, includes connection), Howard (Marion nitrogen, cheaper but no connection — need Colano plumber), different company for Citrus (all-in-one).",
+      "holders": ["Dandara Souza"],
+      "risk_if_lost": "Wrong installer selection; missing connection step with Howard"
+    }
+  ],
+  "training_curriculum": [
+    {
+      "module": "Utility Availability and Setup",
+      "topics": ["UAL request and analysis", "Water options (5 types)", "Sewer options (4 types)", "Red flag identification", "Multi-system registration"],
+      "target_audience": ["New utilities staff"],
+      "priority": "high",
+      "quiz_coverage": "Water/sewer types, cost trigger thresholds, registration locations"
+    },
+    {
+      "module": "Energy Company Procedures",
+      "topics": ["DUC vs FPL vs CICLE vs WEC processes", "TUG side determination rules", "Underground electric scheduling", "Meter installation coordination"],
+      "target_audience": ["Utilities staff"],
+      "priority": "high",
+      "quiz_coverage": "Company-specific flows, TUG side rules by company, timeline expectations"
+    },
+    {
+      "module": "Septic Systems",
+      "topics": ["Conventional vs nitrogen vs LPS", "Installation trigger (Roof Assembly inspection)", "DOH inspection requirements", "Connection coordination"],
+      "target_audience": ["Utilities staff"],
+      "priority": "medium",
+      "quiz_coverage": "Septic types, installer selection, inspection flow"
+    }
+  ],
+  "compliance_requirements": [
+    {
+      "requirement": "UAL must be obtained before construction planning begins",
+      "regulation": "County utility connection requirements",
+      "verification": "UAL document filed in Drive and BT per SOP"
+    },
+    {
+      "requirement": "DOH approval required for septic systems before covering",
+      "regulation": "Florida Department of Health septic regulations",
+      "verification": "Septic permit saved in BuilderTrend after DOH inspection"
+    },
+    {
+      "requirement": "Impact fees paid before Final Electric inspection",
+      "regulation": "County impact fee schedules",
+      "verification": "Financeiro confirms payment; Dandara verifies before scheduling inspection"
+    }
+  ],
+  "key_metrics": [
+    {
+      "metric": "UAL turnaround time",
+      "target": "<5 business days from request to receipt",
+      "measurement": "Date tracking in Utilities spreadsheet"
+    },
+    {
+      "metric": "TUG side accuracy",
+      "target": "100% correct on first installation",
+      "measurement": "Zero rework incidents for TUG side errors"
+    },
+    {
+      "metric": "Meter installation tracking",
+      "target": "100% of meters confirmed within 6 weeks of payment",
+      "measurement": "Field monitor weekly verification reports"
+    }
+  ]
+}
